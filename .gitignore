@@ -3,6 +3,7 @@
 *.aar
 *.ap_
 *.aab
+apktool-out/
 
 # Files for the ART/Dalvik VM
 *.dex

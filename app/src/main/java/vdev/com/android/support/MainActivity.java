@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
     private static final String PREF_SAVE_LOGIN = "save_login";
     private static final String LIB_URL = "https://modmanager-chi.vercel.app/api/download/libcoverfirehooksvdevso";
     private static final String LIB_NAME = "lib.so";
-    private static final String GAME_ACTIVITY = "com.generagames.resistance.MainActivity";
+    private static final String GAME_ACTIVITY = "com.unity3d.player.UnityPlayerActivity";
     private static final String MOD_INFO_URL = "https://vinaomods.vercel.app/api/mods/by-package";
     private static final String MOD_DETAILS_BASE_URL = "https://vinaomods.online/details?slug=";
     private static final String MOD_LOOKUP_PACKAGE = "com.generagames.resistance";
