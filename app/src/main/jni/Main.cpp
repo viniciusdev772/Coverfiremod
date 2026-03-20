@@ -86,14 +86,20 @@ bool gInfiniteLife999 = false;
 bool gHookInstalled = false;
 bool gEnemyLines = false;
 bool gTriggerBot = false;
+bool gAutoKillAll = false;
+bool gKillAllNowRequested = false;
 int gLineOriginMode = 2;
 void* gLocalPlayerControl = nullptr;
 void* gLastTriggerTarget = nullptr;
-constexpr float kTriggerRadiusPixels = 90.0f;
-constexpr float kTriggerDamage = 9999.0f;
+float gTriggerRadiusPixels = 90.0f;
+float gTriggerDamage = 9999.0f;
 constexpr useconds_t kTriggerLoopDelayUs = 30000;
-constexpr long long kTriggerWindowMs = 120;
+constexpr long long kTriggerWindowMs = 260;
+constexpr long long kTriggerRefireCooldownMs = 70;
+constexpr float kTriggerLockBias = 1.35f;
+constexpr int kTriggerBurstShots = 3;
 long long gLastShootCommandTimeMs = 0;
+long long gLastTriggerFireTimeMs = 0;
 
 struct EnemyListSnapshot {
     int total = 0;
@@ -156,6 +162,10 @@ bool IsEnemyLineEspEnabled() {
 
 bool IsTriggerBotEnabled() {
     return gHookInstalled && gTriggerBot && gEnemyApplyDamage;
+}
+
+bool IsAutoKillAllEnabled() {
+    return gHookInstalled && gAutoKillAll && gEnemyApplyDamage;
 }
 
 long long GetMonotonicTimeMs() {
@@ -340,9 +350,23 @@ bool FindBestTriggerTarget(void** outEnemy) {
 
     const float centerX = static_cast<float>(screenWidth) * 0.5f;
     const float centerY = static_cast<float>(screenHeight) * 0.5f;
-    const float maxDistanceSq = kTriggerRadiusPixels * kTriggerRadiusPixels;
+    const float maxDistanceSq = gTriggerRadiusPixels * gTriggerRadiusPixels;
     float bestDistanceSq = maxDistanceSq;
     void* bestEnemy = nullptr;
+
+    if (gLastTriggerTarget) {
+        float lockX = 0.0f;
+        float lockY = 0.0f;
+        if (TryGetEnemyScreenPosition(gLastTriggerTarget, static_cast<float>(screenHeight), &lockX, &lockY)) {
+            const float lockDx = lockX - centerX;
+            const float lockDy = lockY - centerY;
+            const float lockDistanceSq = (lockDx * lockDx) + (lockDy * lockDy);
+            if (lockDistanceSq <= (maxDistanceSq * kTriggerLockBias)) {
+                bestDistanceSq = lockDistanceSq;
+                bestEnemy = gLastTriggerTarget;
+            }
+        }
+    }
 
     for (int i = 0; i < snapshot.active; ++i) {
         float targetX = 0.0f;
@@ -366,20 +390,51 @@ bool FindBestTriggerTarget(void** outEnemy) {
     return bestEnemy != nullptr;
 }
 
-void FireTriggerShot(void* enemy) {
+bool FireTriggerShot(void* enemy) {
     if (!enemy || !gEnemyApplyDamage) {
-        return;
+        return false;
+    }
+    const auto isActive = *reinterpret_cast<bool*>(
+            reinterpret_cast<uintptr_t>(enemy) + kEnemyControllerIsActiveOffset);
+    const auto isDead = *reinterpret_cast<bool*>(
+            reinterpret_cast<uintptr_t>(enemy) + kEnemyControllerIsDeadOffset);
+    if (!isActive || isDead) {
+        return false;
+    }
+
+    if (orig_SendShootCommand && gLocalPlayerControl) {
+        orig_SendShootCommand(gLocalPlayerControl);
+        gLastShootCommandTimeMs = GetMonotonicTimeMs();
     }
 
     Vec3 force{};
     Vec3 hitPoint{};
     if (!TryGetEnemyWorldPosition(enemy, &hitPoint)) {
-        return;
+        return false;
     }
 
     hitPoint.y += 1.4f;
-    force.z = 1.0f;
-    gEnemyApplyDamage(enemy, kTriggerDamage, 1.0f, force, nullptr, hitPoint, 0, false);
+    force.y = 0.35f;
+    force.z = 2.25f;
+    gEnemyApplyDamage(enemy, gTriggerDamage, 10.0f, force, nullptr, hitPoint, 0, true);
+    return true;
+}
+
+int FireKillAllBurst() {
+    if (!gEnemyApplyDamage) {
+        return 0;
+    }
+
+    const EnemyListSnapshot snapshot = ReadLocalEnemyList();
+    int fired = 0;
+    for (int i = 0; i < snapshot.active; ++i) {
+        if (FireTriggerShot(snapshot.enemies[i])) {
+            fired++;
+            usleep(2500);
+        }
+    }
+
+    return fired;
 }
 
 const char* GetLineOriginModeName() {
@@ -592,6 +647,18 @@ void* InstallHooksThread(void*) {
 
 void* TriggerBotThread(void*) {
     while (true) {
+        if (gKillAllNowRequested) {
+            gKillAllNowRequested = false;
+            const int fired = FireKillAllBurst();
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Kill-all burst executado: %d alvos", fired);
+        }
+
+        if (IsAutoKillAllEnabled()) {
+            FireKillAllBurst();
+            usleep(120000);
+            continue;
+        }
+
         if (!IsTriggerBotEnabled() || !IsTriggerWindowOpen()) {
             gLastTriggerTarget = nullptr;
             usleep(kTriggerLoopDelayUs);
@@ -600,9 +667,21 @@ void* TriggerBotThread(void*) {
 
         void* target = nullptr;
         if (FindBestTriggerTarget(&target)) {
-            if (target != gLastTriggerTarget) {
-                FireTriggerShot(target);
-                gLastTriggerTarget = target;
+            const long long nowMs = GetMonotonicTimeMs();
+            const bool targetChanged = target != gLastTriggerTarget;
+            const bool cooldownReady = (nowMs - gLastTriggerFireTimeMs) >= kTriggerRefireCooldownMs;
+            if (targetChanged || cooldownReady) {
+                int burstFired = 0;
+                for (int shot = 0; shot < kTriggerBurstShots; ++shot) {
+                    if (FireTriggerShot(target)) {
+                        burstFired++;
+                    }
+                    usleep(3500);
+                }
+                if (burstFired > 0) {
+                    gLastTriggerFireTimeMs = nowMs;
+                    gLastTriggerTarget = target;
+                }
             }
         } else {
             gLastTriggerTarget = nullptr;
@@ -797,11 +876,15 @@ jobjectArray SettingsList(JNIEnv* env, jobject) {
 jobjectArray GetFeatureList(JNIEnv* env, jobject) {
     static const char* const kFeatures[] = {
             OBFUSCATE("1_Button_Status do hook ARMv7"),
-            OBFUSCATE("2_Toggle_Super dano"),
+            OBFUSCATE("2_Toggle_God mode"),
             OBFUSCATE("3_Toggle_Draw line inimigos locais"),
             OBFUSCATE("4_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
             OBFUSCATE("5_Toggle_Vida infinita 999"),
             OBFUSCATE("6_Toggle_Trigger bot centro da tela"),
+            OBFUSCATE("7_Button_Matar todos agora"),
+            OBFUSCATE("8_Toggle_Auto kill continuo"),
+            OBFUSCATE("9_SeekBar_Raio do trigger_30_400"),
+            OBFUSCATE("10_SeekBar_Dano kill/trigger_100_50000"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -870,6 +953,47 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
                     "Trigger bot %s | enemyApply=%p",
                     gTriggerBot ? "ON" : "OFF",
                     reinterpret_cast<void*>(gEnemyApplyDamage));
+            break;
+        case 7: {
+            gKillAllNowRequested = true;
+            const EnemyListSnapshot snapshot = ReadLocalEnemyList();
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Kill-all solicitado | inimigos ativos=%d total=%d",
+                    snapshot.active,
+                    snapshot.total);
+            break;
+        }
+        case 8:
+            gAutoKillAll = boolean;
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Auto kill continuo %s",
+                    gAutoKillAll ? "ON" : "OFF");
+            break;
+        case 9:
+            gTriggerRadiusPixels = static_cast<float>(value);
+            if (gTriggerRadiusPixels < 30.0f) {
+                gTriggerRadiusPixels = 30.0f;
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Raio trigger ajustado para %.1f px",
+                    gTriggerRadiusPixels);
+            break;
+        case 10:
+            gTriggerDamage = static_cast<float>(value);
+            if (gTriggerDamage < 100.0f) {
+                gTriggerDamage = 100.0f;
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Dano trigger/kill ajustado para %.1f",
+                    gTriggerDamage);
             break;
         default:
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Feature sem ação dedicada: %d", featNum);
