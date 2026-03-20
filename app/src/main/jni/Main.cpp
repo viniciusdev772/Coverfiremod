@@ -1,23 +1,561 @@
 #include <jni.h>
 
 #include <android/log.h>
+#include <cmath>
 #include <cstdio>
+#include <pthread.h>
+#include <unistd.h>
 
 #include "DialogOnLoad.h"
 #include "Includes/obfuscate.h"
+#include "Includes/Utils.h"
+#include "Substrate/SubstrateHook.h"
 
 namespace {
 
-constexpr const char* kLogTag = "MOD_NATIVE_MIN";
-constexpr const char* kMenuTitle = "Cover Fire";
-constexpr const char* kMenuSubtitle = "Login validado e menu pronto";
+constexpr const char* kLogTag = "teste";
+const char* kTargetLibName = OBFUSCATE("libil2cpp.so");
+constexpr const char* kMenuTitle = "teste";
+constexpr const char* kMenuSubtitle = "teste";
 constexpr const char* kIconBase64 =
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aF9sAAAAASUVORK5CYII=";
 constexpr const char* kIconWebData =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aF9sAAAAASUVORK5CYII=";
+constexpr uintptr_t kPlayerControlActionShootRva = 0xBD0ECC;
+constexpr uintptr_t kPlayerControlApplyDamageRva = 0xBEEE58;
+constexpr uintptr_t kPlayerControlApplyDirectDamageRva = 0xBF2B6C;
+constexpr uintptr_t kPlayerWeaponCalculateLineOfFireRva = 0xD36BC8;
+constexpr uintptr_t kPlayerControlSceneControllerOffset = 0x24;
+constexpr uintptr_t kPlayerControlInitialLifeOffset = 0x6C;
+constexpr uintptr_t kPlayerControlActualLifeOffset = 0x70;
+constexpr uintptr_t kPlayerControlIsDeadOffset = 0x524;
+constexpr uintptr_t kSceneControllerMapEnemiesOffset = 0x58;
+constexpr uintptr_t kEnemyControllerIsActiveOffset = 0x104;
+constexpr uintptr_t kEnemyControllerIsDeadOffset = 0x106;
+constexpr uintptr_t kEnemyControllerTransformOffset = 0x12C;
+constexpr uintptr_t kManagedListItemsOffset = 0x8;
+constexpr uintptr_t kManagedListSizeOffset = 0xC;
+constexpr uintptr_t kManagedArrayFirstItemOffset = 0x10;
+constexpr uintptr_t kCameraGetMainRva = 0x210E7F8;
+constexpr uintptr_t kCameraGetCurrentRva = 0x210E838;
+constexpr uintptr_t kCameraWorldToScreenPointInjectedRva = 0x210E210;
+constexpr uintptr_t kTransformGetPositionInjectedRva = 0x2148AA4;
+constexpr size_t kManagedPointerSize = sizeof(void*);
+constexpr int kMaxEnemyLinesToDraw = 24;
+constexpr int kCameraMonoEye = 2;
+
+struct Vec3 {
+    float x;
+    float y;
+    float z;
+};
+
+using ApplyDamage_t = void (*)(void*,
+                               float,
+                               Vec3,
+                               Vec3,
+                               Vec3,
+                               void*,
+                               int,
+                               void*);
+using ApplyDirectDamage_t = void (*)(void*, float, Vec3, Vec3, int);
+using PlayerControlActionShoot_t = void* (*)(void*);
+using PlayerWeaponCalculateLineOfFire_t = void* (*)(void*, Vec3, Vec3);
+using CameraGetMain_t = void* (*)();
+using CameraGetCurrent_t = void* (*)();
+using CameraWorldToScreenPoint_Injected_t = void (*)(void*, Vec3*, int, Vec3*);
+using TransformGetPosition_Injected_t = void (*)(void*, Vec3*);
+
+ApplyDamage_t orig_ApplyDamage = nullptr;
+ApplyDirectDamage_t orig_ApplyDirectDamage = nullptr;
+PlayerControlActionShoot_t orig_PlayerControlActionShoot = nullptr;
+PlayerWeaponCalculateLineOfFire_t orig_PlayerWeaponCalculateLineOfFire = nullptr;
+CameraGetMain_t gCameraGetMain = nullptr;
+CameraGetCurrent_t gCameraGetCurrent = nullptr;
+CameraWorldToScreenPoint_Injected_t gCameraWorldToScreenPoint_Injected = nullptr;
+TransformGetPosition_Injected_t gTransformGetPosition_Injected = nullptr;
+bool gGodMode = false;
+bool gInfiniteLife999 = false;
+bool gAimIntercept = false;
+bool gHookInstalled = false;
+bool gAimHooksInstalled = false;
+bool gEnemyLines = false;
+int gLineOriginMode = 2;
+void* gLocalPlayerControl = nullptr;
+
+struct EnemyListSnapshot {
+    int total = 0;
+    int active = 0;
+    void* enemies[kMaxEnemyLinesToDraw] = {};
+};
+
+Vec3 AddVec3(const Vec3& a, const Vec3& b) {
+    return {a.x + b.x, a.y + b.y, a.z + b.z};
+}
+
+Vec3 SubVec3(const Vec3& a, const Vec3& b) {
+    return {a.x - b.x, a.y - b.y, a.z - b.z};
+}
+
+Vec3 MulVec3(const Vec3& v, float scalar) {
+    return {v.x * scalar, v.y * scalar, v.z * scalar};
+}
+
+float DotVec3(const Vec3& a, const Vec3& b) {
+    return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
+float LengthSqVec3(const Vec3& v) {
+    return DotVec3(v, v);
+}
+
+bool NormalizeVec3(Vec3* v) {
+    if (!v) {
+        return false;
+    }
+
+    const float lenSq = LengthSqVec3(*v);
+    if (lenSq <= 0.000001f) {
+        return false;
+    }
+
+    const float invLen = 1.0f / std::sqrt(lenSq);
+    *v = MulVec3(*v, invLen);
+    return true;
+}
+
+void SetLocalPlayerLife999(void* player) {
+    if (!player) {
+        return;
+    }
+
+    *reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(player) + kPlayerControlInitialLifeOffset) = 999.0f;
+    *reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(player) + kPlayerControlActualLifeOffset) = 999.0f;
+    *reinterpret_cast<bool*>(reinterpret_cast<uintptr_t>(player) + kPlayerControlIsDeadOffset) = false;
+}
+
+bool IsInfiniteLifeEnabled() {
+    return gHookInstalled && gInfiniteLife999;
+}
+
+bool IsGodModeEnabled() {
+    return gHookInstalled && gGodMode;
+}
+
+bool IsEnemyLineEspEnabled() {
+    return gHookInstalled && gEnemyLines;
+}
+
+bool IsAimInterceptEnabled() {
+    return gHookInstalled && gAimHooksInstalled && gAimIntercept;
+}
+
+EnemyListSnapshot ReadLocalEnemyList() {
+    EnemyListSnapshot snapshot;
+
+    auto* player = reinterpret_cast<uintptr_t*>(gLocalPlayerControl);
+    if (!player) {
+        return snapshot;
+    }
+
+    auto* sceneController = *reinterpret_cast<uintptr_t**>(
+            reinterpret_cast<uintptr_t>(player) + kPlayerControlSceneControllerOffset);
+    if (!sceneController) {
+        return snapshot;
+    }
+
+    auto* enemyList = *reinterpret_cast<uintptr_t**>(
+            reinterpret_cast<uintptr_t>(sceneController) + kSceneControllerMapEnemiesOffset);
+    if (!enemyList) {
+        return snapshot;
+    }
+
+    auto* items = *reinterpret_cast<uintptr_t**>(reinterpret_cast<uintptr_t>(enemyList) + kManagedListItemsOffset);
+    const int size = *reinterpret_cast<int*>(reinterpret_cast<uintptr_t>(enemyList) + kManagedListSizeOffset);
+    if (!items || size <= 0) {
+        return snapshot;
+    }
+
+    snapshot.total = size;
+
+    const int limit = size < kMaxEnemyLinesToDraw ? size : kMaxEnemyLinesToDraw;
+    for (int i = 0; i < limit; ++i) {
+        auto enemy = *reinterpret_cast<void**>(
+                reinterpret_cast<uintptr_t>(items) + kManagedArrayFirstItemOffset + (i * kManagedPointerSize));
+        if (!enemy) {
+            continue;
+        }
+
+        const auto isActive = *reinterpret_cast<bool*>(
+                reinterpret_cast<uintptr_t>(enemy) + kEnemyControllerIsActiveOffset);
+        const auto isDead = *reinterpret_cast<bool*>(
+                reinterpret_cast<uintptr_t>(enemy) + kEnemyControllerIsDeadOffset);
+        if (!isActive || isDead) {
+            continue;
+        }
+
+        snapshot.enemies[snapshot.active++] = enemy;
+    }
+
+    return snapshot;
+}
+
+void ResolveUnityDrawApis() {
+    if (gCameraGetMain && gCameraWorldToScreenPoint_Injected && gTransformGetPosition_Injected) {
+        return;
+    }
+
+    gCameraGetMain = reinterpret_cast<CameraGetMain_t>(getAbsoluteAddress(kTargetLibName, kCameraGetMainRva));
+    gCameraGetCurrent = reinterpret_cast<CameraGetCurrent_t>(getAbsoluteAddress(kTargetLibName, kCameraGetCurrentRva));
+    gCameraWorldToScreenPoint_Injected = reinterpret_cast<CameraWorldToScreenPoint_Injected_t>(
+            getAbsoluteAddress(kTargetLibName, kCameraWorldToScreenPointInjectedRva));
+    gTransformGetPosition_Injected = reinterpret_cast<TransformGetPosition_Injected_t>(
+            getAbsoluteAddress(kTargetLibName, kTransformGetPositionInjectedRva));
+}
+
+void* GetActiveCamera() {
+    ResolveUnityDrawApis();
+
+    if (gCameraGetMain) {
+        if (void* camera = gCameraGetMain()) {
+            return camera;
+        }
+    }
+
+    if (gCameraGetCurrent) {
+        return gCameraGetCurrent();
+    }
+
+    return nullptr;
+}
+
+bool TryGetEnemyScreenPosition(void* enemy, float canvasHeight, float* outX, float* outY) {
+    if (!enemy || !outX || !outY || !gTransformGetPosition_Injected || !gCameraWorldToScreenPoint_Injected) {
+        return false;
+    }
+
+    void* camera = GetActiveCamera();
+    if (!camera) {
+        return false;
+    }
+
+    auto* transform = *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(enemy) + kEnemyControllerTransformOffset);
+    if (!transform) {
+        return false;
+    }
+
+    Vec3 worldPos{};
+    gTransformGetPosition_Injected(transform, &worldPos);
+    worldPos.y += 1.4f;
+
+    Vec3 screenPos{};
+    gCameraWorldToScreenPoint_Injected(camera, &worldPos, kCameraMonoEye, &screenPos);
+    if (screenPos.z <= 0.01f) {
+        return false;
+    }
+
+    *outX = screenPos.x;
+    *outY = canvasHeight - screenPos.y;
+    return true;
+}
+
+bool TryGetEnemyWorldPosition(void* enemy, Vec3* outPosition) {
+    if (!enemy || !outPosition || !gTransformGetPosition_Injected) {
+        return false;
+    }
+
+    auto* transform = *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(enemy) + kEnemyControllerTransformOffset);
+    if (!transform) {
+        return false;
+    }
+
+    gTransformGetPosition_Injected(transform, outPosition);
+    outPosition->y += 1.4f;
+    return true;
+}
+
+bool TryGetInterceptAimDirection(Vec3 start, Vec3 originalDirection, Vec3* outDirection) {
+    if (!outDirection || !IsAimInterceptEnabled()) {
+        return false;
+    }
+
+    EnemyListSnapshot snapshot = ReadLocalEnemyList();
+    if (snapshot.active <= 0) {
+        return false;
+    }
+
+    Vec3 normalizedOriginal = originalDirection;
+    if (!NormalizeVec3(&normalizedOriginal)) {
+        return false;
+    }
+
+    bool found = false;
+    float bestScore = -999999.0f;
+    Vec3 bestDirection{};
+
+    for (int i = 0; i < snapshot.active; ++i) {
+        Vec3 enemyWorld{};
+        if (!TryGetEnemyWorldPosition(snapshot.enemies[i], &enemyWorld)) {
+            continue;
+        }
+
+        Vec3 candidateDirection = SubVec3(enemyWorld, start);
+        if (!NormalizeVec3(&candidateDirection)) {
+            continue;
+        }
+
+        const float alignment = DotVec3(normalizedOriginal, candidateDirection);
+        if (alignment < 0.80f) {
+            continue;
+        }
+
+        const float distancePenalty = LengthSqVec3(SubVec3(enemyWorld, start)) * 0.00001f;
+        const float score = alignment - distancePenalty;
+        if (!found || score > bestScore) {
+            found = true;
+            bestScore = score;
+            bestDirection = candidateDirection;
+        }
+    }
+
+    if (!found) {
+        return false;
+    }
+
+    *outDirection = bestDirection;
+    return true;
+}
+
+const char* GetLineOriginModeName() {
+    switch (gLineOriginMode) {
+        case 0:
+            return "Topo";
+        case 1:
+            return "Centro";
+        case 2:
+            return "Base";
+        case 3:
+            return "Topo esquerda";
+        case 4:
+            return "Topo direita";
+        case 5:
+            return "Base esquerda";
+        case 6:
+            return "Base direita";
+        default:
+            return "Base";
+    }
+}
+
+void GetLineOriginPoint(float canvasWidth, float canvasHeight, float* outX, float* outY) {
+    if (!outX || !outY) {
+        return;
+    }
+
+    switch (gLineOriginMode) {
+        case 0:
+            *outX = canvasWidth * 0.5f;
+            *outY = 40.0f;
+            break;
+        case 1:
+            *outX = canvasWidth * 0.5f;
+            *outY = canvasHeight * 0.5f;
+            break;
+        case 2:
+            *outX = canvasWidth * 0.5f;
+            *outY = canvasHeight - 80.0f;
+            break;
+        case 3:
+            *outX = 40.0f;
+            *outY = 40.0f;
+            break;
+        case 4:
+            *outX = canvasWidth - 40.0f;
+            *outY = 40.0f;
+            break;
+        case 5:
+            *outX = 40.0f;
+            *outY = canvasHeight - 80.0f;
+            break;
+        case 6:
+            *outX = canvasWidth - 40.0f;
+            *outY = canvasHeight - 80.0f;
+            break;
+        default:
+            *outX = canvasWidth * 0.5f;
+            *outY = canvasHeight - 80.0f;
+            break;
+    }
+}
 
 void LogInfo(const char* message) {
     __android_log_print(ANDROID_LOG_INFO, kLogTag, "%s", message ? message : "");
+}
+
+void Hooked_ApplyDamage(void* instance,
+                        float damage,
+                        Vec3 directionDamage,
+                        Vec3 impactPoint,
+                        Vec3 hitNormal,
+                        void* damageCreator,
+                        int originDamage,
+                        void* originObject) {
+    if (instance) {
+        gLocalPlayerControl = instance;
+    }
+
+    if (IsInfiniteLifeEnabled()) {
+        SetLocalPlayerLife999(instance);
+        if (orig_ApplyDamage) {
+            orig_ApplyDamage(
+                    instance,
+                    0.0f,
+                    directionDamage,
+                    impactPoint,
+                    hitNormal,
+                    damageCreator,
+                    originDamage,
+                    originObject);
+        }
+        SetLocalPlayerLife999(instance);
+        return;
+    }
+
+    if (IsGodModeEnabled()) {
+        if (orig_ApplyDamage) {
+            orig_ApplyDamage(
+                    instance,
+                    0.0f,
+                    directionDamage,
+                    impactPoint,
+                    hitNormal,
+                    damageCreator,
+                    originDamage,
+                    originObject);
+        }
+        return;
+    }
+
+    if (orig_ApplyDamage) {
+        orig_ApplyDamage(
+                instance,
+                damage,
+                directionDamage,
+                impactPoint,
+                hitNormal,
+                damageCreator,
+                originDamage,
+                originObject);
+    }
+}
+
+void Hooked_ApplyDirectDamage(void* instance,
+                              float damage,
+                              Vec3 directionDamage,
+                              Vec3 impactPoint,
+                              int originDamage) {
+    if (instance) {
+        gLocalPlayerControl = instance;
+    }
+
+    if (IsInfiniteLifeEnabled()) {
+        SetLocalPlayerLife999(instance);
+        if (orig_ApplyDirectDamage) {
+            orig_ApplyDirectDamage(instance, 0.0f, directionDamage, impactPoint, originDamage);
+        }
+        SetLocalPlayerLife999(instance);
+        return;
+    }
+
+    if (IsGodModeEnabled()) {
+        if (orig_ApplyDirectDamage) {
+            orig_ApplyDirectDamage(instance, 0.0f, directionDamage, impactPoint, originDamage);
+        }
+        return;
+    }
+
+    if (orig_ApplyDirectDamage) {
+        orig_ApplyDirectDamage(instance, damage, directionDamage, impactPoint, originDamage);
+    }
+}
+
+void* Hooked_PlayerControlActionShoot(void* instance) {
+    if (instance) {
+        gLocalPlayerControl = instance;
+    }
+
+    if (orig_PlayerControlActionShoot) {
+        return orig_PlayerControlActionShoot(instance);
+    }
+
+    return nullptr;
+}
+
+void* Hooked_PlayerWeaponCalculateLineOfFire(void* instance, Vec3 start, Vec3 direction) {
+    Vec3 redirectedDirection = direction;
+    if (TryGetInterceptAimDirection(start, direction, &redirectedDirection)) {
+        direction = redirectedDirection;
+    }
+
+    if (orig_PlayerWeaponCalculateLineOfFire) {
+        return orig_PlayerWeaponCalculateLineOfFire(instance, start, direction);
+    }
+
+    return nullptr;
+}
+
+void* InstallHooksThread(void*) {
+    while (!isLibraryLoaded(kTargetLibName)) {
+        sleep(1);
+    }
+
+    ResolveUnityDrawApis();
+
+    const auto actionShootTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlActionShootRva));
+    const auto target = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlApplyDamageRva));
+    const auto directDamageTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlApplyDirectDamageRva));
+    const auto calculateLineOfFireTarget =
+            reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerWeaponCalculateLineOfFireRva));
+
+#if defined(__aarch64__)
+
+#else
+    if (target) {
+        MSHookFunction(target, reinterpret_cast<void*>(Hooked_ApplyDamage), reinterpret_cast<void**>(&orig_ApplyDamage));
+    }
+    if (directDamageTarget) {
+        MSHookFunction(
+                directDamageTarget,
+                reinterpret_cast<void*>(Hooked_ApplyDirectDamage),
+                reinterpret_cast<void**>(&orig_ApplyDirectDamage));
+    }
+
+    gHookInstalled = (orig_ApplyDamage != nullptr || orig_ApplyDirectDamage != nullptr);
+
+    if (actionShootTarget) {
+        MSHookFunction(
+                actionShootTarget,
+                reinterpret_cast<void*>(Hooked_PlayerControlActionShoot),
+                reinterpret_cast<void**>(&orig_PlayerControlActionShoot));
+    }
+    if (calculateLineOfFireTarget) {
+        MSHookFunction(
+                calculateLineOfFireTarget,
+                reinterpret_cast<void*>(Hooked_PlayerWeaponCalculateLineOfFire),
+                reinterpret_cast<void**>(&orig_PlayerWeaponCalculateLineOfFire));
+    }
+
+    gAimHooksInstalled =
+            (orig_PlayerControlActionShoot != nullptr && orig_PlayerWeaponCalculateLineOfFire != nullptr);
+
+    if (gHookInstalled) {
+        LogInfo(gAimHooksInstalled ? "sucess" : "partial");
+    } else {
+        LogInfo("failed");
+    }
+#endif
+
+    return nullptr;
 }
 
 jobjectArray NewStringArray(JNIEnv* env, const char* const* items, size_t count) {
@@ -189,8 +727,8 @@ jstring IconWebViewData(JNIEnv* env, jobject) {
     return env->NewStringUTF(kIconWebData);
 }
 
-jboolean isGameLibLoaded(JNIEnv*, jobject) {
-    return JNI_TRUE;
+jboolean MenuIsGameLibLoaded(JNIEnv*, jobject) {
+    return libLoaded ? JNI_TRUE : JNI_FALSE;
 }
 
 jobjectArray SettingsList(JNIEnv* env, jobject) {
@@ -204,16 +742,17 @@ jobjectArray SettingsList(JNIEnv* env, jobject) {
 
 jobjectArray GetFeatureList(JNIEnv* env, jobject) {
     static const char* const kFeatures[] = {
-            OBFUSCATE("Category_Menu de Modificações"),
-            OBFUSCATE("Collapse_Status"),
-            OBFUSCATE("CollapseAdd_Category_Status"),
-            OBFUSCATE("CollapseAdd_0_Button_Login validado no launcher"),
-            OBFUSCATE("CollapseAdd_1_Button_Lib nativa mínima sem hooks"),
+            OBFUSCATE("1_Button_Status do hook ARMv7"),
+            OBFUSCATE("2_Toggle_Super dano"),
+            OBFUSCATE("3_Toggle_Draw line inimigos locais"),
+            OBFUSCATE("4_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
+            OBFUSCATE("5_Toggle_Vida infinita 999"),
+            OBFUSCATE("6_Toggle_Interceptar mira"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
 
-void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint, jboolean, jstring) {
+void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint value, jboolean boolean, jstring) {
     RegisterDialogContext(env, context);
     if (!IsDialogLoginValidated()) {
         ShowQueuedLibLoadDialog(env, context);
@@ -221,7 +760,65 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint, 
         return;
     }
 
-    __android_log_print(ANDROID_LOG_INFO, kLogTag, "Feature acionada sem hook ativo: %d", featNum);
+    switch (featNum) {
+        case 1:
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Status hook=%s | player=%p",
+                    gHookInstalled ? "instalado" : "pendente",
+                    gLocalPlayerControl);
+            break;
+        case 2:
+            gGodMode = boolean;
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Super dano %s | hook=%s",
+                    gGodMode ? "ON" : "OFF",
+                    gHookInstalled ? "instalado" : "pendente");
+            break;
+        case 3:
+            gEnemyLines = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Draw line inimigos %s", gEnemyLines ? "ON" : "OFF");
+            break;
+        case 4:
+            gLineOriginMode = value;
+            if (gLineOriginMode < 0 || gLineOriginMode > 6) {
+                gLineOriginMode = 2;
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Origem da linha=%d (%s)",
+                    gLineOriginMode,
+                    GetLineOriginModeName());
+            break;
+        case 5:
+            gInfiniteLife999 = boolean;
+            if (IsInfiniteLifeEnabled()) {
+                SetLocalPlayerLife999(gLocalPlayerControl);
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Vida infinita 999 %s",
+                    gInfiniteLife999 ? "ON" : "OFF");
+            break;
+        case 6:
+            gAimIntercept = boolean;
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Interceptar mira %s | player=%p | aimHooks=%s",
+                    gAimIntercept ? "ON" : "OFF",
+                    gLocalPlayerControl,
+                    gAimHooksInstalled ? "ok" : "faltando");
+            break;
+        default:
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Feature sem ação dedicada: %d", featNum);
+            break;
+    }
 }
 
 void CheckOverlayPermission(JNIEnv* env, jclass, jobject context) {
@@ -301,14 +898,133 @@ extern "C" jstring GetNativeLoginSummary(JNIEnv* env, jclass) {
     return env->NewStringUTF((summary && summary[0]) ? summary : "{}");
 }
 
-void DrawOn(JNIEnv*, jobject, jobject) {
+void DrawOn(JNIEnv* env, jobject, jobject canvas) {
+    if (!env || !canvas) {
+        return;
+    }
+
+    jclass canvasClass = env->FindClass(OBFUSCATE("android/graphics/Canvas"));
+    jclass paintClass = env->FindClass(OBFUSCATE("android/graphics/Paint"));
+    jclass colorClass = env->FindClass(OBFUSCATE("android/graphics/Color"));
+    if (!canvasClass || !paintClass || !colorClass) {
+        return;
+    }
+
+    jmethodID paintCtor = env->GetMethodID(paintClass, OBFUSCATE("<init>"), OBFUSCATE("()V"));
+    jmethodID setColor = env->GetMethodID(paintClass, OBFUSCATE("setColor"), OBFUSCATE("(I)V"));
+    jmethodID setStrokeWidth = env->GetMethodID(paintClass, OBFUSCATE("setStrokeWidth"), OBFUSCATE("(F)V"));
+    jmethodID setTextSize = env->GetMethodID(paintClass, OBFUSCATE("setTextSize"), OBFUSCATE("(F)V"));
+    jmethodID setAntiAlias = env->GetMethodID(paintClass, OBFUSCATE("setAntiAlias"), OBFUSCATE("(Z)V"));
+    jmethodID rgb = env->GetStaticMethodID(colorClass, OBFUSCATE("rgb"), OBFUSCATE("(III)I"));
+    jmethodID drawText = env->GetMethodID(
+            canvasClass,
+            OBFUSCATE("drawText"),
+            OBFUSCATE("(Ljava/lang/String;FFLandroid/graphics/Paint;)V"));
+    jmethodID drawLine = env->GetMethodID(
+            canvasClass,
+            OBFUSCATE("drawLine"),
+            OBFUSCATE("(FFFFLandroid/graphics/Paint;)V"));
+    jmethodID drawCircle = env->GetMethodID(
+            canvasClass,
+            OBFUSCATE("drawCircle"),
+            OBFUSCATE("(FFFLandroid/graphics/Paint;)V"));
+    jmethodID getWidth = env->GetMethodID(canvasClass, OBFUSCATE("getWidth"), OBFUSCATE("()I"));
+    jmethodID getHeight = env->GetMethodID(canvasClass, OBFUSCATE("getHeight"), OBFUSCATE("()I"));
+    if (!paintCtor || !setColor || !setStrokeWidth || !setTextSize || !setAntiAlias || !rgb ||
+        !drawText || !drawLine || !drawCircle || !getWidth || !getHeight) {
+        return;
+    }
+
+    jobject paint = env->NewObject(paintClass, paintCtor);
+    if (!paint) {
+        return;
+    }
+
+    const jint green = env->CallStaticIntMethod(colorClass, rgb, 80, 220, 120);
+    const jint yellow = env->CallStaticIntMethod(colorClass, rgb, 255, 210, 64);
+    const jint red = env->CallStaticIntMethod(colorClass, rgb, 255, 96, 96);
+    const jint cyan = env->CallStaticIntMethod(colorClass, rgb, 72, 200, 255);
+    const jint white = env->CallStaticIntMethod(colorClass, rgb, 245, 245, 245);
+    const auto canvasWidth = static_cast<float>(env->CallIntMethod(canvas, getWidth));
+    const auto canvasHeight = static_cast<float>(env->CallIntMethod(canvas, getHeight));
+
+    env->CallVoidMethod(paint, setAntiAlias, JNI_TRUE);
+    env->CallVoidMethod(paint, setStrokeWidth, 4.0f);
+    env->CallVoidMethod(paint, setTextSize, 32.0f);
+    env->CallVoidMethod(paint, setColor, green);
+
+    char status[128] = {0};
+    std::snprintf(
+            status,
+            sizeof(status),
+            "JNI OK | hook=%s | god=%s",
+            gHookInstalled ? "on" : "wait",
+            gGodMode ? "on" : "off");
+
+    jstring text = env->NewStringUTF(status);
+    env->CallVoidMethod(canvas, drawText, text, 60.0f, 90.0f, paint);
+    env->DeleteLocalRef(text);
+
+    env->CallVoidMethod(canvas, drawLine, 60.0f, 120.0f, 320.0f, 120.0f, paint);
+    env->CallVoidMethod(canvas, drawCircle, 190.0f, 220.0f, 48.0f, paint);
+
+    env->CallVoidMethod(paint, setColor, yellow);
+    env->CallVoidMethod(paint, setTextSize, 24.0f);
+    jstring subtitle = env->NewStringUTF("Overlay nativo de teste");
+    env->CallVoidMethod(canvas, drawText, subtitle, 60.0f, 290.0f, paint);
+    env->DeleteLocalRef(subtitle);
+
+    if (IsEnemyLineEspEnabled()) {
+        const EnemyListSnapshot snapshot = ReadLocalEnemyList();
+
+        char enemyStatus[160] = {0};
+        std::snprintf(
+                enemyStatus,
+                sizeof(enemyStatus),
+                "map_enemies: %d | ativos: %d | origem: %s",
+                snapshot.total,
+                snapshot.active,
+                GetLineOriginModeName());
+        jstring enemyText = env->NewStringUTF(enemyStatus);
+        env->CallVoidMethod(paint, setColor, white);
+        env->CallVoidMethod(paint, setTextSize, 26.0f);
+        env->CallVoidMethod(canvas, drawText, enemyText, 60.0f, 340.0f, paint);
+        env->DeleteLocalRef(enemyText);
+
+        if (snapshot.active > 0 && canvasWidth > 0.0f && canvasHeight > 0.0f) {
+            float startX = 0.0f;
+            float startY = 0.0f;
+            GetLineOriginPoint(canvasWidth, canvasHeight, &startX, &startY);
+
+            env->CallVoidMethod(paint, setColor, red);
+            env->CallVoidMethod(paint, setStrokeWidth, 3.0f);
+            for (int i = 0; i < snapshot.active; ++i) {
+                float targetX = 0.0f;
+                float targetY = 0.0f;
+                if (!TryGetEnemyScreenPosition(snapshot.enemies[i], canvasHeight, &targetX, &targetY)) {
+                    continue;
+                }
+
+                if (targetX < 0.0f || targetX > canvasWidth || targetY < 0.0f || targetY > canvasHeight) {
+                    continue;
+                }
+
+                env->CallVoidMethod(canvas, drawLine, startX, startY, targetX, targetY, paint);
+                env->CallVoidMethod(paint, setColor, cyan);
+                env->CallVoidMethod(canvas, drawCircle, targetX, targetY, 8.0f, paint);
+                env->CallVoidMethod(paint, setColor, red);
+            }
+        }
+    }
+
+    env->DeleteLocalRef(paint);
 }
 
 int RegisterMenu(JNIEnv* env) {
     JNINativeMethod methods[] = {
             {OBFUSCATE("Icon"), OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void*>(Icon)},
             {OBFUSCATE("IconWebViewData"), OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void*>(IconWebViewData)},
-            {OBFUSCATE("IsGameLibLoaded"), OBFUSCATE("()Z"), reinterpret_cast<void*>(isGameLibLoaded)},
+            {OBFUSCATE("IsGameLibLoaded"), OBFUSCATE("()Z"), reinterpret_cast<void*>(MenuIsGameLibLoaded)},
             {OBFUSCATE("Init"), OBFUSCATE("(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/TextView;)V"), reinterpret_cast<void*>(Init)},
             {OBFUSCATE("SettingsList"), OBFUSCATE("()[Ljava/lang/String;"), reinterpret_cast<void*>(SettingsList)},
             {OBFUSCATE("GetFeatureList"), OBFUSCATE("()[Ljava/lang/String;"), reinterpret_cast<void*>(GetFeatureList)},
@@ -384,7 +1100,7 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
         return JNI_ERR;
     }
 
-    LogInfo("Carregando JNI mínimo sem hooks");
+    LogInfo("Carregando JNI com hook ARMv7 de ApplyDamage");
 
     if (RegisterMenu(env) != JNI_OK) {
         return JNI_ERR;
@@ -400,6 +1116,13 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     }
     if (RegisterESPView(env) != JNI_OK) {
         return JNI_ERR;
+    }
+
+    pthread_t hookThread{};
+    if (pthread_create(&hookThread, nullptr, InstallHooksThread, nullptr) == 0) {
+        pthread_detach(hookThread);
+    } else {
+        LogInfo("Falha ao criar thread de hooks");
     }
 
     return JNI_VERSION_1_6;
