@@ -39,6 +39,8 @@ constexpr uintptr_t kManagedArrayFirstItemOffset = 0x10;
 constexpr uintptr_t kCameraGetMainRva = 0x210E7F8;
 constexpr uintptr_t kCameraGetCurrentRva = 0x210E838;
 constexpr uintptr_t kCameraWorldToScreenPointInjectedRva = 0x210E210;
+constexpr uintptr_t kScreenGetWidthRva = 0x2118538;
+constexpr uintptr_t kScreenGetHeightRva = 0x2118578;
 constexpr uintptr_t kTransformGetPositionInjectedRva = 0x2148AA4;
 constexpr size_t kManagedPointerSize = sizeof(void*);
 constexpr int kMaxEnemyLinesToDraw = 24;
@@ -64,6 +66,8 @@ using PlayerWeaponCalculateLineOfFire_t = void* (*)(void*, Vec3, Vec3);
 using CameraGetMain_t = void* (*)();
 using CameraGetCurrent_t = void* (*)();
 using CameraWorldToScreenPoint_Injected_t = void (*)(void*, Vec3*, int, Vec3*);
+using ScreenGetWidth_t = int (*)();
+using ScreenGetHeight_t = int (*)();
 using TransformGetPosition_Injected_t = void (*)(void*, Vec3*);
 
 ApplyDamage_t orig_ApplyDamage = nullptr;
@@ -73,6 +77,8 @@ PlayerWeaponCalculateLineOfFire_t orig_PlayerWeaponCalculateLineOfFire = nullptr
 CameraGetMain_t gCameraGetMain = nullptr;
 CameraGetCurrent_t gCameraGetCurrent = nullptr;
 CameraWorldToScreenPoint_Injected_t gCameraWorldToScreenPoint_Injected = nullptr;
+ScreenGetWidth_t gScreenGetWidth = nullptr;
+ScreenGetHeight_t gScreenGetHeight = nullptr;
 TransformGetPosition_Injected_t gTransformGetPosition_Injected = nullptr;
 bool gGodMode = false;
 bool gInfiniteLife999 = false;
@@ -88,10 +94,6 @@ struct EnemyListSnapshot {
     int active = 0;
     void* enemies[kMaxEnemyLinesToDraw] = {};
 };
-
-Vec3 AddVec3(const Vec3& a, const Vec3& b) {
-    return {a.x + b.x, a.y + b.y, a.z + b.z};
-}
 
 Vec3 SubVec3(const Vec3& a, const Vec3& b) {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
@@ -201,7 +203,8 @@ EnemyListSnapshot ReadLocalEnemyList() {
 }
 
 void ResolveUnityDrawApis() {
-    if (gCameraGetMain && gCameraWorldToScreenPoint_Injected && gTransformGetPosition_Injected) {
+    if (gCameraGetMain && gCameraWorldToScreenPoint_Injected && gTransformGetPosition_Injected && gScreenGetWidth &&
+        gScreenGetHeight) {
         return;
     }
 
@@ -209,6 +212,8 @@ void ResolveUnityDrawApis() {
     gCameraGetCurrent = reinterpret_cast<CameraGetCurrent_t>(getAbsoluteAddress(kTargetLibName, kCameraGetCurrentRva));
     gCameraWorldToScreenPoint_Injected = reinterpret_cast<CameraWorldToScreenPoint_Injected_t>(
             getAbsoluteAddress(kTargetLibName, kCameraWorldToScreenPointInjectedRva));
+    gScreenGetWidth = reinterpret_cast<ScreenGetWidth_t>(getAbsoluteAddress(kTargetLibName, kScreenGetWidthRva));
+    gScreenGetHeight = reinterpret_cast<ScreenGetHeight_t>(getAbsoluteAddress(kTargetLibName, kScreenGetHeightRva));
     gTransformGetPosition_Injected = reinterpret_cast<TransformGetPosition_Injected_t>(
             getAbsoluteAddress(kTargetLibName, kTransformGetPositionInjectedRva));
 }
@@ -270,7 +275,23 @@ bool TryGetEnemyWorldPosition(void* enemy, Vec3* outPosition) {
     }
 
     gTransformGetPosition_Injected(transform, outPosition);
-    outPosition->y += 1.4f;
+    return true;
+}
+
+bool TryGetScreenSize(int* outWidth, int* outHeight) {
+    ResolveUnityDrawApis();
+    if (!outWidth || !outHeight || !gScreenGetWidth || !gScreenGetHeight) {
+        return false;
+    }
+
+    const int width = gScreenGetWidth();
+    const int height = gScreenGetHeight();
+    if (width <= 0 || height <= 0) {
+        return false;
+    }
+
+    *outWidth = width;
+    *outHeight = height;
     return true;
 }
 
@@ -279,18 +300,29 @@ bool TryGetInterceptAimDirection(Vec3 start, Vec3 originalDirection, Vec3* outDi
         return false;
     }
 
+    void* camera = GetActiveCamera();
+    if (!camera || !gCameraWorldToScreenPoint_Injected) {
+        return false;
+    }
+
+    int screenWidth = 0;
+    int screenHeight = 0;
+    if (!TryGetScreenSize(&screenWidth, &screenHeight)) {
+        return false;
+    }
+
     EnemyListSnapshot snapshot = ReadLocalEnemyList();
     if (snapshot.active <= 0) {
         return false;
     }
 
-    Vec3 normalizedOriginal = originalDirection;
-    if (!NormalizeVec3(&normalizedOriginal)) {
-        return false;
-    }
+    const float centerX = static_cast<float>(screenWidth) * 0.5f;
+    const float centerY = static_cast<float>(screenHeight) * 0.5f;
+    const float fov = 180.0f;
+    const float fovSq = fov * fov;
 
     bool found = false;
-    float bestScore = -999999.0f;
+    float bestDistanceSq = 0.0f;
     Vec3 bestDirection{};
 
     for (int i = 0; i < snapshot.active; ++i) {
@@ -299,21 +331,29 @@ bool TryGetInterceptAimDirection(Vec3 start, Vec3 originalDirection, Vec3* outDi
             continue;
         }
 
+        enemyWorld.y += 1.15f;
+
+        Vec3 screenPos{};
+        gCameraWorldToScreenPoint_Injected(camera, &enemyWorld, kCameraMonoEye, &screenPos);
+        if (screenPos.z <= 0.01f) {
+            continue;
+        }
+
+        const float dx = screenPos.x - centerX;
+        const float dy = screenPos.y - centerY;
+        const float distanceSq = (dx * dx) + (dy * dy);
+        if (distanceSq > fovSq) {
+            continue;
+        }
+
         Vec3 candidateDirection = SubVec3(enemyWorld, start);
         if (!NormalizeVec3(&candidateDirection)) {
             continue;
         }
 
-        const float alignment = DotVec3(normalizedOriginal, candidateDirection);
-        if (alignment < 0.80f) {
-            continue;
-        }
-
-        const float distancePenalty = LengthSqVec3(SubVec3(enemyWorld, start)) * 0.00001f;
-        const float score = alignment - distancePenalty;
-        if (!found || score > bestScore) {
+        if (!found || distanceSq < bestDistanceSq) {
             found = true;
-            bestScore = score;
+            bestDistanceSq = distanceSq;
             bestDirection = candidateDirection;
         }
     }
@@ -345,6 +385,16 @@ const char* GetLineOriginModeName() {
         default:
             return "Base";
     }
+}
+
+const char* GetAimStatusText() {
+    if (!gAimHooksInstalled) {
+        return "aim hooks ausentes";
+    }
+    if (!gAimIntercept) {
+        return "aim off";
+    }
+    return "aim on";
 }
 
 void GetLineOriginPoint(float canvasWidth, float canvasHeight, float* outX, float* outY) {
@@ -957,9 +1007,10 @@ void DrawOn(JNIEnv* env, jobject, jobject canvas) {
     std::snprintf(
             status,
             sizeof(status),
-            "JNI OK | hook=%s | god=%s",
+            "JNI OK | hook=%s | god=%s | %s",
             gHookInstalled ? "on" : "wait",
-            gGodMode ? "on" : "off");
+            gGodMode ? "on" : "off",
+            GetAimStatusText());
 
     jstring text = env->NewStringUTF(status);
     env->CallVoidMethod(canvas, drawText, text, 60.0f, 90.0f, paint);
