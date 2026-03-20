@@ -21,10 +21,8 @@ constexpr const char* kIconBase64 =
         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aF9sAAAAASUVORK5CYII=";
 constexpr const char* kIconWebData =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aF9sAAAAASUVORK5CYII=";
-constexpr uintptr_t kPlayerControlActionShootRva = 0xBD0ECC;
 constexpr uintptr_t kPlayerControlApplyDamageRva = 0xBEEE58;
 constexpr uintptr_t kPlayerControlApplyDirectDamageRva = 0xBF2B6C;
-constexpr uintptr_t kPlayerWeaponCalculateLineOfFireRva = 0xD36BC8;
 constexpr uintptr_t kPlayerControlSceneControllerOffset = 0x24;
 constexpr uintptr_t kPlayerControlInitialLifeOffset = 0x6C;
 constexpr uintptr_t kPlayerControlActualLifeOffset = 0x70;
@@ -61,8 +59,6 @@ using ApplyDamage_t = void (*)(void*,
                                int,
                                void*);
 using ApplyDirectDamage_t = void (*)(void*, float, Vec3, Vec3, int);
-using PlayerControlActionShoot_t = void* (*)(void*);
-using PlayerWeaponCalculateLineOfFire_t = void* (*)(void*, Vec3, Vec3);
 using CameraGetMain_t = void* (*)();
 using CameraGetCurrent_t = void* (*)();
 using CameraWorldToScreenPoint_Injected_t = void (*)(void*, Vec3*, int, Vec3*);
@@ -72,8 +68,6 @@ using TransformGetPosition_Injected_t = void (*)(void*, Vec3*);
 
 ApplyDamage_t orig_ApplyDamage = nullptr;
 ApplyDirectDamage_t orig_ApplyDirectDamage = nullptr;
-PlayerControlActionShoot_t orig_PlayerControlActionShoot = nullptr;
-PlayerWeaponCalculateLineOfFire_t orig_PlayerWeaponCalculateLineOfFire = nullptr;
 CameraGetMain_t gCameraGetMain = nullptr;
 CameraGetCurrent_t gCameraGetCurrent = nullptr;
 CameraWorldToScreenPoint_Injected_t gCameraWorldToScreenPoint_Injected = nullptr;
@@ -82,9 +76,7 @@ ScreenGetHeight_t gScreenGetHeight = nullptr;
 TransformGetPosition_Injected_t gTransformGetPosition_Injected = nullptr;
 bool gGodMode = false;
 bool gInfiniteLife999 = false;
-bool gAimIntercept = false;
 bool gHookInstalled = false;
-bool gAimHooksInstalled = false;
 bool gEnemyLines = false;
 int gLineOriginMode = 2;
 void* gLocalPlayerControl = nullptr;
@@ -146,10 +138,6 @@ bool IsGodModeEnabled() {
 
 bool IsEnemyLineEspEnabled() {
     return gHookInstalled && gEnemyLines;
-}
-
-bool IsAimInterceptEnabled() {
-    return gHookInstalled && gAimHooksInstalled && gAimIntercept;
 }
 
 EnemyListSnapshot ReadLocalEnemyList() {
@@ -295,77 +283,6 @@ bool TryGetScreenSize(int* outWidth, int* outHeight) {
     return true;
 }
 
-bool TryGetInterceptAimDirection(Vec3 start, Vec3 originalDirection, Vec3* outDirection) {
-    if (!outDirection || !IsAimInterceptEnabled()) {
-        return false;
-    }
-
-    void* camera = GetActiveCamera();
-    if (!camera || !gCameraWorldToScreenPoint_Injected) {
-        return false;
-    }
-
-    int screenWidth = 0;
-    int screenHeight = 0;
-    if (!TryGetScreenSize(&screenWidth, &screenHeight)) {
-        return false;
-    }
-
-    EnemyListSnapshot snapshot = ReadLocalEnemyList();
-    if (snapshot.active <= 0) {
-        return false;
-    }
-
-    const float centerX = static_cast<float>(screenWidth) * 0.5f;
-    const float centerY = static_cast<float>(screenHeight) * 0.5f;
-    const float fov = 180.0f;
-    const float fovSq = fov * fov;
-
-    bool found = false;
-    float bestDistanceSq = 0.0f;
-    Vec3 bestDirection{};
-
-    for (int i = 0; i < snapshot.active; ++i) {
-        Vec3 enemyWorld{};
-        if (!TryGetEnemyWorldPosition(snapshot.enemies[i], &enemyWorld)) {
-            continue;
-        }
-
-        enemyWorld.y += 1.15f;
-
-        Vec3 screenPos{};
-        gCameraWorldToScreenPoint_Injected(camera, &enemyWorld, kCameraMonoEye, &screenPos);
-        if (screenPos.z <= 0.01f) {
-            continue;
-        }
-
-        const float dx = screenPos.x - centerX;
-        const float dy = screenPos.y - centerY;
-        const float distanceSq = (dx * dx) + (dy * dy);
-        if (distanceSq > fovSq) {
-            continue;
-        }
-
-        Vec3 candidateDirection = SubVec3(enemyWorld, start);
-        if (!NormalizeVec3(&candidateDirection)) {
-            continue;
-        }
-
-        if (!found || distanceSq < bestDistanceSq) {
-            found = true;
-            bestDistanceSq = distanceSq;
-            bestDirection = candidateDirection;
-        }
-    }
-
-    if (!found) {
-        return false;
-    }
-
-    *outDirection = bestDirection;
-    return true;
-}
-
 const char* GetLineOriginModeName() {
     switch (gLineOriginMode) {
         case 0:
@@ -385,16 +302,6 @@ const char* GetLineOriginModeName() {
         default:
             return "Base";
     }
-}
-
-const char* GetAimStatusText() {
-    if (!gAimHooksInstalled) {
-        return "aim hooks ausentes";
-    }
-    if (!gAimIntercept) {
-        return "aim off";
-    }
-    return "aim on";
 }
 
 void GetLineOriginPoint(float canvasWidth, float canvasHeight, float* outX, float* outY) {
@@ -529,31 +436,6 @@ void Hooked_ApplyDirectDamage(void* instance,
     }
 }
 
-void* Hooked_PlayerControlActionShoot(void* instance) {
-    if (instance) {
-        gLocalPlayerControl = instance;
-    }
-
-    if (orig_PlayerControlActionShoot) {
-        return orig_PlayerControlActionShoot(instance);
-    }
-
-    return nullptr;
-}
-
-void* Hooked_PlayerWeaponCalculateLineOfFire(void* instance, Vec3 start, Vec3 direction) {
-    Vec3 redirectedDirection = direction;
-    if (TryGetInterceptAimDirection(start, direction, &redirectedDirection)) {
-        direction = redirectedDirection;
-    }
-
-    if (orig_PlayerWeaponCalculateLineOfFire) {
-        return orig_PlayerWeaponCalculateLineOfFire(instance, start, direction);
-    }
-
-    return nullptr;
-}
-
 void* InstallHooksThread(void*) {
     while (!isLibraryLoaded(kTargetLibName)) {
         sleep(1);
@@ -561,11 +443,8 @@ void* InstallHooksThread(void*) {
 
     ResolveUnityDrawApis();
 
-    const auto actionShootTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlActionShootRva));
     const auto target = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlApplyDamageRva));
     const auto directDamageTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlApplyDirectDamageRva));
-    const auto calculateLineOfFireTarget =
-            reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerWeaponCalculateLineOfFireRva));
 
 #if defined(__aarch64__)
 
@@ -582,24 +461,8 @@ void* InstallHooksThread(void*) {
 
     gHookInstalled = (orig_ApplyDamage != nullptr || orig_ApplyDirectDamage != nullptr);
 
-    if (actionShootTarget) {
-        MSHookFunction(
-                actionShootTarget,
-                reinterpret_cast<void*>(Hooked_PlayerControlActionShoot),
-                reinterpret_cast<void**>(&orig_PlayerControlActionShoot));
-    }
-    if (calculateLineOfFireTarget) {
-        MSHookFunction(
-                calculateLineOfFireTarget,
-                reinterpret_cast<void*>(Hooked_PlayerWeaponCalculateLineOfFire),
-                reinterpret_cast<void**>(&orig_PlayerWeaponCalculateLineOfFire));
-    }
-
-    gAimHooksInstalled =
-            (orig_PlayerControlActionShoot != nullptr && orig_PlayerWeaponCalculateLineOfFire != nullptr);
-
     if (gHookInstalled) {
-        LogInfo(gAimHooksInstalled ? "sucess" : "partial");
+        LogInfo("sucess");
     } else {
         LogInfo("failed");
     }
@@ -797,7 +660,6 @@ jobjectArray GetFeatureList(JNIEnv* env, jobject) {
             OBFUSCATE("3_Toggle_Draw line inimigos locais"),
             OBFUSCATE("4_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
             OBFUSCATE("5_Toggle_Vida infinita 999"),
-            OBFUSCATE("6_Toggle_Interceptar mira"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -854,16 +716,6 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
                     kLogTag,
                     "Vida infinita 999 %s",
                     gInfiniteLife999 ? "ON" : "OFF");
-            break;
-        case 6:
-            gAimIntercept = boolean;
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Interceptar mira %s | player=%p | aimHooks=%s",
-                    gAimIntercept ? "ON" : "OFF",
-                    gLocalPlayerControl,
-                    gAimHooksInstalled ? "ok" : "faltando");
             break;
         default:
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Feature sem ação dedicada: %d", featNum);
@@ -990,8 +842,6 @@ void DrawOn(JNIEnv* env, jobject, jobject canvas) {
         return;
     }
 
-    const jint green = env->CallStaticIntMethod(colorClass, rgb, 80, 220, 120);
-    const jint yellow = env->CallStaticIntMethod(colorClass, rgb, 255, 210, 64);
     const jint red = env->CallStaticIntMethod(colorClass, rgb, 255, 96, 96);
     const jint cyan = env->CallStaticIntMethod(colorClass, rgb, 72, 200, 255);
     const jint white = env->CallStaticIntMethod(colorClass, rgb, 245, 245, 245);
@@ -1001,29 +851,6 @@ void DrawOn(JNIEnv* env, jobject, jobject canvas) {
     env->CallVoidMethod(paint, setAntiAlias, JNI_TRUE);
     env->CallVoidMethod(paint, setStrokeWidth, 4.0f);
     env->CallVoidMethod(paint, setTextSize, 32.0f);
-    env->CallVoidMethod(paint, setColor, green);
-
-    char status[128] = {0};
-    std::snprintf(
-            status,
-            sizeof(status),
-            "JNI OK | hook=%s | god=%s | %s",
-            gHookInstalled ? "on" : "wait",
-            gGodMode ? "on" : "off",
-            GetAimStatusText());
-
-    jstring text = env->NewStringUTF(status);
-    env->CallVoidMethod(canvas, drawText, text, 60.0f, 90.0f, paint);
-    env->DeleteLocalRef(text);
-
-    env->CallVoidMethod(canvas, drawLine, 60.0f, 120.0f, 320.0f, 120.0f, paint);
-    env->CallVoidMethod(canvas, drawCircle, 190.0f, 220.0f, 48.0f, paint);
-
-    env->CallVoidMethod(paint, setColor, yellow);
-    env->CallVoidMethod(paint, setTextSize, 24.0f);
-    jstring subtitle = env->NewStringUTF("Overlay nativo de teste");
-    env->CallVoidMethod(canvas, drawText, subtitle, 60.0f, 290.0f, paint);
-    env->DeleteLocalRef(subtitle);
 
     if (IsEnemyLineEspEnabled()) {
         const EnemyListSnapshot snapshot = ReadLocalEnemyList();
