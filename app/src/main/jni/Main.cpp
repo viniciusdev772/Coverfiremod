@@ -25,11 +25,15 @@ constexpr const char* kIconWebData =
 constexpr uintptr_t kPlayerControlApplyDamageRva = 0xBEEE58;
 constexpr uintptr_t kPlayerControlApplyDirectDamageRva = 0xBF2B6C;
 constexpr uintptr_t kPlayerControlSendShootCommandRva = 0xBD2B20;
+constexpr uintptr_t kPlayerControlActionShootRva = 0xBD0ECC;
 constexpr uintptr_t kEnemyControllerApplyDamageRva = 0xB115A8;
 constexpr uintptr_t kPlayerControlSceneControllerOffset = 0x24;
 constexpr uintptr_t kPlayerControlInitialLifeOffset = 0x6C;
 constexpr uintptr_t kPlayerControlActualLifeOffset = 0x70;
 constexpr uintptr_t kPlayerControlIsDeadOffset = 0x524;
+constexpr uintptr_t kPlayerControlPitchOffset = 0x204;
+constexpr uintptr_t kPlayerControlYawOffset = 0x208;
+constexpr uintptr_t kPlayerControlCameraOffset = 0x1E4;
 constexpr uintptr_t kSceneControllerMapEnemiesOffset = 0x58;
 constexpr uintptr_t kEnemyControllerIsActiveOffset = 0x104;
 constexpr uintptr_t kEnemyControllerIsDeadOffset = 0x106;
@@ -43,6 +47,12 @@ constexpr uintptr_t kCameraWorldToScreenPointInjectedRva = 0x210E210;
 constexpr uintptr_t kScreenGetWidthRva = 0x2118538;
 constexpr uintptr_t kScreenGetHeightRva = 0x2118578;
 constexpr uintptr_t kTransformGetPositionInjectedRva = 0x2148AA4;
+constexpr uintptr_t kComponentGetTransformRva = 0x2139D90;
+constexpr uintptr_t kInverseTransformPointInjectedRva = 0x214A958;
+constexpr uintptr_t kEnemyHeadTransformOffset = 0x238;
+constexpr uintptr_t kEnemySpine2TransformOffset = 0x234;
+constexpr uintptr_t kEnemyHipsTransformOffset = 0x230;
+constexpr uintptr_t kPlayerControlTrOffset = 0x88;
 constexpr size_t kManagedPointerSize = sizeof(void*);
 constexpr int kMaxEnemyLinesToDraw = 24;
 constexpr int kCameraMonoEye = 2;
@@ -70,6 +80,9 @@ using ScreenGetWidth_t = int (*)();
 using ScreenGetHeight_t = int (*)();
 using TransformGetPosition_Injected_t = void (*)(void*, Vec3*);
 using EnemyApplyDamage_t = void (*)(void*, float, float, Vec3, void*, Vec3, int, bool);
+using ComponentGetTransform_t = void* (*)(void*);
+using InverseTransformPointInjected_t = void (*)(void*, Vec3*, Vec3*);
+using ActionShoot_t = void* (*)(void*);
 
 ApplyDamage_t orig_ApplyDamage = nullptr;
 ApplyDirectDamage_t orig_ApplyDirectDamage = nullptr;
@@ -81,6 +94,10 @@ ScreenGetWidth_t gScreenGetWidth = nullptr;
 ScreenGetHeight_t gScreenGetHeight = nullptr;
 TransformGetPosition_Injected_t gTransformGetPosition_Injected = nullptr;
 EnemyApplyDamage_t gEnemyApplyDamage = nullptr;
+ComponentGetTransform_t gComponentGetTransform = nullptr;
+InverseTransformPointInjected_t gInverseTransformPointInjected = nullptr;
+ActionShoot_t orig_ActionShoot = nullptr;
+float gAimSmoothing = 0.35f;
 bool gGodMode = false;
 bool gInfiniteLife999 = false;
 bool gHookInstalled = false;
@@ -88,16 +105,19 @@ bool gEnemyLines = false;
 bool gTriggerBot = false;
 bool gAutoKillAll = false;
 bool gKillAllNowRequested = false;
+bool gAimBot = false;
 int gLineOriginMode = 2;
 void* gLocalPlayerControl = nullptr;
 void* gLastTriggerTarget = nullptr;
+void* gAimBotLastTarget = nullptr;
 float gTriggerRadiusPixels = 90.0f;
-float gTriggerDamage = 9999.0f;
+float gTriggerDamage = 200.0f;
+float gAimBotFov = 180.0f;
 constexpr useconds_t kTriggerLoopDelayUs = 30000;
 constexpr long long kTriggerWindowMs = 260;
-constexpr long long kTriggerRefireCooldownMs = 70;
+constexpr long long kTriggerRefireCooldownMs = 150;
 constexpr float kTriggerLockBias = 1.35f;
-constexpr int kTriggerBurstShots = 3;
+constexpr int kTriggerBurstShots = 1;
 long long gLastShootCommandTimeMs = 0;
 long long gLastTriggerFireTimeMs = 0;
 
@@ -166,6 +186,10 @@ bool IsTriggerBotEnabled() {
 
 bool IsAutoKillAllEnabled() {
     return gHookInstalled && gAutoKillAll && gEnemyApplyDamage;
+}
+
+bool IsAimBotEnabled() {
+    return gHookInstalled && gAimBot && gLocalPlayerControl;
 }
 
 long long GetMonotonicTimeMs() {
@@ -249,6 +273,17 @@ void ResolveUnityDrawApis() {
             getAbsoluteAddress(kTargetLibName, kTransformGetPositionInjectedRva));
 }
 
+void ResolveAimApis() {
+    if (gComponentGetTransform && gInverseTransformPointInjected) {
+        return;
+    }
+
+    gComponentGetTransform = reinterpret_cast<ComponentGetTransform_t>(
+            getAbsoluteAddress(kTargetLibName, kComponentGetTransformRva));
+    gInverseTransformPointInjected = reinterpret_cast<InverseTransformPointInjected_t>(
+            getAbsoluteAddress(kTargetLibName, kInverseTransformPointInjectedRva));
+}
+
 void* GetActiveCamera() {
     ResolveUnityDrawApis();
 
@@ -307,6 +342,187 @@ bool TryGetEnemyWorldPosition(void* enemy, Vec3* outPosition) {
 
     gTransformGetPosition_Injected(transform, outPosition);
     return true;
+}
+
+bool TryGetScreenSize(int* outWidth, int* outHeight);
+
+bool TryGetEnemyHeadPosition(void* enemy, Vec3* outPosition) {
+    if (!enemy || !outPosition || !gTransformGetPosition_Injected) {
+        return false;
+    }
+
+    const auto addr = reinterpret_cast<uintptr_t>(enemy);
+
+    auto* head = *reinterpret_cast<void**>(addr + kEnemyHeadTransformOffset);
+    if (head) {
+        gTransformGetPosition_Injected(head, outPosition);
+        return true;
+    }
+
+    auto* spine = *reinterpret_cast<void**>(addr + kEnemySpine2TransformOffset);
+    if (spine) {
+        gTransformGetPosition_Injected(spine, outPosition);
+        outPosition->y += 0.25f;
+        return true;
+    }
+
+    auto* hips = *reinterpret_cast<void**>(addr + kEnemyHipsTransformOffset);
+    if (hips) {
+        gTransformGetPosition_Injected(hips, outPosition);
+        outPosition->y += 0.5f;
+        return true;
+    }
+
+    if (!TryGetEnemyWorldPosition(enemy, outPosition)) {
+        return false;
+    }
+    outPosition->y += 1.6f;
+    return true;
+}
+
+float LerpAngle(float current, float target, float t) {
+    float delta = target - current;
+    while (delta > 180.0f) delta -= 360.0f;
+    while (delta < -180.0f) delta += 360.0f;
+    return current + delta * t;
+}
+
+bool TryGetCameraWorldPosition(Vec3* outPos) {
+    if (!outPos || !gLocalPlayerControl) {
+        return false;
+    }
+    const auto playerAddr = reinterpret_cast<uintptr_t>(gLocalPlayerControl);
+
+    if (gComponentGetTransform && gTransformGetPosition_Injected) {
+        auto* cam = *reinterpret_cast<void**>(playerAddr + kPlayerControlCameraOffset);
+        if (cam) {
+            void* camTr = gComponentGetTransform(cam);
+            if (camTr) {
+                gTransformGetPosition_Injected(camTr, outPos);
+                return true;
+            }
+        }
+    }
+
+    if (gTransformGetPosition_Injected) {
+        auto* playerTr = *reinterpret_cast<void**>(playerAddr + kPlayerControlTrOffset);
+        if (playerTr) {
+            gTransformGetPosition_Injected(playerTr, outPos);
+            outPos->y += 1.6f;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool TryGetHeadScreenPosition(void* enemy, float canvasHeight, float* outX, float* outY) {
+    if (!enemy || !outX || !outY || !gTransformGetPosition_Injected || !gCameraWorldToScreenPoint_Injected) {
+        return false;
+    }
+
+    void* camera = GetActiveCamera();
+    if (!camera) {
+        return false;
+    }
+
+    Vec3 headPos{};
+    if (!TryGetEnemyHeadPosition(enemy, &headPos)) {
+        return false;
+    }
+
+    Vec3 screenPos{};
+    gCameraWorldToScreenPoint_Injected(camera, &headPos, kCameraMonoEye, &screenPos);
+    if (screenPos.z <= 0.01f) {
+        return false;
+    }
+
+    *outX = screenPos.x;
+    *outY = canvasHeight - screenPos.y;
+    return true;
+}
+
+void RunAimBot() {
+    if (!IsAimBotEnabled()) {
+        gAimBotLastTarget = nullptr;
+        return;
+    }
+
+    const auto playerAddr = reinterpret_cast<uintptr_t>(gLocalPlayerControl);
+    if (!playerAddr) {
+        return;
+    }
+
+    int screenWidth = 0, screenHeight = 0;
+    if (!TryGetScreenSize(&screenWidth, &screenHeight)) {
+        return;
+    }
+
+    const EnemyListSnapshot snapshot = ReadLocalEnemyList();
+    if (snapshot.active <= 0) {
+        gAimBotLastTarget = nullptr;
+        return;
+    }
+
+    const float centerX = static_cast<float>(screenWidth) * 0.5f;
+    const float centerY = static_cast<float>(screenHeight) * 0.5f;
+    const float canvasH = static_cast<float>(screenHeight);
+
+    void* bestEnemy = nullptr;
+    float bestDistSq = 999999.0f;
+
+    if (gAimBotLastTarget) {
+        for (int i = 0; i < snapshot.active; ++i) {
+            if (snapshot.enemies[i] == gAimBotLastTarget) {
+                float sx = 0, sy = 0;
+                if (TryGetHeadScreenPosition(gAimBotLastTarget, canvasH, &sx, &sy)) {
+                    bestEnemy = gAimBotLastTarget;
+                }
+                break;
+            }
+        }
+    }
+
+    if (!bestEnemy) {
+        for (int i = 0; i < snapshot.active; ++i) {
+            float sx = 0, sy = 0;
+            if (!TryGetEnemyScreenPosition(snapshot.enemies[i], canvasH, &sx, &sy)) {
+                continue;
+            }
+            const float dx = sx - centerX;
+            const float dy = sy - centerY;
+            const float distSq = dx * dx + dy * dy;
+            if (distSq < bestDistSq) {
+                bestDistSq = distSq;
+                bestEnemy = snapshot.enemies[i];
+            }
+        }
+    }
+
+    if (!bestEnemy) {
+        gAimBotLastTarget = nullptr;
+        return;
+    }
+
+    float headX = 0, headY = 0;
+    if (!TryGetHeadScreenPosition(bestEnemy, canvasH, &headX, &headY)) {
+        gAimBotLastTarget = nullptr;
+        return;
+    }
+
+    const float dx = headX - centerX;
+    const float dy = headY - centerY;
+
+    const float sens = *reinterpret_cast<float*>(playerAddr + 0x20C);
+    const float pixelScale = (sens > 0.01f ? sens : 0.15f) / static_cast<float>(screenWidth);
+
+    auto& currentYaw = *reinterpret_cast<float*>(playerAddr + kPlayerControlYawOffset);
+    auto& currentPitch = *reinterpret_cast<float*>(playerAddr + kPlayerControlPitchOffset);
+
+    currentYaw += dx * pixelScale * gAimSmoothing;
+    currentPitch -= dy * pixelScale * gAimSmoothing;
+
+    gAimBotLastTarget = bestEnemy;
 }
 
 bool TryGetScreenSize(int* outWidth, int* outHeight) {
@@ -602,16 +818,33 @@ void Hooked_SendShootCommand(void* instance) {
     }
 }
 
+void* Hooked_ActionShoot(void* instance) {
+    if (instance) {
+        gLocalPlayerControl = instance;
+    }
+
+    if (gAimBot && instance) {
+        RunAimBot();
+    }
+
+    if (orig_ActionShoot) {
+        return orig_ActionShoot(instance);
+    }
+    return nullptr;
+}
+
 void* InstallHooksThread(void*) {
     while (!isLibraryLoaded(kTargetLibName)) {
         sleep(1);
     }
 
     ResolveUnityDrawApis();
+    ResolveAimApis();
 
     const auto target = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlApplyDamageRva));
     const auto directDamageTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlApplyDirectDamageRva));
     const auto shootCommandTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlSendShootCommandRva));
+    const auto actionShootTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlActionShootRva));
     gEnemyApplyDamage = reinterpret_cast<EnemyApplyDamage_t>(getAbsoluteAddress(kTargetLibName, kEnemyControllerApplyDamageRva));
 
 #if defined(__aarch64__)
@@ -631,6 +864,12 @@ void* InstallHooksThread(void*) {
                 shootCommandTarget,
                 reinterpret_cast<void*>(Hooked_SendShootCommand),
                 reinterpret_cast<void**>(&orig_SendShootCommand));
+    }
+    if (actionShootTarget) {
+        MSHookFunction(
+                actionShootTarget,
+                reinterpret_cast<void*>(Hooked_ActionShoot),
+                reinterpret_cast<void**>(&orig_ActionShoot));
     }
 
     gHookInstalled = (orig_ApplyDamage != nullptr || orig_ApplyDirectDamage != nullptr);
@@ -652,6 +891,8 @@ void* TriggerBotThread(void*) {
             const int fired = FireKillAllBurst();
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Kill-all burst executado: %d alvos", fired);
         }
+
+        RunAimBot();
 
         if (IsAutoKillAllEnabled()) {
             FireKillAllBurst();
@@ -880,11 +1121,14 @@ jobjectArray GetFeatureList(JNIEnv* env, jobject) {
             OBFUSCATE("3_Toggle_Draw line inimigos locais"),
             OBFUSCATE("4_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
             OBFUSCATE("5_Toggle_Vida infinita 999"),
-            OBFUSCATE("6_Toggle_Trigger bot centro da tela"),
+            OBFUSCATE("6_Toggle_Trigger bot (1 tiro por disparo)"),
             OBFUSCATE("7_Button_Matar todos agora"),
             OBFUSCATE("8_Toggle_Auto kill continuo"),
             OBFUSCATE("9_SeekBar_Raio do trigger_30_400"),
-            OBFUSCATE("10_SeekBar_Dano kill/trigger_100_50000"),
+            OBFUSCATE("10_SeekBar_Dano por tiro_50_5000"),
+            OBFUSCATE("11_Toggle_Aimbot (puxa mira)"),
+            OBFUSCATE("12_SeekBar_FOV do aimbot_60_800"),
+            OBFUSCATE("13_SeekBar_Suavidade do aim_10_100"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -986,14 +1230,52 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
             break;
         case 10:
             gTriggerDamage = static_cast<float>(value);
-            if (gTriggerDamage < 100.0f) {
-                gTriggerDamage = 100.0f;
+            if (gTriggerDamage < 50.0f) {
+                gTriggerDamage = 50.0f;
             }
             __android_log_print(
                     ANDROID_LOG_INFO,
                     kLogTag,
                     "Dano trigger/kill ajustado para %.1f",
                     gTriggerDamage);
+            break;
+        case 11:
+            gAimBot = boolean;
+            if (!gAimBot) {
+                gAimBotLastTarget = nullptr;
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Aimbot %s | camTr=%s | player=%p",
+                    gAimBot ? "ON" : "OFF",
+                    gComponentGetTransform ? "ok" : "null",
+                    gLocalPlayerControl);
+            break;
+        case 12:
+            gAimBotFov = static_cast<float>(value);
+            if (gAimBotFov < 60.0f) {
+                gAimBotFov = 60.0f;
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "FOV do aimbot ajustado para %.1f px",
+                    gAimBotFov);
+            break;
+        case 13:
+            gAimSmoothing = static_cast<float>(value) / 100.0f;
+            if (gAimSmoothing < 0.1f) {
+                gAimSmoothing = 0.1f;
+            }
+            if (gAimSmoothing > 1.0f) {
+                gAimSmoothing = 1.0f;
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Suavidade do aim ajustada para %.0f%%",
+                    gAimSmoothing * 100.0f);
             break;
         default:
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Feature sem ação dedicada: %d", featNum);
