@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdio>
 #include <pthread.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "DialogOnLoad.h"
@@ -23,6 +24,8 @@ constexpr const char* kIconWebData =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aF9sAAAAASUVORK5CYII=";
 constexpr uintptr_t kPlayerControlApplyDamageRva = 0xBEEE58;
 constexpr uintptr_t kPlayerControlApplyDirectDamageRva = 0xBF2B6C;
+constexpr uintptr_t kPlayerControlSendShootCommandRva = 0xBD2B20;
+constexpr uintptr_t kEnemyControllerApplyDamageRva = 0xB115A8;
 constexpr uintptr_t kPlayerControlSceneControllerOffset = 0x24;
 constexpr uintptr_t kPlayerControlInitialLifeOffset = 0x6C;
 constexpr uintptr_t kPlayerControlActualLifeOffset = 0x70;
@@ -59,27 +62,38 @@ using ApplyDamage_t = void (*)(void*,
                                int,
                                void*);
 using ApplyDirectDamage_t = void (*)(void*, float, Vec3, Vec3, int);
+using SendShootCommand_t = void (*)(void*);
 using CameraGetMain_t = void* (*)();
 using CameraGetCurrent_t = void* (*)();
 using CameraWorldToScreenPoint_Injected_t = void (*)(void*, Vec3*, int, Vec3*);
 using ScreenGetWidth_t = int (*)();
 using ScreenGetHeight_t = int (*)();
 using TransformGetPosition_Injected_t = void (*)(void*, Vec3*);
+using EnemyApplyDamage_t = void (*)(void*, float, float, Vec3, void*, Vec3, int, bool);
 
 ApplyDamage_t orig_ApplyDamage = nullptr;
 ApplyDirectDamage_t orig_ApplyDirectDamage = nullptr;
+SendShootCommand_t orig_SendShootCommand = nullptr;
 CameraGetMain_t gCameraGetMain = nullptr;
 CameraGetCurrent_t gCameraGetCurrent = nullptr;
 CameraWorldToScreenPoint_Injected_t gCameraWorldToScreenPoint_Injected = nullptr;
 ScreenGetWidth_t gScreenGetWidth = nullptr;
 ScreenGetHeight_t gScreenGetHeight = nullptr;
 TransformGetPosition_Injected_t gTransformGetPosition_Injected = nullptr;
+EnemyApplyDamage_t gEnemyApplyDamage = nullptr;
 bool gGodMode = false;
 bool gInfiniteLife999 = false;
 bool gHookInstalled = false;
 bool gEnemyLines = false;
+bool gTriggerBot = false;
 int gLineOriginMode = 2;
 void* gLocalPlayerControl = nullptr;
+void* gLastTriggerTarget = nullptr;
+constexpr float kTriggerRadiusPixels = 90.0f;
+constexpr float kTriggerDamage = 9999.0f;
+constexpr useconds_t kTriggerLoopDelayUs = 30000;
+constexpr long long kTriggerWindowMs = 120;
+long long gLastShootCommandTimeMs = 0;
 
 struct EnemyListSnapshot {
     int total = 0;
@@ -138,6 +152,25 @@ bool IsGodModeEnabled() {
 
 bool IsEnemyLineEspEnabled() {
     return gHookInstalled && gEnemyLines;
+}
+
+bool IsTriggerBotEnabled() {
+    return gHookInstalled && gTriggerBot && gEnemyApplyDamage;
+}
+
+long long GetMonotonicTimeMs() {
+    timespec ts{};
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (static_cast<long long>(ts.tv_sec) * 1000LL) + (static_cast<long long>(ts.tv_nsec) / 1000000LL);
+}
+
+bool IsTriggerWindowOpen() {
+    const long long lastShootTime = gLastShootCommandTimeMs;
+    if (lastShootTime <= 0) {
+        return false;
+    }
+
+    return (GetMonotonicTimeMs() - lastShootTime) <= kTriggerWindowMs;
 }
 
 EnemyListSnapshot ReadLocalEnemyList() {
@@ -281,6 +314,72 @@ bool TryGetScreenSize(int* outWidth, int* outHeight) {
     *outWidth = width;
     *outHeight = height;
     return true;
+}
+
+bool FindBestTriggerTarget(void** outEnemy) {
+    if (!outEnemy) {
+        return false;
+    }
+
+    *outEnemy = nullptr;
+
+    if (!IsTriggerBotEnabled()) {
+        return false;
+    }
+
+    int screenWidth = 0;
+    int screenHeight = 0;
+    if (!TryGetScreenSize(&screenWidth, &screenHeight) || screenWidth <= 0 || screenHeight <= 0) {
+        return false;
+    }
+
+    const EnemyListSnapshot snapshot = ReadLocalEnemyList();
+    if (snapshot.active <= 0) {
+        return false;
+    }
+
+    const float centerX = static_cast<float>(screenWidth) * 0.5f;
+    const float centerY = static_cast<float>(screenHeight) * 0.5f;
+    const float maxDistanceSq = kTriggerRadiusPixels * kTriggerRadiusPixels;
+    float bestDistanceSq = maxDistanceSq;
+    void* bestEnemy = nullptr;
+
+    for (int i = 0; i < snapshot.active; ++i) {
+        float targetX = 0.0f;
+        float targetY = 0.0f;
+        if (!TryGetEnemyScreenPosition(snapshot.enemies[i], static_cast<float>(screenHeight), &targetX, &targetY)) {
+            continue;
+        }
+
+        const float dx = targetX - centerX;
+        const float dy = targetY - centerY;
+        const float distanceSq = (dx * dx) + (dy * dy);
+        if (distanceSq > bestDistanceSq) {
+            continue;
+        }
+
+        bestDistanceSq = distanceSq;
+        bestEnemy = snapshot.enemies[i];
+    }
+
+    *outEnemy = bestEnemy;
+    return bestEnemy != nullptr;
+}
+
+void FireTriggerShot(void* enemy) {
+    if (!enemy || !gEnemyApplyDamage) {
+        return;
+    }
+
+    Vec3 force{};
+    Vec3 hitPoint{};
+    if (!TryGetEnemyWorldPosition(enemy, &hitPoint)) {
+        return;
+    }
+
+    hitPoint.y += 1.4f;
+    force.z = 1.0f;
+    gEnemyApplyDamage(enemy, kTriggerDamage, 1.0f, force, nullptr, hitPoint, 0, false);
 }
 
 const char* GetLineOriginModeName() {
@@ -436,6 +535,18 @@ void Hooked_ApplyDirectDamage(void* instance,
     }
 }
 
+void Hooked_SendShootCommand(void* instance) {
+    if (instance) {
+        gLocalPlayerControl = instance;
+    }
+
+    gLastShootCommandTimeMs = GetMonotonicTimeMs();
+
+    if (orig_SendShootCommand) {
+        orig_SendShootCommand(instance);
+    }
+}
+
 void* InstallHooksThread(void*) {
     while (!isLibraryLoaded(kTargetLibName)) {
         sleep(1);
@@ -445,6 +556,8 @@ void* InstallHooksThread(void*) {
 
     const auto target = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlApplyDamageRva));
     const auto directDamageTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlApplyDirectDamageRva));
+    const auto shootCommandTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlSendShootCommandRva));
+    gEnemyApplyDamage = reinterpret_cast<EnemyApplyDamage_t>(getAbsoluteAddress(kTargetLibName, kEnemyControllerApplyDamageRva));
 
 #if defined(__aarch64__)
 
@@ -458,6 +571,12 @@ void* InstallHooksThread(void*) {
                 reinterpret_cast<void*>(Hooked_ApplyDirectDamage),
                 reinterpret_cast<void**>(&orig_ApplyDirectDamage));
     }
+    if (shootCommandTarget) {
+        MSHookFunction(
+                shootCommandTarget,
+                reinterpret_cast<void*>(Hooked_SendShootCommand),
+                reinterpret_cast<void**>(&orig_SendShootCommand));
+    }
 
     gHookInstalled = (orig_ApplyDamage != nullptr || orig_ApplyDirectDamage != nullptr);
 
@@ -469,6 +588,28 @@ void* InstallHooksThread(void*) {
 #endif
 
     return nullptr;
+}
+
+void* TriggerBotThread(void*) {
+    while (true) {
+        if (!IsTriggerBotEnabled() || !IsTriggerWindowOpen()) {
+            gLastTriggerTarget = nullptr;
+            usleep(kTriggerLoopDelayUs);
+            continue;
+        }
+
+        void* target = nullptr;
+        if (FindBestTriggerTarget(&target)) {
+            if (target != gLastTriggerTarget) {
+                FireTriggerShot(target);
+                gLastTriggerTarget = target;
+            }
+        } else {
+            gLastTriggerTarget = nullptr;
+        }
+
+        usleep(kTriggerLoopDelayUs);
+    }
 }
 
 jobjectArray NewStringArray(JNIEnv* env, const char* const* items, size_t count) {
@@ -660,6 +801,7 @@ jobjectArray GetFeatureList(JNIEnv* env, jobject) {
             OBFUSCATE("3_Toggle_Draw line inimigos locais"),
             OBFUSCATE("4_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
             OBFUSCATE("5_Toggle_Vida infinita 999"),
+            OBFUSCATE("6_Toggle_Trigger bot centro da tela"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -716,6 +858,18 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
                     kLogTag,
                     "Vida infinita 999 %s",
                     gInfiniteLife999 ? "ON" : "OFF");
+            break;
+        case 6:
+            gTriggerBot = boolean;
+            if (!gTriggerBot) {
+                gLastTriggerTarget = nullptr;
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Trigger bot %s | enemyApply=%p",
+                    gTriggerBot ? "ON" : "OFF",
+                    reinterpret_cast<void*>(gEnemyApplyDamage));
             break;
         default:
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Feature sem ação dedicada: %d", featNum);
@@ -1001,6 +1155,13 @@ extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
         pthread_detach(hookThread);
     } else {
         LogInfo("Falha ao criar thread de hooks");
+    }
+
+    pthread_t triggerThread{};
+    if (pthread_create(&triggerThread, nullptr, TriggerBotThread, nullptr) == 0) {
+        pthread_detach(triggerThread);
+    } else {
+        LogInfo("Falha ao criar thread do trigger bot");
     }
 
     return JNI_VERSION_1_6;
