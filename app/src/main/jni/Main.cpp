@@ -48,6 +48,7 @@ constexpr uintptr_t kScreenGetHeightRva = 0x2118578;
 constexpr uintptr_t kTransformGetPositionInjectedRva = 0x2148AA4;
 constexpr uintptr_t kComponentGetTransformRva = 0x2139D90;
 constexpr uintptr_t kTransformLookAtRva = 0x214A5AC;
+constexpr uintptr_t kPhysicsRaycastRva = 0x2196C2C;
 constexpr uintptr_t kEnemyHeadTransformOffset = 0x238;
 constexpr uintptr_t kEnemySpine2TransformOffset = 0x234;
 constexpr uintptr_t kEnemyHipsTransformOffset = 0x230;
@@ -80,6 +81,7 @@ using TransformGetPosition_Injected_t = void (*)(void*, Vec3*);
 using EnemyApplyDamage_t = void (*)(void*, float, float, Vec3, void*, Vec3, int, bool);
 using ComponentGetTransform_t = void* (*)(void*);
 using TransformLookAt_t = void (*)(void*, Vec3);
+using PhysicsRaycast_t = bool (*)(Vec3, Vec3, float, int);
 using MoveCam_t = void (*)(void*);
 using ActionShoot_t = void* (*)(void*);
 
@@ -95,6 +97,7 @@ TransformGetPosition_Injected_t gTransformGetPosition_Injected = nullptr;
 EnemyApplyDamage_t gEnemyApplyDamage = nullptr;
 ComponentGetTransform_t gComponentGetTransform = nullptr;
 TransformLookAt_t gTransformLookAt = nullptr;
+PhysicsRaycast_t gPhysicsRaycast = nullptr;
 MoveCam_t orig_MoveCam = nullptr;
 ActionShoot_t orig_ActionShoot = nullptr;
 bool gGodMode = false;
@@ -271,7 +274,7 @@ void ResolveUnityDrawApis() {
 }
 
 void ResolveAimApis() {
-    if (gComponentGetTransform && gTransformLookAt) {
+    if (gComponentGetTransform && gTransformLookAt && gPhysicsRaycast) {
         return;
     }
 
@@ -279,6 +282,8 @@ void ResolveAimApis() {
             getAbsoluteAddress(kTargetLibName, kComponentGetTransformRva));
     gTransformLookAt = reinterpret_cast<TransformLookAt_t>(
             getAbsoluteAddress(kTargetLibName, kTransformLookAtRva));
+    gPhysicsRaycast = reinterpret_cast<PhysicsRaycast_t>(
+            getAbsoluteAddress(kTargetLibName, kPhysicsRaycastRva));
 }
 
 void* GetActiveCamera() {
@@ -377,6 +382,31 @@ bool TryGetEnemyHeadPosition(void* enemy, Vec3* outPosition) {
     return true;
 }
 
+bool IsEnemyVisibleFromCamera(const Vec3& camPos, void* enemy) {
+    if (!gPhysicsRaycast) {
+        return true;
+    }
+
+    Vec3 headPos{};
+    if (!TryGetEnemyHeadPosition(enemy, &headPos)) {
+        return false;
+    }
+
+    Vec3 dir = SubVec3(headPos, camPos);
+    const float dist = std::sqrt(LengthSqVec3(dir));
+    if (dist < 0.5f) {
+        return true;
+    }
+
+    const float invDist = 1.0f / dist;
+    dir.x *= invDist;
+    dir.y *= invDist;
+    dir.z *= invDist;
+
+    constexpr int kDefaultLayer = ~(1 << 2);
+    return !gPhysicsRaycast(camPos, dir, dist - 0.5f, kDefaultLayer);
+}
+
 void* FindClosestActiveEnemy() {
     const EnemyListSnapshot snapshot = ReadLocalEnemyList();
     if (snapshot.active <= 0) {
@@ -403,8 +433,10 @@ void* FindClosestActiveEnemy() {
         return snapshot.enemies[0];
     }
 
-    void* best = nullptr;
-    float bestDist = 999999.0f;
+    void* bestVisible = nullptr;
+    float bestVisibleDist = 999999.0f;
+    void* bestAny = nullptr;
+    float bestAnyDist = 999999.0f;
 
     for (int i = 0; i < snapshot.active; ++i) {
         Vec3 pos{};
@@ -413,13 +445,21 @@ void* FindClosestActiveEnemy() {
         }
         const Vec3 diff = SubVec3(pos, camPos);
         const float dist = LengthSqVec3(diff);
-        if (dist < bestDist) {
-            bestDist = dist;
-            best = snapshot.enemies[i];
+
+        if (dist < bestAnyDist) {
+            bestAnyDist = dist;
+            bestAny = snapshot.enemies[i];
+        }
+
+        if (IsEnemyVisibleFromCamera(camPos, snapshot.enemies[i])) {
+            if (dist < bestVisibleDist) {
+                bestVisibleDist = dist;
+                bestVisible = snapshot.enemies[i];
+            }
         }
     }
 
-    return best;
+    return bestVisible ? bestVisible : bestAny;
 }
 
 void AimCameraAtEnemy(void* playerInstance) {
