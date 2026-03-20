@@ -1273,98 +1273,134 @@ extern "C" jstring GetNativeLoginSummary(JNIEnv* env, jclass) {
     return env->NewStringUTF((summary && summary[0]) ? summary : "{}");
 }
 
-void DrawOn(JNIEnv* env, jobject, jobject canvas) {
-    if (!env || !canvas) {
-        return;
+struct DrawCache {
+    bool resolved = false;
+    jclass canvasClass = nullptr;
+    jclass paintClass = nullptr;
+    jmethodID paintCtor = nullptr;
+    jmethodID setColor = nullptr;
+    jmethodID setStrokeWidth = nullptr;
+    jmethodID setTextSize = nullptr;
+    jmethodID setAntiAlias = nullptr;
+    jmethodID drawText = nullptr;
+    jmethodID drawLine = nullptr;
+    jmethodID drawCircle = nullptr;
+    jmethodID getWidth = nullptr;
+    jmethodID getHeight = nullptr;
+    jint red = 0;
+    jint cyan = 0;
+    jint white = 0;
+};
+
+static DrawCache gDraw;
+
+bool ResolveDrawCache(JNIEnv* env) {
+    if (gDraw.resolved) {
+        return true;
     }
 
-    jclass canvasClass = env->FindClass(OBFUSCATE("android/graphics/Canvas"));
-    jclass paintClass = env->FindClass(OBFUSCATE("android/graphics/Paint"));
-    jclass colorClass = env->FindClass(OBFUSCATE("android/graphics/Color"));
-    if (!canvasClass || !paintClass || !colorClass) {
-        return;
+    jclass cc = env->FindClass(OBFUSCATE("android/graphics/Canvas"));
+    jclass pc = env->FindClass(OBFUSCATE("android/graphics/Paint"));
+    jclass clr = env->FindClass(OBFUSCATE("android/graphics/Color"));
+    if (!cc || !pc || !clr) {
+        return false;
     }
 
-    jmethodID paintCtor = env->GetMethodID(paintClass, OBFUSCATE("<init>"), OBFUSCATE("()V"));
-    jmethodID setColor = env->GetMethodID(paintClass, OBFUSCATE("setColor"), OBFUSCATE("(I)V"));
-    jmethodID setStrokeWidth = env->GetMethodID(paintClass, OBFUSCATE("setStrokeWidth"), OBFUSCATE("(F)V"));
-    jmethodID setTextSize = env->GetMethodID(paintClass, OBFUSCATE("setTextSize"), OBFUSCATE("(F)V"));
-    jmethodID setAntiAlias = env->GetMethodID(paintClass, OBFUSCATE("setAntiAlias"), OBFUSCATE("(Z)V"));
-    jmethodID rgb = env->GetStaticMethodID(colorClass, OBFUSCATE("rgb"), OBFUSCATE("(III)I"));
-    jmethodID drawText = env->GetMethodID(
-            canvasClass,
-            OBFUSCATE("drawText"),
+    gDraw.canvasClass = reinterpret_cast<jclass>(env->NewGlobalRef(cc));
+    gDraw.paintClass = reinterpret_cast<jclass>(env->NewGlobalRef(pc));
+
+    gDraw.paintCtor = env->GetMethodID(pc, OBFUSCATE("<init>"), OBFUSCATE("()V"));
+    gDraw.setColor = env->GetMethodID(pc, OBFUSCATE("setColor"), OBFUSCATE("(I)V"));
+    gDraw.setStrokeWidth = env->GetMethodID(pc, OBFUSCATE("setStrokeWidth"), OBFUSCATE("(F)V"));
+    gDraw.setTextSize = env->GetMethodID(pc, OBFUSCATE("setTextSize"), OBFUSCATE("(F)V"));
+    gDraw.setAntiAlias = env->GetMethodID(pc, OBFUSCATE("setAntiAlias"), OBFUSCATE("(Z)V"));
+    gDraw.drawText = env->GetMethodID(cc, OBFUSCATE("drawText"),
             OBFUSCATE("(Ljava/lang/String;FFLandroid/graphics/Paint;)V"));
-    jmethodID drawLine = env->GetMethodID(
-            canvasClass,
-            OBFUSCATE("drawLine"),
+    gDraw.drawLine = env->GetMethodID(cc, OBFUSCATE("drawLine"),
             OBFUSCATE("(FFFFLandroid/graphics/Paint;)V"));
-    jmethodID drawCircle = env->GetMethodID(
-            canvasClass,
-            OBFUSCATE("drawCircle"),
+    gDraw.drawCircle = env->GetMethodID(cc, OBFUSCATE("drawCircle"),
             OBFUSCATE("(FFFLandroid/graphics/Paint;)V"));
-    jmethodID getWidth = env->GetMethodID(canvasClass, OBFUSCATE("getWidth"), OBFUSCATE("()I"));
-    jmethodID getHeight = env->GetMethodID(canvasClass, OBFUSCATE("getHeight"), OBFUSCATE("()I"));
-    if (!paintCtor || !setColor || !setStrokeWidth || !setTextSize || !setAntiAlias || !rgb ||
-        !drawText || !drawLine || !drawCircle || !getWidth || !getHeight) {
+    gDraw.getWidth = env->GetMethodID(cc, OBFUSCATE("getWidth"), OBFUSCATE("()I"));
+    gDraw.getHeight = env->GetMethodID(cc, OBFUSCATE("getHeight"), OBFUSCATE("()I"));
+
+    if (!gDraw.paintCtor || !gDraw.setColor || !gDraw.setStrokeWidth || !gDraw.drawLine ||
+        !gDraw.drawCircle || !gDraw.getWidth || !gDraw.getHeight || !gDraw.drawText) {
+        return false;
+    }
+
+    jmethodID rgbMethod = env->GetStaticMethodID(clr, OBFUSCATE("rgb"), OBFUSCATE("(III)I"));
+    if (rgbMethod) {
+        gDraw.red = env->CallStaticIntMethod(clr, rgbMethod, 255, 96, 96);
+        gDraw.cyan = env->CallStaticIntMethod(clr, rgbMethod, 72, 200, 255);
+        gDraw.white = env->CallStaticIntMethod(clr, rgbMethod, 245, 245, 245);
+    }
+
+    gDraw.resolved = true;
+    return true;
+}
+
+void DrawOn(JNIEnv* env, jobject, jobject canvas) {
+    if (!env || !canvas || !IsEnemyLineEspEnabled()) {
         return;
     }
 
-    jobject paint = env->NewObject(paintClass, paintCtor);
+    if (!ResolveDrawCache(env)) {
+        return;
+    }
+
+    const auto canvasWidth = static_cast<float>(env->CallIntMethod(canvas, gDraw.getWidth));
+    const auto canvasHeight = static_cast<float>(env->CallIntMethod(canvas, gDraw.getHeight));
+    if (canvasWidth <= 0.0f || canvasHeight <= 0.0f) {
+        return;
+    }
+
+    const EnemyListSnapshot snapshot = ReadLocalEnemyList();
+
+    jobject paint = env->NewObject(gDraw.paintClass, gDraw.paintCtor);
     if (!paint) {
         return;
     }
 
-    const jint red = env->CallStaticIntMethod(colorClass, rgb, 255, 96, 96);
-    const jint cyan = env->CallStaticIntMethod(colorClass, rgb, 72, 200, 255);
-    const jint white = env->CallStaticIntMethod(colorClass, rgb, 245, 245, 245);
-    const auto canvasWidth = static_cast<float>(env->CallIntMethod(canvas, getWidth));
-    const auto canvasHeight = static_cast<float>(env->CallIntMethod(canvas, getHeight));
+    env->CallVoidMethod(paint, gDraw.setAntiAlias, JNI_TRUE);
 
-    env->CallVoidMethod(paint, setAntiAlias, JNI_TRUE);
-    env->CallVoidMethod(paint, setStrokeWidth, 4.0f);
-    env->CallVoidMethod(paint, setTextSize, 32.0f);
+    char statusBuf[120];
+    std::snprintf(statusBuf, sizeof(statusBuf), "enemies: %d/%d | %s",
+            snapshot.active, snapshot.total, GetLineOriginModeName());
+    jstring statusText = env->NewStringUTF(statusBuf);
+    env->CallVoidMethod(paint, gDraw.setColor, gDraw.white);
+    env->CallVoidMethod(paint, gDraw.setTextSize, 26.0f);
+    env->CallVoidMethod(canvas, gDraw.drawText, statusText, 60.0f, 340.0f, paint);
+    env->DeleteLocalRef(statusText);
 
-    if (IsEnemyLineEspEnabled()) {
-        const EnemyListSnapshot snapshot = ReadLocalEnemyList();
+    if (snapshot.active > 0) {
+        float startX = 0.0f, startY = 0.0f;
+        GetLineOriginPoint(canvasWidth, canvasHeight, &startX, &startY);
 
-        char enemyStatus[160] = {0};
-        std::snprintf(
-                enemyStatus,
-                sizeof(enemyStatus),
-                "map_enemies: %d | ativos: %d | origem: %s",
-                snapshot.total,
-                snapshot.active,
-                GetLineOriginModeName());
-        jstring enemyText = env->NewStringUTF(enemyStatus);
-        env->CallVoidMethod(paint, setColor, white);
-        env->CallVoidMethod(paint, setTextSize, 26.0f);
-        env->CallVoidMethod(canvas, drawText, enemyText, 60.0f, 340.0f, paint);
-        env->DeleteLocalRef(enemyText);
+        env->CallVoidMethod(paint, gDraw.setStrokeWidth, 2.0f);
 
-        if (snapshot.active > 0 && canvasWidth > 0.0f && canvasHeight > 0.0f) {
-            float startX = 0.0f;
-            float startY = 0.0f;
-            GetLineOriginPoint(canvasWidth, canvasHeight, &startX, &startY);
+        float positions[kMaxEnemyLinesToDraw * 2];
+        int visibleCount = 0;
 
-            env->CallVoidMethod(paint, setColor, red);
-            env->CallVoidMethod(paint, setStrokeWidth, 3.0f);
-            for (int i = 0; i < snapshot.active; ++i) {
-                float targetX = 0.0f;
-                float targetY = 0.0f;
-                if (!TryGetEnemyScreenPosition(snapshot.enemies[i], canvasHeight, &targetX, &targetY)) {
-                    continue;
-                }
-
-                if (targetX < 0.0f || targetX > canvasWidth || targetY < 0.0f || targetY > canvasHeight) {
-                    continue;
-                }
-
-                env->CallVoidMethod(canvas, drawLine, startX, startY, targetX, targetY, paint);
-                env->CallVoidMethod(paint, setColor, cyan);
-                env->CallVoidMethod(canvas, drawCircle, targetX, targetY, 8.0f, paint);
-                env->CallVoidMethod(paint, setColor, red);
+        for (int i = 0; i < snapshot.active; ++i) {
+            float tx = 0.0f, ty = 0.0f;
+            if (!TryGetEnemyScreenPosition(snapshot.enemies[i], canvasHeight, &tx, &ty)) {
+                continue;
             }
+            if (tx < 0.0f || tx > canvasWidth || ty < 0.0f || ty > canvasHeight) {
+                continue;
+            }
+            positions[visibleCount * 2] = tx;
+            positions[visibleCount * 2 + 1] = ty;
+            visibleCount++;
+        }
+
+        for (int i = 0; i < visibleCount; ++i) {
+            const float tx = positions[i * 2];
+            const float ty = positions[i * 2 + 1];
+            env->CallVoidMethod(paint, gDraw.setColor, gDraw.red);
+            env->CallVoidMethod(canvas, gDraw.drawLine, startX, startY, tx, ty, paint);
+            env->CallVoidMethod(paint, gDraw.setColor, gDraw.cyan);
+            env->CallVoidMethod(canvas, gDraw.drawCircle, tx, ty, 6.0f, paint);
         }
     }
 
