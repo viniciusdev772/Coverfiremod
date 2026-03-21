@@ -28,6 +28,7 @@ constexpr uintptr_t kPlayerControlApplyDirectDamageRva = 0xBF2B6C;
 constexpr uintptr_t kPlayerControlSendShootCommandRva = 0xBD2B20;
 constexpr uintptr_t kPlayerControlActionShootRva = 0xBD0ECC;
 constexpr uintptr_t kEnemyControllerApplyDamageRva = 0xB115A8;
+constexpr uintptr_t kEnemyControllerKillEnemyRva = 0xB14590;
 constexpr uintptr_t kPlayerControlSceneControllerOffset = 0x24;
 constexpr uintptr_t kPlayerControlInitialLifeOffset = 0x6C;
 constexpr uintptr_t kPlayerControlActualLifeOffset = 0x70;
@@ -35,6 +36,7 @@ constexpr uintptr_t kPlayerControlIsDeadOffset = 0x524;
 constexpr uintptr_t kPlayerControlCameraOffset = 0x1E4;
 constexpr uintptr_t kPlayerControlMoveCamRva = 0xBE15C0;
 constexpr uintptr_t kSceneControllerMapEnemiesOffset = 0x58;
+constexpr uintptr_t kSceneControllerWaveEnemiesOffset = 0x5C;
 constexpr uintptr_t kSceneControllerStateOffset = 0x30;
 constexpr uintptr_t kSceneControllerMyPlayerControlOffset = 0x38;
 constexpr uintptr_t kSceneControllerIsPlayingMissionOffset = 0x131;
@@ -72,6 +74,7 @@ constexpr int kMaxEnemyLinesToDraw = 24;
 constexpr int kCameraMonoEye = 2;
 constexpr int kSceneStatePrefinal = 4;
 constexpr int kSceneStateFinalMission = 5;
+constexpr int kEnemyBodyPartChest = 2;
 constexpr long long kDrawMinFrameIntervalMs = 20;
 constexpr long long kDrawFailureBackoffMs = 1500;
 
@@ -98,6 +101,7 @@ using ScreenGetWidth_t = int (*)();
 using ScreenGetHeight_t = int (*)();
 using TransformGetPosition_Injected_t = void (*)(void*, Vec3*);
 using EnemyApplyDamage_t = void (*)(void*, float, float, Vec3, void*, Vec3, int, bool);
+using EnemyKill_t = void (*)(void*);
 using ComponentGetTransform_t = void* (*)(void*);
 using TransformLookAt_t = void (*)(void*, Vec3);
 using PhysicsRaycast_t = bool (*)(Vec3, Vec3, float, int);
@@ -115,6 +119,7 @@ ScreenGetHeight_t gScreenGetHeight = nullptr;
 TransformGetPosition_Injected_t gTransformGetPosition_Injected = nullptr;
 EnemyApplyDamage_t gEnemyApplyDamage = nullptr;
 EnemyApplyDamage_t orig_EnemyApplyDamage = nullptr;
+EnemyKill_t gEnemyKillEnemy = nullptr;
 ComponentGetTransform_t gComponentGetTransform = nullptr;
 TransformLookAt_t gTransformLookAt = nullptr;
 PhysicsRaycast_t gPhysicsRaycast = nullptr;
@@ -125,11 +130,14 @@ bool gInfiniteLife999 = false;
 bool gHookInstalled = false;
 bool gEnemyLines = false;
 bool gEnemySkeleton = false;
+bool gEspOnlyAware = false;
+bool gEspOnlyShooting = false;
 bool gTriggerBot = false;
 bool gAutoKillAll = false;
 bool gKillAllNowRequested = false;
 bool gAimBot = false;
 int gLineOriginMode = 2;
+int gEspColorPreset = 3;
 void* gLocalPlayerControl = nullptr;
 void* gLastTriggerTarget = nullptr;
 float gTriggerRadiusPixels = 90.0f;
@@ -141,9 +149,11 @@ constexpr long long kTriggerRefireCooldownMs = 150;
 constexpr float kTriggerLockBias = 1.35f;
 constexpr int kTriggerBurstShots = 1;
 constexpr long long kLocalPlayerStaleTimeoutMs = 3000;
+constexpr long long kAutoKillTickCooldownMs = 180;
 long long gLastShootCommandTimeMs = 0;
 long long gLastTriggerFireTimeMs = 0;
 long long gLastLocalPlayerSeenMs = 0;
+long long gLastAutoKillTickMs = 0;
 
 struct EnemyListSnapshot {
     int total = 0;
@@ -153,6 +163,9 @@ struct EnemyListSnapshot {
 
 long long GetMonotonicTimeMs();
 bool HasFreshLocalPlayerControl();
+EnemyListSnapshot ReadEnemyListFromSceneOffset(uintptr_t listOffset);
+bool TryGetScreenSize(int* outWidth, int* outHeight);
+bool TryGetEnemyScreenPosition(void* enemy, float canvasHeight, float* outX, float* outY);
 
 Vec3 SubVec3(const Vec3& a, const Vec3& b) {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
@@ -213,6 +226,38 @@ bool IsEnemySkeletonEspEnabled() {
 
 bool IsAnyVisualEspEnabled() {
     return IsEnemyLineEspEnabled() || IsEnemySkeletonEspEnabled();
+}
+
+const char* GetEspColorPresetName() {
+    switch (gEspColorPreset) {
+        case 0: return "Verde";
+        case 1: return "Vermelho";
+        case 2: return "Azul";
+        case 3: return "Ciano";
+        case 4: return "Amarelo";
+        case 5: return "Branco";
+        case 6: return "Rosa";
+        case 7: return "Laranja";
+        default: return "Ciano";
+    }
+}
+
+void GetEspPresetColor(int* outR, int* outG, int* outB) {
+    if (!outR || !outG || !outB) {
+        return;
+    }
+
+    switch (gEspColorPreset) {
+        case 0: *outR = 90;  *outG = 255; *outB = 120; break;
+        case 1: *outR = 255; *outG = 96;  *outB = 96;  break;
+        case 2: *outR = 90;  *outG = 150; *outB = 255; break;
+        case 3: *outR = 72;  *outG = 200; *outB = 255; break;
+        case 4: *outR = 255; *outG = 220; *outB = 80;  break;
+        case 5: *outR = 245; *outG = 245; *outB = 245; break;
+        case 6: *outR = 255; *outG = 120; *outB = 210; break;
+        case 7: *outR = 255; *outG = 155; *outB = 72;  break;
+        default:*outR = 72;  *outG = 200; *outB = 255; break;
+    }
 }
 
 bool IsTriggerBotEnabled() {
@@ -320,6 +365,11 @@ bool IsTriggerWindowOpen() {
 
 EnemyListSnapshot ReadLocalEnemyList() {
     EnemyListSnapshot snapshot;
+    return ReadEnemyListFromSceneOffset(kSceneControllerMapEnemiesOffset);
+}
+
+EnemyListSnapshot ReadEnemyListFromSceneOffset(uintptr_t listOffset) {
+    EnemyListSnapshot snapshot;
 
     if (!HasFreshLocalPlayerControl()) {
         return snapshot;
@@ -343,9 +393,8 @@ EnemyListSnapshot ReadLocalEnemyList() {
     }
 
     auto* enemyList = *reinterpret_cast<uintptr_t**>(
-            reinterpret_cast<uintptr_t>(sceneController) + kSceneControllerMapEnemiesOffset);
+            reinterpret_cast<uintptr_t>(sceneController) + listOffset);
     if (!enemyList) {
-        ClearLocalPlayerControl();
         return snapshot;
     }
 
@@ -378,6 +427,59 @@ EnemyListSnapshot ReadLocalEnemyList() {
     }
 
     return snapshot;
+}
+
+EnemyListSnapshot ReadCurrentWaveEnemyList() {
+    return ReadEnemyListFromSceneOffset(kSceneControllerWaveEnemiesOffset);
+}
+
+bool FindBestTargetInSnapshot(const EnemyListSnapshot& snapshot, void** outEnemy) {
+    if (!outEnemy) {
+        return false;
+    }
+
+    *outEnemy = nullptr;
+
+    if (!HasFreshLocalPlayerControl()) {
+        return false;
+    }
+
+    int screenWidth = 0;
+    int screenHeight = 0;
+    if (!TryGetScreenSize(&screenWidth, &screenHeight) || screenWidth <= 0 || screenHeight <= 0) {
+        return false;
+    }
+
+    if (snapshot.active <= 0) {
+        return false;
+    }
+
+    const float centerX = static_cast<float>(screenWidth) * 0.5f;
+    const float centerY = static_cast<float>(screenHeight) * 0.5f;
+    const float maxDistanceSq = gTriggerRadiusPixels * gTriggerRadiusPixels;
+    float bestDistanceSq = maxDistanceSq;
+    void* bestEnemy = nullptr;
+
+    for (int i = 0; i < snapshot.active; ++i) {
+        float targetX = 0.0f;
+        float targetY = 0.0f;
+        if (!TryGetEnemyScreenPosition(snapshot.enemies[i], static_cast<float>(screenHeight), &targetX, &targetY)) {
+            continue;
+        }
+
+        const float dx = targetX - centerX;
+        const float dy = targetY - centerY;
+        const float distanceSq = (dx * dx) + (dy * dy);
+        if (distanceSq > bestDistanceSq) {
+            continue;
+        }
+
+        bestDistanceSq = distanceSq;
+        bestEnemy = snapshot.enemies[i];
+    }
+
+    *outEnemy = bestEnemy;
+    return bestEnemy != nullptr;
 }
 
 void ResolveUnityDrawApis() {
@@ -789,21 +891,116 @@ bool FireTriggerShot(void* enemy) {
     return true;
 }
 
+bool FireDirectAutoKillDamage(void* enemy) {
+    if (!enemy || !gEnemyApplyDamage || !HasFreshLocalPlayerControl()) {
+        return false;
+    }
+
+    const auto playerAddr = reinterpret_cast<uintptr_t>(gLocalPlayerControl);
+    auto* sceneController = *reinterpret_cast<void**>(playerAddr + kPlayerControlSceneControllerOffset);
+    if (!IsSceneControllerGameplayActive(sceneController, gLocalPlayerControl)) {
+        ClearLocalPlayerControl();
+        return false;
+    }
+
+    const auto enemyAddr = reinterpret_cast<uintptr_t>(enemy);
+    const bool isActive = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsActiveOffset);
+    const bool isDead = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsDeadOffset);
+    if (!isActive || isDead) {
+        return false;
+    }
+
+    Vec3 force{};
+    Vec3 hitPoint{};
+    if (!TryGetEnemyHeadPosition(enemy, &hitPoint) && !TryGetEnemyWorldPosition(enemy, &hitPoint)) {
+        return false;
+    }
+
+    force.y = 0.35f;
+    force.z = 2.25f;
+    gEnemyApplyDamage(
+            enemy,
+            ApplyDamageMultiplierIfNeeded(gTriggerDamage),
+            10.0f,
+            force,
+            nullptr,
+            hitPoint,
+            kEnemyBodyPartChest,
+            true);
+    return true;
+}
+
+bool ForceKillEnemyNow(void* enemy) {
+    if (!enemy || !HasFreshLocalPlayerControl()) {
+        return false;
+    }
+
+    const auto playerAddr = reinterpret_cast<uintptr_t>(gLocalPlayerControl);
+    auto* sceneController = *reinterpret_cast<void**>(playerAddr + kPlayerControlSceneControllerOffset);
+    if (!IsSceneControllerGameplayActive(sceneController, gLocalPlayerControl)) {
+        ClearLocalPlayerControl();
+        return false;
+    }
+
+    const auto enemyAddr = reinterpret_cast<uintptr_t>(enemy);
+    const bool isActive = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsActiveOffset);
+    const bool isDead = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsDeadOffset);
+    if (!isActive || isDead) {
+        return false;
+    }
+
+    if (gEnemyKillEnemy) {
+        gEnemyKillEnemy(enemy);
+        return true;
+    }
+
+    return FireTriggerShot(enemy);
+}
+
 int FireKillAllBurst() {
-    if (!gEnemyApplyDamage) {
+    if (!gEnemyKillEnemy && !gEnemyApplyDamage) {
         return 0;
     }
 
     const EnemyListSnapshot snapshot = ReadLocalEnemyList();
     int fired = 0;
     for (int i = 0; i < snapshot.active; ++i) {
-        if (FireTriggerShot(snapshot.enemies[i])) {
+        if (ForceKillEnemyNow(snapshot.enemies[i])) {
             fired++;
-            usleep(2500);
+            usleep(4000);
         }
     }
 
     return fired;
+}
+
+void ProcessPendingKillAllWork() {
+    if (!HasFreshLocalPlayerControl()) {
+        return;
+    }
+
+    const long long nowMs = GetMonotonicTimeMs();
+    if ((nowMs - gLastAutoKillTickMs) < kAutoKillTickCooldownMs) {
+        return;
+    }
+
+    if (gKillAllNowRequested) {
+        gKillAllNowRequested = false;
+        const int fired = FireKillAllBurst();
+        gLastAutoKillTickMs = nowMs;
+        __android_log_print(ANDROID_LOG_INFO, kLogTag, "Kill-all burst executado: %d alvos", fired);
+        return;
+    }
+
+    if (IsAutoKillAllEnabled()) {
+        void* target = nullptr;
+        const EnemyListSnapshot waveSnapshot = ReadCurrentWaveEnemyList();
+        if (FindBestTargetInSnapshot(waveSnapshot, &target) && FireDirectAutoKillDamage(target)) {
+            gLastAutoKillTickMs = nowMs;
+            gLastTriggerTarget = target;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Auto kill dano aplicado em %p", target);
+        }
+    }
 }
 
 const char* GetLineOriginModeName() {
@@ -965,6 +1162,7 @@ void Hooked_SendShootCommand(void* instance) {
     }
 
     gLastShootCommandTimeMs = GetMonotonicTimeMs();
+    ProcessPendingKillAllWork();
 
     if (orig_SendShootCommand) {
         orig_SendShootCommand(instance);
@@ -975,6 +1173,8 @@ void Hooked_MoveCam(void* instance) {
     if (instance) {
         UpdateLocalPlayerControl(instance);
     }
+
+    ProcessPendingKillAllWork();
 
     if (orig_MoveCam) {
         orig_MoveCam(instance);
@@ -1016,6 +1216,8 @@ void* Hooked_ActionShoot(void* instance) {
         UpdateLocalPlayerControl(instance);
     }
 
+    ProcessPendingKillAllWork();
+
     AimCameraAtEnemy(instance);
 
     if (orig_ActionShoot) {
@@ -1038,7 +1240,9 @@ void* InstallHooksThread(void*) {
     const auto actionShootTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlActionShootRva));
     const auto moveCamTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlMoveCamRva));
     const auto enemyApplyDamageTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kEnemyControllerApplyDamageRva));
+    const auto enemyKillTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kEnemyControllerKillEnemyRva));
     gEnemyApplyDamage = reinterpret_cast<EnemyApplyDamage_t>(enemyApplyDamageTarget);
+    gEnemyKillEnemy = reinterpret_cast<EnemyKill_t>(enemyKillTarget);
 
 #if defined(__aarch64__)
 
@@ -1098,18 +1302,6 @@ void* TriggerBotThread(void*) {
         if (!HasFreshLocalPlayerControl()) {
             gLastTriggerTarget = nullptr;
             usleep(kTriggerLoopDelayUs);
-            continue;
-        }
-
-        if (gKillAllNowRequested) {
-            gKillAllNowRequested = false;
-            const int fired = FireKillAllBurst();
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Kill-all burst executado: %d alvos", fired);
-        }
-
-        if (IsAutoKillAllEnabled()) {
-            FireKillAllBurst();
-            usleep(120000);
             continue;
         }
 
@@ -1407,12 +1599,15 @@ jobjectArray GetFeatureList(JNIEnv* env, jobject) {
             OBFUSCATE("Category_Visual"),
             OBFUSCATE("8_Toggle_Draw line inimigos locais"),
             OBFUSCATE("9_Toggle_Draw esqueleto inimigos"),
-            OBFUSCATE("10_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
+            OBFUSCATE("10_Spinner_Cor do ESP_Verde,Vermelho,Azul,Ciano,Amarelo,Branco,Rosa,Laranja"),
+            OBFUSCATE("11_Toggle_ESP apenas alertas"),
+            OBFUSCATE("12_Toggle_ESP apenas inimigos atirando"),
+            OBFUSCATE("13_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
             OBFUSCATE("Category_Defesa"),
-            OBFUSCATE("11_Toggle_God mode"),
-            OBFUSCATE("12_Toggle_Vida infinita 999"),
+            OBFUSCATE("14_Toggle_God mode"),
+            OBFUSCATE("15_Toggle_Vida infinita 999"),
             OBFUSCATE("Category_Util"),
-            OBFUSCATE("13_Button_Status do hook ARMv7"),
+            OBFUSCATE("16_Button_Status do hook ARMv7"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -1509,6 +1704,26 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Draw esqueleto inimigos %s", gEnemySkeleton ? "ON" : "OFF");
             break;
         case 10:
+            gEspColorPreset = value;
+            if (gEspColorPreset < 0 || gEspColorPreset > 7) {
+                gEspColorPreset = 3;
+            }
+            __android_log_print(
+                    ANDROID_LOG_INFO,
+                    kLogTag,
+                    "Cor do ESP=%d (%s)",
+                    gEspColorPreset,
+                    GetEspColorPresetName());
+            break;
+        case 11:
+            gEspOnlyAware = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "ESP apenas alertas %s", gEspOnlyAware ? "ON" : "OFF");
+            break;
+        case 12:
+            gEspOnlyShooting = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "ESP apenas atirando %s", gEspOnlyShooting ? "ON" : "OFF");
+            break;
+        case 13:
             gLineOriginMode = value;
             if (gLineOriginMode < 0 || gLineOriginMode > 6) {
                 gLineOriginMode = 2;
@@ -1520,7 +1735,7 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
                     gLineOriginMode,
                     GetLineOriginModeName());
             break;
-        case 11:
+        case 14:
             gGodMode = boolean;
             __android_log_print(
                     ANDROID_LOG_INFO,
@@ -1529,7 +1744,7 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
                     gGodMode ? "ON" : "OFF",
                     gHookInstalled ? "instalado" : "pendente");
             break;
-        case 12:
+        case 15:
             gInfiniteLife999 = boolean;
             if (IsInfiniteLifeEnabled()) {
                 SetLocalPlayerLife999(gLocalPlayerControl);
@@ -1540,7 +1755,7 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
                     "Vida infinita 999 %s",
                     gInfiniteLife999 ? "ON" : "OFF");
             break;
-        case 13:
+        case 16:
             __android_log_print(
                     ANDROID_LOG_INFO,
                     kLogTag,
@@ -1883,14 +2098,18 @@ void DrawOn(JNIEnv* env, jobject thiz, jobject canvas) {
         RegisterDrawFailure(env, "criar texto de status");
         return;
     }
+    int baseR = 72;
+    int baseG = 200;
+    int baseB = 255;
+    GetEspPresetColor(&baseR, &baseG, &baseB);
     env->CallVoidMethod(
             thiz,
             gDraw.espDrawText,
             canvas,
             static_cast<jint>(235),
-            static_cast<jint>(245),
-            static_cast<jint>(245),
-            static_cast<jint>(245),
+            static_cast<jint>(baseR),
+            static_cast<jint>(baseG),
+            static_cast<jint>(baseB),
             statusText,
             120.0f,
             120.0f,
@@ -1917,9 +2136,25 @@ void DrawOn(JNIEnv* env, jobject thiz, jobject canvas) {
         const auto enemyAddr = reinterpret_cast<uintptr_t>(snapshot.enemies[i]);
         const bool isAware = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsAwareOffset);
         const bool isShooting = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsShootingOffset);
-        const int lineR = isShooting ? 255 : (isAware ? 255 : 72);
-        const int lineG = isShooting ? 96 : (isAware ? 190 : 200);
-        const int lineB = isShooting ? 96 : (isAware ? 72 : 255);
+        if (gEspOnlyAware && !isAware) {
+            continue;
+        }
+        if (gEspOnlyShooting && !isShooting) {
+            continue;
+        }
+
+        int lineR = baseR;
+        int lineG = baseG;
+        int lineB = baseB;
+        if (isShooting) {
+            lineR = 255;
+            lineG = 96;
+            lineB = 96;
+        } else if (isAware) {
+            lineR = std::min(255, baseR + 35);
+            lineG = std::min(255, baseG + 15);
+            lineB = std::max(0, baseB - 25);
+        }
 
         if (IsEnemyLineEspEnabled()) {
             env->CallVoidMethod(
