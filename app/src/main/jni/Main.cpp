@@ -29,6 +29,17 @@ constexpr uintptr_t kPlayerControlSendShootCommandRva = 0xBD2B20;
 constexpr uintptr_t kPlayerControlActionShootRva = 0xBD0ECC;
 constexpr uintptr_t kEnemyControllerApplyDamageRva = 0xB115A8;
 constexpr uintptr_t kEnemyControllerKillEnemyRva = 0xB14590;
+constexpr uintptr_t kApplovinHasVideoRva = 0xE64BEC;
+constexpr uintptr_t kApplovinPreloadVideoRewardRva = 0xE64DFC;
+constexpr uintptr_t kApplovinShowAdCoroutineRva = 0xE64F7C;
+constexpr uintptr_t kApplovinPreloadInterstitialRva = 0xE65014;
+constexpr uintptr_t kApplovinShowAdInterstitialCoroutineRva = 0xE651E0;
+constexpr uintptr_t kApplovinShowInterstitialRva = 0xE65458;
+constexpr uintptr_t kApplovinShowRewardedAdRva = 0xE65DDC;
+constexpr uintptr_t kUnityCanShowVideosRva = 0xE684A4;
+constexpr uintptr_t kUnityIsVideoAvailableRva = 0xE684D0;
+constexpr uintptr_t kUnityHasVideoRva = 0xE684D8;
+constexpr uintptr_t kUnityShowAdCoroutineRva = 0xE686AC;
 constexpr uintptr_t kPlayerControlSceneControllerOffset = 0x24;
 constexpr uintptr_t kPlayerControlInitialLifeOffset = 0x6C;
 constexpr uintptr_t kPlayerControlActualLifeOffset = 0x70;
@@ -107,6 +118,11 @@ using TransformLookAt_t = void (*)(void*, Vec3);
 using PhysicsRaycast_t = bool (*)(Vec3, Vec3, float, int);
 using MoveCam_t = void (*)(void*);
 using ActionShoot_t = void* (*)(void*);
+using AdsBoolInstance_t = bool (*)(void*);
+using AdsVoidInstance_t = void (*)(void*);
+using AdsVoidStringInstance_t = void (*)(void*, void*);
+using AdsCoroutineOneString_t = void* (*)(void*, void*);
+using AdsCoroutineThreeStrings_t = void* (*)(void*, void*, void*, void*);
 
 ApplyDamage_t orig_ApplyDamage = nullptr;
 ApplyDirectDamage_t orig_ApplyDirectDamage = nullptr;
@@ -125,6 +141,17 @@ TransformLookAt_t gTransformLookAt = nullptr;
 PhysicsRaycast_t gPhysicsRaycast = nullptr;
 MoveCam_t orig_MoveCam = nullptr;
 ActionShoot_t orig_ActionShoot = nullptr;
+AdsBoolInstance_t orig_ApplovinHasVideo = nullptr;
+AdsVoidInstance_t orig_ApplovinPreloadVideoReward = nullptr;
+AdsCoroutineThreeStrings_t orig_ApplovinShowAdCoroutine = nullptr;
+AdsVoidInstance_t orig_ApplovinPreloadInterstitial = nullptr;
+AdsCoroutineOneString_t orig_ApplovinShowAdInterstitialCoroutine = nullptr;
+AdsVoidStringInstance_t orig_ApplovinShowInterstitial = nullptr;
+AdsVoidStringInstance_t orig_ApplovinShowRewardedAd = nullptr;
+AdsBoolInstance_t orig_UnityCanShowVideos = nullptr;
+AdsBoolInstance_t orig_UnityIsVideoAvailable = nullptr;
+AdsBoolInstance_t orig_UnityHasVideo = nullptr;
+AdsCoroutineThreeStrings_t orig_UnityShowAdCoroutine = nullptr;
 bool gGodMode = false;
 bool gInfiniteLife999 = false;
 bool gHookInstalled = false;
@@ -135,6 +162,12 @@ bool gEspOnlyShooting = false;
 bool gTriggerBot = false;
 bool gAutoKillAll = false;
 bool gKillAllNowRequested = false;
+bool gAddGoldRequested = false;
+bool gAddMoneyRequested = false;
+bool gSetGoldRequested = false;
+bool gSetMoneyRequested = false;
+bool gDisableAdsRequested = false;
+bool gDisableVideosRequested = false;
 bool gAimBot = false;
 int gLineOriginMode = 2;
 int gEspColorPreset = 3;
@@ -148,12 +181,15 @@ constexpr long long kTriggerWindowMs = 260;
 constexpr long long kTriggerRefireCooldownMs = 150;
 constexpr float kTriggerLockBias = 1.35f;
 constexpr int kTriggerBurstShots = 1;
+constexpr int kSafeInfiniteCurrencyAmount = 1000000;
+constexpr int kAutoDisableAdsMaxRetries = 12;
 constexpr long long kLocalPlayerStaleTimeoutMs = 3000;
 constexpr long long kAutoKillTickCooldownMs = 180;
 long long gLastShootCommandTimeMs = 0;
 long long gLastTriggerFireTimeMs = 0;
 long long gLastLocalPlayerSeenMs = 0;
 long long gLastAutoKillTickMs = 0;
+int gAutoDisableAdsRetries = 0;
 
 struct EnemyListSnapshot {
     int total = 0;
@@ -206,6 +242,159 @@ void SetLocalPlayerLife999(void* player) {
     *reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(player) + kPlayerControlInitialLifeOffset) = 999.0f;
     *reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(player) + kPlayerControlActualLifeOffset) = 999.0f;
     *reinterpret_cast<bool*>(reinterpret_cast<uintptr_t>(player) + kPlayerControlIsDeadOffset) = false;
+}
+
+void AddGold(int amount) {
+    using AddGold_t = void (*)(int);
+
+    static AddGold_t addGold = nullptr;
+    if (!addGold) {
+        addGold = reinterpret_cast<AddGold_t>(getAbsoluteAddress(kTargetLibName, 0xB43864));
+    }
+    if (!addGold) {
+        return;
+    }
+
+    const int infiniteAmount = kSafeInfiniteCurrencyAmount;
+    const int grantAmount = amount > infiniteAmount ? amount : infiniteAmount;
+    addGold(grantAmount);
+}
+
+void AddMoney(int amount) {
+    using AddCoins_t = void (*)(int);
+
+    static AddCoins_t addCoins = nullptr;
+    if (!addCoins) {
+        addCoins = reinterpret_cast<AddCoins_t>(getAbsoluteAddress(kTargetLibName, 0xB433E8));
+    }
+    if (!addCoins) {
+        return;
+    }
+
+    const int infiniteAmount = kSafeInfiniteCurrencyAmount;
+    const int grantAmount = amount > infiniteAmount ? amount : infiniteAmount;
+    addCoins(grantAmount);
+}
+
+void SetGold(int amount) {
+    using GetGold_t = int (*)();
+    using AddGold_t = void (*)(int);
+    using RemoveGold_t = void (*)(int);
+
+    static GetGold_t getGold = nullptr;
+    static AddGold_t addGold = nullptr;
+    static RemoveGold_t removeGold = nullptr;
+    if (!getGold) {
+        getGold = reinterpret_cast<GetGold_t>(getAbsoluteAddress(kTargetLibName, 0xB2EE78));
+    }
+    if (!addGold) {
+        addGold = reinterpret_cast<AddGold_t>(getAbsoluteAddress(kTargetLibName, 0xB43864));
+    }
+    if (!removeGold) {
+        removeGold = reinterpret_cast<RemoveGold_t>(getAbsoluteAddress(kTargetLibName, 0xB2EF40));
+    }
+    if (!getGold || !addGold || !removeGold) {
+        return;
+    }
+
+    const int infiniteAmount = kSafeInfiniteCurrencyAmount;
+    const int targetAmount = amount > infiniteAmount ? amount : infiniteAmount;
+    const int currentGold = getGold();
+
+    if (currentGold < targetAmount) {
+        addGold(targetAmount - currentGold);
+        return;
+    }
+
+    if (currentGold > targetAmount) {
+        removeGold(currentGold - targetAmount);
+    }
+}
+
+void SetMoney(int amount) {
+    using GetMoney_t = int (*)();
+    using AddCoins_t = void (*)(int);
+    using RemoveCoins_t = void (*)(int);
+
+    static GetMoney_t getMoney = nullptr;
+    static AddCoins_t addCoins = nullptr;
+    static RemoveCoins_t removeCoins = nullptr;
+    if (!getMoney) {
+        getMoney = reinterpret_cast<GetMoney_t>(getAbsoluteAddress(kTargetLibName, 0xB36DF8));
+    }
+    if (!addCoins) {
+        addCoins = reinterpret_cast<AddCoins_t>(getAbsoluteAddress(kTargetLibName, 0xB433E8));
+    }
+    if (!removeCoins) {
+        removeCoins = reinterpret_cast<RemoveCoins_t>(getAbsoluteAddress(kTargetLibName, 0xB43508));
+    }
+    if (!getMoney || !addCoins || !removeCoins) {
+        return;
+    }
+
+    const int infiniteAmount = kSafeInfiniteCurrencyAmount;
+    const int targetAmount = amount > infiniteAmount ? amount : infiniteAmount;
+    const int currentMoney = getMoney();
+
+    if (currentMoney < targetAmount) {
+        addCoins(targetAmount - currentMoney);
+        return;
+    }
+
+    if (currentMoney > targetAmount) {
+        removeCoins(currentMoney - targetAmount);
+    }
+}
+
+void DisableAds() {
+    using SetPlayerSkipAds_t = void (*)(int);
+
+    static SetPlayerSkipAds_t setPlayerSkipAds = nullptr;
+    if (!setPlayerSkipAds) {
+        setPlayerSkipAds = reinterpret_cast<SetPlayerSkipAds_t>(getAbsoluteAddress(kTargetLibName, 0xB429BC));
+    }
+    if (!setPlayerSkipAds) {
+        return;
+    }
+
+    setPlayerSkipAds(1);
+}
+
+void DisableVideos() {
+    using SetShowVideos_t = void (*)(bool);
+
+    static SetShowVideos_t setShowVideos = nullptr;
+    if (!setShowVideos) {
+        setShowVideos = reinterpret_cast<SetShowVideos_t>(getAbsoluteAddress(kTargetLibName, 0xB3B44C));
+    }
+    if (!setShowVideos) {
+        return;
+    }
+
+    setShowVideos(false);
+}
+
+void ProcessAutomaticAdsWork() {
+    if (!gHookInstalled) {
+        return;
+    }
+
+    if (gAutoDisableAdsRetries >= kAutoDisableAdsMaxRetries) {
+        return;
+    }
+
+    DisableAds();
+    DisableVideos();
+    gAutoDisableAdsRetries++;
+
+    if (gAutoDisableAdsRetries == 1 || gAutoDisableAdsRetries == kAutoDisableAdsMaxRetries) {
+        __android_log_print(
+                ANDROID_LOG_INFO,
+                kLogTag,
+                "Auto ads off aplicado via hook (%d/%d)",
+                gAutoDisableAdsRetries,
+                kAutoDisableAdsMaxRetries);
+    }
 }
 
 bool IsInfiniteLifeEnabled() {
@@ -1003,6 +1192,44 @@ void ProcessPendingKillAllWork() {
     }
 }
 
+void ProcessPendingEconomyWork() {
+    if (gAddGoldRequested) {
+        gAddGoldRequested = false;
+        AddGold(kSafeInfiniteCurrencyAmount);
+        __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddGold infinito executado no game thread");
+    }
+
+    if (gAddMoneyRequested) {
+        gAddMoneyRequested = false;
+        AddMoney(kSafeInfiniteCurrencyAmount);
+        __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddMoney infinito executado no game thread");
+    }
+
+    if (gSetGoldRequested) {
+        gSetGoldRequested = false;
+        SetGold(kSafeInfiniteCurrencyAmount);
+        __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetGold infinito executado no game thread");
+    }
+
+    if (gSetMoneyRequested) {
+        gSetMoneyRequested = false;
+        SetMoney(kSafeInfiniteCurrencyAmount);
+        __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetMoney infinito executado no game thread");
+    }
+
+    if (gDisableAdsRequested) {
+        gDisableAdsRequested = false;
+        DisableAds();
+        __android_log_print(ANDROID_LOG_INFO, kLogTag, "SkipAds aplicado");
+    }
+
+    if (gDisableVideosRequested) {
+        gDisableVideosRequested = false;
+        DisableVideos();
+        __android_log_print(ANDROID_LOG_INFO, kLogTag, "ShowVideos=false aplicado");
+    }
+}
+
 const char* GetLineOriginModeName() {
     switch (gLineOriginMode) {
         case 0:
@@ -1081,6 +1308,9 @@ void Hooked_ApplyDamage(void* instance,
         UpdateLocalPlayerControl(instance);
     }
 
+    ProcessAutomaticAdsWork();
+    ProcessPendingEconomyWork();
+
     if (IsInfiniteLifeEnabled()) {
         SetLocalPlayerLife999(instance);
         if (orig_ApplyDamage) {
@@ -1135,6 +1365,9 @@ void Hooked_ApplyDirectDamage(void* instance,
         UpdateLocalPlayerControl(instance);
     }
 
+    ProcessAutomaticAdsWork();
+    ProcessPendingEconomyWork();
+
     if (IsInfiniteLifeEnabled()) {
         SetLocalPlayerLife999(instance);
         if (orig_ApplyDirectDamage) {
@@ -1162,7 +1395,9 @@ void Hooked_SendShootCommand(void* instance) {
     }
 
     gLastShootCommandTimeMs = GetMonotonicTimeMs();
+    ProcessAutomaticAdsWork();
     ProcessPendingKillAllWork();
+    ProcessPendingEconomyWork();
 
     if (orig_SendShootCommand) {
         orig_SendShootCommand(instance);
@@ -1174,7 +1409,9 @@ void Hooked_MoveCam(void* instance) {
         UpdateLocalPlayerControl(instance);
     }
 
+    ProcessAutomaticAdsWork();
     ProcessPendingKillAllWork();
+    ProcessPendingEconomyWork();
 
     if (orig_MoveCam) {
         orig_MoveCam(instance);
@@ -1211,12 +1448,36 @@ void Hooked_EnemyApplyDamage(void* instance,
             applyRotationForces);
 }
 
+bool Hooked_AdsHasVideo(void*) {
+    return false;
+}
+
+bool Hooked_UnityCanShowVideos(void*) {
+    return false;
+}
+
+void Hooked_AdsPreloadNoOp(void*) {
+}
+
+void Hooked_AdsShowNoOp(void*, void*) {
+}
+
+void* Hooked_AdsCoroutineNoOp(void*, void*) {
+    return nullptr;
+}
+
+void* Hooked_AdsCoroutineNoOp3(void*, void*, void*, void*) {
+    return nullptr;
+}
+
 void* Hooked_ActionShoot(void* instance) {
     if (instance) {
         UpdateLocalPlayerControl(instance);
     }
 
+    ProcessAutomaticAdsWork();
     ProcessPendingKillAllWork();
+    ProcessPendingEconomyWork();
 
     AimCameraAtEnemy(instance);
 
@@ -1241,6 +1502,17 @@ void* InstallHooksThread(void*) {
     const auto moveCamTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlMoveCamRva));
     const auto enemyApplyDamageTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kEnemyControllerApplyDamageRva));
     const auto enemyKillTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kEnemyControllerKillEnemyRva));
+    const auto applovinHasVideoTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kApplovinHasVideoRva));
+    const auto applovinPreloadVideoRewardTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kApplovinPreloadVideoRewardRva));
+    const auto applovinShowAdCoroutineTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kApplovinShowAdCoroutineRva));
+    const auto applovinPreloadInterstitialTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kApplovinPreloadInterstitialRva));
+    const auto applovinShowAdInterstitialCoroutineTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kApplovinShowAdInterstitialCoroutineRva));
+    const auto applovinShowInterstitialTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kApplovinShowInterstitialRva));
+    const auto applovinShowRewardedAdTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kApplovinShowRewardedAdRva));
+    const auto unityCanShowVideosTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kUnityCanShowVideosRva));
+    const auto unityIsVideoAvailableTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kUnityIsVideoAvailableRva));
+    const auto unityHasVideoTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kUnityHasVideoRva));
+    const auto unityShowAdCoroutineTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kUnityShowAdCoroutineRva));
     gEnemyApplyDamage = reinterpret_cast<EnemyApplyDamage_t>(enemyApplyDamageTarget);
     gEnemyKillEnemy = reinterpret_cast<EnemyKill_t>(enemyKillTarget);
 
@@ -1280,12 +1552,79 @@ void* InstallHooksThread(void*) {
                 reinterpret_cast<void*>(Hooked_EnemyApplyDamage),
                 reinterpret_cast<void**>(&orig_EnemyApplyDamage));
     }
+    if (applovinHasVideoTarget) {
+        MSHookFunction(
+                applovinHasVideoTarget,
+                reinterpret_cast<void*>(Hooked_AdsHasVideo),
+                reinterpret_cast<void**>(&orig_ApplovinHasVideo));
+    }
+    if (applovinPreloadVideoRewardTarget) {
+        MSHookFunction(
+                applovinPreloadVideoRewardTarget,
+                reinterpret_cast<void*>(Hooked_AdsPreloadNoOp),
+                reinterpret_cast<void**>(&orig_ApplovinPreloadVideoReward));
+    }
+    if (applovinShowAdCoroutineTarget) {
+        MSHookFunction(
+                applovinShowAdCoroutineTarget,
+                reinterpret_cast<void*>(Hooked_AdsCoroutineNoOp3),
+                reinterpret_cast<void**>(&orig_ApplovinShowAdCoroutine));
+    }
+    if (applovinPreloadInterstitialTarget) {
+        MSHookFunction(
+                applovinPreloadInterstitialTarget,
+                reinterpret_cast<void*>(Hooked_AdsPreloadNoOp),
+                reinterpret_cast<void**>(&orig_ApplovinPreloadInterstitial));
+    }
+    if (applovinShowAdInterstitialCoroutineTarget) {
+        MSHookFunction(
+                applovinShowAdInterstitialCoroutineTarget,
+                reinterpret_cast<void*>(Hooked_AdsCoroutineNoOp),
+                reinterpret_cast<void**>(&orig_ApplovinShowAdInterstitialCoroutine));
+    }
+    if (applovinShowInterstitialTarget) {
+        MSHookFunction(
+                applovinShowInterstitialTarget,
+                reinterpret_cast<void*>(Hooked_AdsShowNoOp),
+                reinterpret_cast<void**>(&orig_ApplovinShowInterstitial));
+    }
+    if (applovinShowRewardedAdTarget) {
+        MSHookFunction(
+                applovinShowRewardedAdTarget,
+                reinterpret_cast<void*>(Hooked_AdsShowNoOp),
+                reinterpret_cast<void**>(&orig_ApplovinShowRewardedAd));
+    }
+    if (unityCanShowVideosTarget) {
+        MSHookFunction(
+                unityCanShowVideosTarget,
+                reinterpret_cast<void*>(Hooked_UnityCanShowVideos),
+                reinterpret_cast<void**>(&orig_UnityCanShowVideos));
+    }
+    if (unityIsVideoAvailableTarget) {
+        MSHookFunction(
+                unityIsVideoAvailableTarget,
+                reinterpret_cast<void*>(Hooked_AdsHasVideo),
+                reinterpret_cast<void**>(&orig_UnityIsVideoAvailable));
+    }
+    if (unityHasVideoTarget) {
+        MSHookFunction(
+                unityHasVideoTarget,
+                reinterpret_cast<void*>(Hooked_AdsHasVideo),
+                reinterpret_cast<void**>(&orig_UnityHasVideo));
+    }
+    if (unityShowAdCoroutineTarget) {
+        MSHookFunction(
+                unityShowAdCoroutineTarget,
+                reinterpret_cast<void*>(Hooked_AdsCoroutineNoOp3),
+                reinterpret_cast<void**>(&orig_UnityShowAdCoroutine));
+    }
 
     if (orig_EnemyApplyDamage) {
         gEnemyApplyDamage = orig_EnemyApplyDamage;
     }
 
     gHookInstalled = (orig_ApplyDamage != nullptr || orig_ApplyDirectDamage != nullptr || orig_EnemyApplyDamage != nullptr);
+    gAutoDisableAdsRetries = 0;
 
     if (gHookInstalled) {
         LogInfo("sucess");
@@ -1608,6 +1947,14 @@ jobjectArray GetFeatureList(JNIEnv* env, jobject) {
             OBFUSCATE("15_Toggle_Vida infinita 999"),
             OBFUSCATE("Category_Util"),
             OBFUSCATE("16_Button_Status do hook ARMv7"),
+            OBFUSCATE("Category_Economia"),
+            OBFUSCATE("17_Button_Add Gold infinito"),
+            OBFUSCATE("18_Button_Add Money infinito"),
+            OBFUSCATE("19_Button_Set Gold infinito"),
+            OBFUSCATE("20_Button_Set Money infinito"),
+            OBFUSCATE("Category_Ads"),
+            OBFUSCATE("21_Button_Desativar ads"),
+            OBFUSCATE("22_Button_Desativar videos"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -1762,6 +2109,30 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
                     "Status hook=%s | player=%p",
                     gHookInstalled ? "instalado" : "pendente",
                     gLocalPlayerControl);
+            break;
+        case 17:
+            gAddGoldRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddGold infinito enfileirado");
+            break;
+        case 18:
+            gAddMoneyRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddMoney infinito enfileirado");
+            break;
+        case 19:
+            gSetGoldRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetGold infinito enfileirado");
+            break;
+        case 20:
+            gSetMoneyRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetMoney infinito enfileirado");
+            break;
+        case 21:
+            gDisableAdsRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Desativar ads enfileirado");
+            break;
+        case 22:
+            gDisableVideosRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Desativar videos enfileirado");
             break;
         default:
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Feature sem ação dedicada: %d", featNum);
