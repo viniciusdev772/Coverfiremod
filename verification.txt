@@ -1,0 +1,21 @@
+Total linhas: 2958
+
+  OK   [1x] ApplyEnemyModifications
+  OK   [1x] ProcessAllEnemyModifications
+  OK   [1x] ApplySpeedHack
+  OK   [1x] Hooked_NeedReloading
+  OK   [1x] gInfiniteAmmo
+  OK   [1x] gFreezeEnemies
+  OK   [1x] case 23 ammo
+  OK   [1x] case 30 oneshot
+  OK   [1x] case 32 ads
+  OK   [1x] case 33 videos
+  OK   [2x] Municao infinita
+  OK   [1x] Congelar
+  OK   [2x] One shot kill
+  OK   [1x] needReloadingTarget hook
+  OK   [2x] gEnemySetCurrentHealth resolve
+  OK   [3x] ProcessAllEnemyModifications call
+  OK   [3x] ApplySpeedHack call
+  OK   [4x] gEnemyInfoEsp in DrawOn
+  OK   [1x] BOSS tag

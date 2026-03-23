@@ -1,0 +1,47 @@
+=== OFFSET VERIFICATION ===
+
+  OK   EnemyController.HasShield @ 0x324 => public bool HasShield; // 0x324
+  OK   EnemyController.Head @ 0x238 => public Transform Head; // 0x238
+  OK   EnemyController.Hips @ 0x230 => public Transform Hips; // 0x230
+  OK   EnemyController.IsBazooka @ 0x11F => public bool IsBazooka; // 0x11F
+  OK   EnemyController.IsShotgun @ 0x120 => public bool IsShotgun; // 0x120
+  OK   EnemyController.IsSniper @ 0x11E => public bool IsSniper; // 0x11E
+  OK   EnemyController.Speed @ 0x78 => public float Speed; // 0x78
+  OK   EnemyController.SpeedBetweenCovers @ 0xAC => public float SpeedBetweenCovers; // 0xAC
+  OK   EnemyController.Spine2 @ 0x234 => public Transform Spine2; // 0x234
+  OK   EnemyController.damage @ 0x228 => public float damage; // 0x228
+  OK   EnemyController.isActivo @ 0x104 => public bool isActivo; // 0x104
+  OK   EnemyController.isAware @ 0x108 => public bool isAware; // 0x108
+  OK   EnemyController.isBoss @ 0x46 => public bool isBoss; // 0x46
+  OK   EnemyController.isDead @ 0x106 => public bool isDead; // 0x106
+  OK   EnemyController.isFlying @ 0x122 => public bool isFlying; // 0x122
+  OK   EnemyController.isLaunchGrenade @ 0x116 => public bool isLaunchGrenade; // 0x116
+  OK   EnemyController.isShooting @ 0x114 => public bool isShooting; // 0x114
+  OK   EnemyController.isZombie @ 0xCC => public bool isZombie; // 0xCC
+  OK   EnemyController.myplayercontrol @ 0x1C => public PlayerControl myplayercontrol; // 0x1C
+  OK   EnemyController.potencia_damageToPlayer @ 0x220 => public float potencia_damageToPlayer; // 0x220
+  OK   EnemyController.probabilidad_damageToPlayer @ 0x224 => public float probabilidad_damageToPlayer; // 0x224
+  OK   EnemyController.speed_interpoints @ 0x80 => public float speed_interpoints; // 0x80
+  OK   EnemyController.speed_onalarm @ 0x84 => public float speed_onalarm; // 0x84
+  OK   EnemyController.tr @ 0x12C => private Transform tr; // 0x12C
+  OK   PlayerControl.actual_life @ 0x70 => public float actual_life; // 0x70
+  OK   PlayerControl.initial_life @ 0x6C => public float initial_life; // 0x6C
+  OK   PlayerControl.multiplier_speed_transform @ 0x154 => public float multiplier_speed_transform; // 0x154
+  OK   PlayerControl.myscenecontroller @ 0x24 => public SceneController myscenecontroller; // 0x24
+
+
+=== RVA VERIFICATION ===
+
+  OK   EnemyController.SetCurrentHealth @ 0xAFE838 => public void SetCurrentHealth(float health) { }
+  OK   EnemyController.SetDamage @ 0xAFE840 => public void SetDamage(float damage) { }
+  OK   EnemyController.SetDamageProbability @ 0xAFE848 => public void SetDamageProbability(float prob) { }
+  OK   EnemyController.ApplyDamage @ 0xB115A8 => public void ApplyDamage(float damageShoot, float multiplier, Vector3 fuerza, Transform objetoToApply
+  OK   EnemyController.KillEnemy @ 0xB14590 => public void KillEnemy() { }
+  OK   PlayerControl.ActionShoot @ 0xBD0ECC => public WeaponShootResult ActionShoot() { }
+  OK   PlayerControl.NeedReloading @ 0xBD2A98 => public bool NeedReloading() { }
+  OK   PlayerControl.SendShootCommand @ 0xBD2B20 => public void SendShootCommand() { }
+  OK   PlayerControl.ApplyDamage @ 0xBEEE58 => public void ApplyDamage(float damage, Vector3 direccionDamage, Vector3 puntoImpactoFinal, Vector3 di
+  OK   PlayerControl.ApplyDirectDamage @ 0xBF2B6C => public void ApplyDirectDamage(float damage, Vector3 direccionDamage, Vector3 puntoImpactoFinal, Play
+
+
+Offsets: 28/28  RVAs: 10/10

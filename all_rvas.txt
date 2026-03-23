@@ -1,0 +1,25 @@
+EC.GetDamage                             = 0xAFE820      // public float GetDamage() { }
+EC.SetInitialHealth                      = 0xAFE830      // public void SetInitialHealth(float health) { }
+EC.SetCurrentHealth                      = 0xAFE838      // public void SetCurrentHealth(float health) { }
+EC.SetDamage                             = 0xAFE840      // public void SetDamage(float damage) { }
+EC.SetDamageProbability                  = 0xAFE848      // public void SetDamageProbability(float prob) { }
+EC.GetCurrentHealth                      = 0xAFE858      // public float GetCurrentHealth() { }
+EC.ApplyDamage                           = 0xB115A8      // public void ApplyDamage(float damageShoot, float multiplier, Vector3 fuerza, Transform objetoToApplyForce, Vector3 punto
+EC.KillEnemy                             = 0xB14590      // public void KillEnemy() { }
+PC.ChangeWeapon                          = 0xBD063C      // public void ChangeWeapon(PlayerWeapon weapon) { }
+PC.ActionReload                          = 0xBD1F3C      // public void ActionReload() { }
+PC.CanShoot                              = 0xBD29A4      // public bool CanShoot() { }
+PC.NeedReloading                         = 0xBD2A98      // public bool NeedReloading() { }
+PC.accion_recarga                        = 0xBD2118      // public void accion_recarga() { }
+PC.chargeWeapon                          = 0xBDF408      // private void chargeWeapon() { }
+PC.setWaitToFire                         = 0xBDF590      // private void setWaitToFire() { }
+PC.disparar                              = 0xBD2B98      // public void disparar() { }
+PC.end_disparar                          = 0xBD2CC0      // public void end_disparar() { }
+PC.Modify_Capacidad                      = 0xBEC874      // public void Modify_Capacidad(float aumentoCapPrimaria, float aumentoCapSecundaria) { }
+PC.Modify_Life                           = 0xBECA80      // public void Modify_Life(int aumentolife) { }
+PC.Modify_Dispersion                     = 0xBECACC      // public void Modify_Dispersion(float aumentodispersion) { }
+PC.Modify_VelocidadDisparo               = 0xBECB8C      // public void Modify_VelocidadDisparo(float aumentovelocidad) { }
+SC.ForzarSiguienteOleada                 = ???           // [IteratorStateMachine(typeof(SceneController.<ForzarSiguienteOleada>d__167))]
+
+
+Total: 22/22

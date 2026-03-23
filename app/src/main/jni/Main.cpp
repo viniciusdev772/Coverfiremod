@@ -29,6 +29,11 @@ constexpr uintptr_t kPlayerControlSendShootCommandRva = 0xBD2B20;
 constexpr uintptr_t kPlayerControlActionShootRva = 0xBD0ECC;
 constexpr uintptr_t kEnemyControllerApplyDamageRva = 0xB115A8;
 constexpr uintptr_t kEnemyControllerKillEnemyRva = 0xB14590;
+constexpr uintptr_t kPlayerControlNeedReloadingRva = 0xBD2A98;
+constexpr uintptr_t kEnemyControllerSetCurrentHealthRva = 0xAFE838;
+constexpr uintptr_t kEnemyControllerSetDamageRva = 0xAFE840;
+constexpr uintptr_t kEnemyControllerSetDamageProbabilityRva = 0xAFE848;
+constexpr uintptr_t kTimeSetTimeScaleRva = 0x2145A30;
 constexpr uintptr_t kApplovinHasVideoRva = 0xE64BEC;
 constexpr uintptr_t kApplovinPreloadVideoRewardRva = 0xE64DFC;
 constexpr uintptr_t kApplovinShowAdCoroutineRva = 0xE64F7C;
@@ -55,6 +60,28 @@ constexpr uintptr_t kEnemyControllerIsActiveOffset = 0x104;
 constexpr uintptr_t kEnemyControllerIsDeadOffset = 0x106;
 constexpr uintptr_t kEnemyControllerIsAwareOffset = 0x108;
 constexpr uintptr_t kEnemyControllerIsShootingOffset = 0x114;
+constexpr uintptr_t kEnemyControllerIsLaunchGrenadeOffset = 0x116;
+constexpr uintptr_t kEnemyControllerSpeedOffset = 0x78;
+constexpr uintptr_t kEnemyControllerSpeedInterpointsOffset = 0x80;
+constexpr uintptr_t kEnemyControllerSpeedOnAlarmOffset = 0x84;
+constexpr uintptr_t kEnemyControllerSpeedBetweenCoversOffset = 0xAC;
+constexpr uintptr_t kEnemyControllerDamageToPlayerOffset = 0x220;
+constexpr uintptr_t kEnemyControllerDamageProbOffset = 0x224;
+constexpr uintptr_t kEnemyControllerDamageOffset = 0x228;
+constexpr uintptr_t kEnemyControllerIsBossOffset = 0x46;
+constexpr uintptr_t kEnemyControllerIsSniperOffset = 0x11E;
+constexpr uintptr_t kEnemyControllerIsBazookaOffset = 0x11F;
+constexpr uintptr_t kEnemyControllerIsShotgunOffset = 0x120;
+constexpr uintptr_t kEnemyControllerIsZombieOffset = 0xCC;
+constexpr uintptr_t kEnemyControllerIsFlyingOffset = 0x122;
+constexpr uintptr_t kEnemyControllerHasShieldOffset = 0x324;
+constexpr uintptr_t kPlayerControlCurrentWeaponOffset = 0x2E4;
+constexpr uintptr_t kPlayerWeaponParamsOffset = 0x8;
+constexpr uintptr_t kWeaponParamsDispersionMinOffset = 0x14;
+constexpr uintptr_t kWeaponParamsDispersionMaxOffset = 0x18;
+constexpr uintptr_t kWeaponParamsRecoilOffset = 0x20;
+
+constexpr uintptr_t kPlayerControlSpeedMultiplierOffset = 0x154;
 constexpr uintptr_t kEnemyControllerPlayerControlOffset = 0x1C;
 constexpr uintptr_t kEnemyControllerTransformOffset = 0x12C;
 constexpr uintptr_t kManagedListItemsOffset = 0x8;
@@ -123,6 +150,8 @@ using AdsVoidInstance_t = void (*)(void*);
 using AdsVoidStringInstance_t = void (*)(void*, void*);
 using AdsCoroutineOneString_t = void* (*)(void*, void*);
 using AdsCoroutineThreeStrings_t = void* (*)(void*, void*, void*, void*);
+using NeedReloading_t = bool (*)(void*);
+using EnemySetFloat_t = void (*)(void*, float);
 
 ApplyDamage_t orig_ApplyDamage = nullptr;
 ApplyDirectDamage_t orig_ApplyDirectDamage = nullptr;
@@ -141,11 +170,17 @@ TransformLookAt_t gTransformLookAt = nullptr;
 PhysicsRaycast_t gPhysicsRaycast = nullptr;
 MoveCam_t orig_MoveCam = nullptr;
 ActionShoot_t orig_ActionShoot = nullptr;
+NeedReloading_t orig_NeedReloading = nullptr;
+EnemySetFloat_t gEnemySetCurrentHealth = nullptr;
+EnemySetFloat_t gEnemySetDamage = nullptr;
+EnemySetFloat_t gEnemySetDamageProbability = nullptr;
 AdsBoolInstance_t orig_ApplovinHasVideo = nullptr;
 AdsVoidInstance_t orig_ApplovinPreloadVideoReward = nullptr;
 AdsCoroutineThreeStrings_t orig_ApplovinShowAdCoroutine = nullptr;
 AdsVoidInstance_t orig_ApplovinPreloadInterstitial = nullptr;
 AdsCoroutineOneString_t orig_ApplovinShowAdInterstitialCoroutine = nullptr;
+
+
 AdsVoidStringInstance_t orig_ApplovinShowInterstitial = nullptr;
 AdsVoidStringInstance_t orig_ApplovinShowRewardedAd = nullptr;
 AdsBoolInstance_t orig_UnityCanShowVideos = nullptr;
@@ -169,6 +204,18 @@ bool gSetMoneyRequested = false;
 bool gDisableAdsRequested = false;
 bool gDisableVideosRequested = false;
 bool gAimBot = false;
+bool gInfiniteAmmo = false;
+bool gNoRecoil = false;
+bool gFireRateBoost = false;
+bool gSpeedHack = false;
+bool gFreezeEnemies = false;
+bool gDisableEnemyDamage = false;
+bool gDisableEnemyGrenades = false;
+bool gRemoveEnemyShield = false;
+bool gEnemyInfoEsp = true;
+bool gOneShotKill = false;
+bool gSkipWave = false;
+float gSpeedMultiplier = 2.0f;
 int gLineOriginMode = 2;
 int gEspColorPreset = 3;
 void* gLocalPlayerControl = nullptr;
@@ -202,6 +249,7 @@ bool HasFreshLocalPlayerControl();
 EnemyListSnapshot ReadEnemyListFromSceneOffset(uintptr_t listOffset);
 bool TryGetScreenSize(int* outWidth, int* outHeight);
 bool TryGetEnemyScreenPosition(void* enemy, float canvasHeight, float* outX, float* outY);
+EnemyListSnapshot ReadLocalEnemyList();
 
 Vec3 SubVec3(const Vec3& a, const Vec3& b) {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
@@ -465,6 +513,30 @@ bool IsDamageMultiplierEnabled() {
     return gHookInstalled && gDamageMultiplier > 1.0f;
 }
 
+bool IsInfiniteAmmoEnabled() {
+    return gHookInstalled && gInfiniteAmmo;
+}
+
+bool IsNoRecoilEnabled() {
+    return gHookInstalled && gNoRecoil;
+}
+
+bool IsSpeedHackEnabled() {
+    return gHookInstalled && gSpeedHack && gLocalPlayerControl;
+}
+
+bool IsFreezeEnemiesEnabled() {
+    return gHookInstalled && gFreezeEnemies;
+}
+
+bool IsDisableEnemyDamageEnabled() {
+    return gHookInstalled && gDisableEnemyDamage;
+}
+
+bool IsOneShotKillEnabled() {
+    return gHookInstalled && gOneShotKill;
+}
+
 float ApplyDamageMultiplierIfNeeded(float baseDamage) {
     if (!IsDamageMultiplierEnabled() || baseDamage <= 0.0f) {
         return baseDamage;
@@ -472,6 +544,103 @@ float ApplyDamageMultiplierIfNeeded(float baseDamage) {
 
     return baseDamage * gDamageMultiplier;
 }
+
+
+void ApplyEnemyModifications(void* enemy) {
+    if (!enemy) {
+        return;
+    }
+
+    const auto addr = reinterpret_cast<uintptr_t>(enemy);
+
+    if (IsFreezeEnemiesEnabled()) {
+        *reinterpret_cast<float*>(addr + kEnemyControllerSpeedOffset) = 0.0f;
+        *reinterpret_cast<float*>(addr + kEnemyControllerSpeedInterpointsOffset) = 0.0f;
+        *reinterpret_cast<float*>(addr + kEnemyControllerSpeedOnAlarmOffset) = 0.0f;
+        *reinterpret_cast<float*>(addr + kEnemyControllerSpeedBetweenCoversOffset) = 0.0f;
+    }
+
+    if (IsDisableEnemyDamageEnabled()) {
+        *reinterpret_cast<float*>(addr + kEnemyControllerDamageToPlayerOffset) = 0.0f;
+        *reinterpret_cast<float*>(addr + kEnemyControllerDamageProbOffset) = 0.0f;
+        *reinterpret_cast<float*>(addr + kEnemyControllerDamageOffset) = 0.0f;
+    }
+
+    if (gRemoveEnemyShield) {
+        *reinterpret_cast<bool*>(addr + kEnemyControllerHasShieldOffset) = false;
+    }
+
+    if (gDisableEnemyGrenades) {
+        *reinterpret_cast<bool*>(addr + kEnemyControllerIsLaunchGrenadeOffset) = false;
+    }
+
+    if (IsOneShotKillEnabled() && gEnemySetCurrentHealth) {
+        gEnemySetCurrentHealth(enemy, 1.0f);
+    }
+}
+
+void ProcessAllEnemyModifications() {
+    if (!HasFreshLocalPlayerControl()) {
+        return;
+    }
+
+    if (!IsFreezeEnemiesEnabled() && !IsDisableEnemyDamageEnabled() &&
+        !gRemoveEnemyShield && !gDisableEnemyGrenades && !IsOneShotKillEnabled()) {
+        return;
+    }
+
+    const EnemyListSnapshot snapshot = ReadLocalEnemyList();
+    for (int i = 0; i < snapshot.active; ++i) {
+        ApplyEnemyModifications(snapshot.enemies[i]);
+    }
+}
+
+typedef void (*SetTimeScale_t)(float);
+SetTimeScale_t gSetTimeScale = nullptr;
+
+void ApplyNoRecoil() {
+
+    const auto currentWeapon = *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(gLocalPlayerControl) + kPlayerControlCurrentWeaponOffset);
+
+    const auto weaponParams = *reinterpret_cast<void**>(reinterpret_cast<uintptr_t>(currentWeapon) + kPlayerWeaponParamsOffset);
+
+    auto pDispersionMin = reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(weaponParams) + kWeaponParamsDispersionMinOffset);
+    auto pDispersionMax = reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(weaponParams) + kWeaponParamsDispersionMaxOffset);
+    auto pRecoil = reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(weaponParams) + kWeaponParamsRecoilOffset);
+
+    // We just write 0 if enabled. The original values won't be perfectly restored but it's simpler and doesn't crash.
+    // However, if the user toggles it OFF, they might need to change weapons or restart level to get recoil back.
+    if (IsNoRecoilEnabled()) {
+        *pDispersionMin = 0.0f;
+        *pDispersionMax = 0.0f;
+        *pRecoil = 0.0f;
+    }
+}
+
+void ApplySpeedHack() {
+    static bool wasEnabled = false;
+
+    if (!gSetTimeScale) {
+        return;
+    }
+
+    if (gSpeedHack) {
+        gSetTimeScale(gSpeedMultiplier);
+        wasEnabled = true;
+    } else if (wasEnabled) {
+        gSetTimeScale(1.0f);
+        wasEnabled = false;
+    }
+}
+
+bool Hooked_NeedReloading(void* instance) {
+    if (IsInfiniteAmmoEnabled()) {
+        return false;
+    }
+    return orig_NeedReloading ? orig_NeedReloading(instance) : true;
+}
+
+
 
 void ClearLocalPlayerControl() {
     gLocalPlayerControl = nullptr;
@@ -1398,6 +1567,9 @@ void Hooked_SendShootCommand(void* instance) {
     ProcessAutomaticAdsWork();
     ProcessPendingKillAllWork();
     ProcessPendingEconomyWork();
+    ProcessAllEnemyModifications();
+    ApplySpeedHack();
+    ApplyNoRecoil();
 
     if (orig_SendShootCommand) {
         orig_SendShootCommand(instance);
@@ -1412,6 +1584,9 @@ void Hooked_MoveCam(void* instance) {
     ProcessAutomaticAdsWork();
     ProcessPendingKillAllWork();
     ProcessPendingEconomyWork();
+    ProcessAllEnemyModifications();
+    ApplySpeedHack();
+    ApplyNoRecoil();
 
     if (orig_MoveCam) {
         orig_MoveCam(instance);
@@ -1478,6 +1653,9 @@ void* Hooked_ActionShoot(void* instance) {
     ProcessAutomaticAdsWork();
     ProcessPendingKillAllWork();
     ProcessPendingEconomyWork();
+    ProcessAllEnemyModifications();
+    ApplySpeedHack();
+    ApplyNoRecoil();
 
     AimCameraAtEnemy(instance);
 
@@ -1515,6 +1693,12 @@ void* InstallHooksThread(void*) {
     const auto unityShowAdCoroutineTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kUnityShowAdCoroutineRva));
     gEnemyApplyDamage = reinterpret_cast<EnemyApplyDamage_t>(enemyApplyDamageTarget);
     gEnemyKillEnemy = reinterpret_cast<EnemyKill_t>(enemyKillTarget);
+    gEnemySetCurrentHealth = reinterpret_cast<EnemySetFloat_t>(getAbsoluteAddress(kTargetLibName, kEnemyControllerSetCurrentHealthRva));
+    gEnemySetDamage = reinterpret_cast<EnemySetFloat_t>(getAbsoluteAddress(kTargetLibName, kEnemyControllerSetDamageRva));
+    gEnemySetDamageProbability = reinterpret_cast<EnemySetFloat_t>(getAbsoluteAddress(kTargetLibName, kEnemyControllerSetDamageProbabilityRva));
+    const auto needReloadingTarget = reinterpret_cast<void*>(getAbsoluteAddress(kTargetLibName, kPlayerControlNeedReloadingRva));
+
+    gSetTimeScale = reinterpret_cast<SetTimeScale_t>(getAbsoluteAddress(kTargetLibName, kTimeSetTimeScaleRva));
 
 #if defined(__aarch64__)
 
@@ -1552,6 +1736,13 @@ void* InstallHooksThread(void*) {
                 reinterpret_cast<void*>(Hooked_EnemyApplyDamage),
                 reinterpret_cast<void**>(&orig_EnemyApplyDamage));
     }
+    if (needReloadingTarget) {
+        MSHookFunction(
+                needReloadingTarget,
+                reinterpret_cast<void*>(Hooked_NeedReloading),
+                reinterpret_cast<void**>(&orig_NeedReloading));
+    }
+
     if (applovinHasVideoTarget) {
         MSHookFunction(
                 applovinHasVideoTarget,
@@ -1952,9 +2143,20 @@ jobjectArray GetFeatureList(JNIEnv* env, jobject) {
             OBFUSCATE("18_Button_Add Money infinito"),
             OBFUSCATE("19_Button_Set Gold infinito"),
             OBFUSCATE("20_Button_Set Money infinito"),
+            OBFUSCATE("Category_Arsenal"),
+            OBFUSCATE("23_Toggle_Municao infinita"),
+            OBFUSCATE("24_Toggle_Sem recuo (no recoil)"),
+            OBFUSCATE("25_SeekBar_Speed hack_1_5"),
+            OBFUSCATE("Category_Inimigos"),
+            OBFUSCATE("26_Toggle_Congelar inimigos"),
+            OBFUSCATE("27_Toggle_Inimigos nao atacam"),
+            OBFUSCATE("28_Toggle_Remover escudo inimigos"),
+            OBFUSCATE("29_Toggle_Desativar granadas inimigas"),
+            OBFUSCATE("30_Toggle_One shot kill"),
+            OBFUSCATE("31_Toggle_Mostrar info no ESP"),
             OBFUSCATE("Category_Ads"),
-            OBFUSCATE("21_Button_Desativar ads"),
-            OBFUSCATE("22_Button_Desativar videos"),
+            OBFUSCATE("32_Button_Desativar ads"),
+            OBFUSCATE("33_Button_Desativar videos"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -2126,11 +2328,52 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
             gSetMoneyRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetMoney infinito enfileirado");
             break;
-        case 21:
+        case 23:
+            gInfiniteAmmo = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Municao infinita %s", gInfiniteAmmo ? "ON" : "OFF");
+            break;
+        case 24:
+            gNoRecoil = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "No recoil %s", gNoRecoil ? "ON" : "OFF");
+            break;
+        case 25:
+            gSpeedHack = true;
+            gSpeedMultiplier = static_cast<float>(value);
+            if (gSpeedMultiplier < 1.0f) {
+                gSpeedMultiplier = 1.0f;
+                gSpeedHack = false;
+            }
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Speed hack %.1fx", gSpeedMultiplier);
+            break;
+        case 26:
+            gFreezeEnemies = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Freeze enemies %s", gFreezeEnemies ? "ON" : "OFF");
+            break;
+        case 27:
+            gDisableEnemyDamage = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Disable enemy damage %s", gDisableEnemyDamage ? "ON" : "OFF");
+            break;
+        case 28:
+            gRemoveEnemyShield = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Remove shield %s", gRemoveEnemyShield ? "ON" : "OFF");
+            break;
+        case 29:
+            gDisableEnemyGrenades = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Disable grenades %s", gDisableEnemyGrenades ? "ON" : "OFF");
+            break;
+        case 30:
+            gOneShotKill = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "One shot kill %s", gOneShotKill ? "ON" : "OFF");
+            break;
+        case 31:
+            gEnemyInfoEsp = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Enemy info ESP %s", gEnemyInfoEsp ? "ON" : "OFF");
+            break;
+        case 32:
             gDisableAdsRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Desativar ads enfileirado");
             break;
-        case 22:
+        case 33:
             gDisableVideosRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Desativar videos enfileirado");
             break;
@@ -2598,6 +2841,36 @@ void DrawOn(JNIEnv* env, jobject thiz, jobject canvas) {
             DrawEspSegment(env, thiz, canvas, 200, lineR, lineG, lineB, 1.4f,
                            bones.rightUpLeg, bones.rightUpLegX, bones.rightUpLegY,
                            bones.rightLeg, bones.rightLegX, bones.rightLegY);
+        }
+
+        if (gEnemyInfoEsp) {
+            const bool isBoss = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsBossOffset);
+            const bool isSniper = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsSniperOffset);
+            const bool isBazooka = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsBazookaOffset);
+            const bool isZombie = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsZombieOffset);
+            const bool isFlying = *reinterpret_cast<bool*>(enemyAddr + kEnemyControllerIsFlyingOffset);
+            const char* tag = isBoss ? "BOSS" : isSniper ? "SNP" : isBazooka ? "RPG" : isZombie ? "ZMB" : isFlying ? "FLY" : nullptr;
+            if (tag) {
+                jstring infoText = env->NewStringUTF(tag);
+                if (infoText) {
+                    int tr = isBoss ? 255 : 200;
+                    int tg = isBoss ? 60 : 200;
+                    int tb = isBoss ? 60 : 200;
+                    env->CallVoidMethod(
+                            thiz,
+                            gDraw.espDrawText,
+                            canvas,
+                            static_cast<jint>(255),
+                            static_cast<jint>(tr),
+                            static_cast<jint>(tg),
+                            static_cast<jint>(tb),
+                            infoText,
+                            tx,
+                            ty - 18.0f,
+                            14.0f);
+                    env->DeleteLocalRef(infoText);
+                }
+            }
         }
 
         if (ClearJniException(env, "desenhar inimigo")) {

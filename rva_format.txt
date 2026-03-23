@@ -1,0 +1,81 @@
+=== FORMATO DE METODOS COM ApplyDamage ===
+PREV: // RVA: 0xE5AAB8 Offset: 0xE5AAB8 VA: 0xE5AAB8
+LINE: public void ApplyDamage(float damage) { }
+
+PREV: // RVA: 0xA20270 Offset: 0xA20270 VA: 0xA20270
+LINE: public void ApplyDamage(float damageShoot, float multiplier, Vector3 fuerza, Transform objetoToApplyForce, Vector3 punto, EnemyBodyParameter.partesCuerpo zonebody) { }
+
+PREV: // RVA: 0xABCF20 Offset: 0xABCF20 VA: 0xABCF20
+LINE: public void ApplyDamage(float damageToApply, Vector3 puntoImpacto, Vector3 directionFuerza, Quaternion anguloParticulas) { }
+
+PREV: // RVA: 0xABFAA0 Offset: 0xABFAA0 VA: 0xABFAA0
+LINE: public void ApplyDamage(float damageToApply, Vector3 puntoImpacto, Vector3 directionFuerza, Quaternion anguloParticulas, ForceMode myforceMode) { }
+
+PREV: // RVA: 0xABCECC Offset: 0xABCECC VA: 0xABCECC
+LINE: public void ApplyDamage(float damageToApply, Vector3 puntoImpacto, Vector3 directionFuerza, Quaternion anguloParticulas, float audioTo) { }
+
+PREV: // RVA: 0xABCF84 Offset: 0xABCF84 VA: 0xABCF84
+LINE: public void ApplyDamage(float damageToApply, Vector3 puntoImpacto, Vector3 directionFuerza, Quaternion anguloParticulas, float audioTo, ForceMode myforceMode) { }
+
+PREV: // RVA: 0xAC6D94 Offset: 0xAC6D94 VA: 0xAC6D94
+LINE: public void ApplyDamage(float cantidadDamage, Vector3 pointImpacto, Vector3 direccionFuerza) { }
+
+PREV: // RVA: 0xAC773C Offset: 0xAC773C VA: 0xAC773C
+LINE: public void ApplyDamage(Transform part, float damage, Vector3 direction, Vector3 point) { }
+
+
+=== LINHAS COM RVA/VA/Offset (primeiras 10) ===
+// RVA: 0x96C358 Offset: 0x96C358 VA: 0x96C358
+// RVA: 0x96C360 Offset: 0x96C360 VA: 0x96C360
+// RVA: 0x96C3EC Offset: 0x96C3EC VA: 0x96C3EC
+// RVA: 0x96C408 Offset: 0x96C408 VA: 0x96C408
+// RVA: 0x96C558 Offset: 0x96C558 VA: 0x96C558
+// RVA: 0x96C618 Offset: 0x96C618 VA: 0x96C618 Slot: 5
+// RVA: 0x96C61C Offset: 0x96C61C VA: 0x96C61C Slot: 6
+// RVA: 0x96C7D0 Offset: 0x96C7D0 VA: 0x96C7D0 Slot: 4
+// RVA: 0x96C7D8 Offset: 0x96C7D8 VA: 0x96C7D8 Slot: 8
+// RVA: 0x96C81C Offset: 0x96C81C VA: 0x96C81C Slot: 7
+
+=== CONTEXTO APPLYDAMAGE PLAYERCONTROL ===
+  public void forceNoDamageOnAimTop() { }
+  
+  // RVA: 0xBEEE58 Offset: 0xBEEE58 VA: 0xBEEE58
+>>> public void ApplyDamage(float damage, Vector3 direccionDamage, Vector3 puntoImpactoFinal, Vector3 direccionHitNormal, GameObject objcreater, PlayerControl.origenDamage _origenDamage, GameObject obj_or
+
+  public void CleanAccumulatedDamage() { }
+  
+  // RVA: 0xC8054C Offset: 0xC8054C VA: 0xC8054C
+>>> public void ApplyDamage(float cantidadDamage, SpiderPart part, Vector3 pointImpacto, Vector3 direccionFuerza) { }
+
+  public void ApplyDamage(float cantidadDamage, SpiderPart part, Vector3 pointImpacto, Vector3 direccionFuerza) { }
+  
+  // RVA: 0xC80630 Offset: 0xC80630 VA: 0xC80630
+>>> public void ApplyDamage(float cantidadDamage, Vector3 pointImpacto, Vector3 direccionFuerza) { }
+
+  private void takeChildDamage(float damage) { }
+  
+  // RVA: 0xC84C80 Offset: 0xC84C80 VA: 0xC84C80 Slot: 4
+>>> public override void ApplyDamage(float damage, Vector3 impactPoint, Vector3 ForceDirection) { }
+
+  // Methods
+  
+  // RVA: 0xC85D04 Offset: 0xC85D04 VA: 0xC85D04 Slot: 4
+>>> public override void ApplyDamage(float damage, Vector3 impactPoint, Vector3 ForceDirection) { }
+
+  // Methods
+  
+  // RVA: -1 Offset: -1 Slot: 4
+>>> public abstract void ApplyDamage(float damage, Vector3 impactPoint, Vector3 ForceDirection);
+
+  private void Update() { }
+  
+  // RVA: 0xC99EA0 Offset: 0xC99EA0 VA: 0xC99EA0 Slot: 4
+>>> public override void ApplyDamage(float damage, Vector3 impactPoint, Vector3 ForceDirection) { }
+
+  public bool IsPartOfTheShield(GameObject obj) { }
+  
+  // RVA: 0xD014F4 Offset: 0xD014F4 VA: 0xD014F4
+>>> public void ApplyDamage(float damageToApply, Vector3 puntoImpacto, Vector3 directionFuerza) { }
+
+
+DONE
