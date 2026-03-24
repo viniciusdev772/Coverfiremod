@@ -568,6 +568,14 @@ void ApplyEnemyModifications(void* enemy) {
 
     if (gDisableEnemyGrenades) {
         *reinterpret_cast<bool*>(addr + kEnemyControllerIsLaunchGrenadeOffset) = false;
+        *reinterpret_cast<float*>(addr + 0x118) = 9999999.0f; // lastTimeLaunchGrenade
+        
+        // Ensure that even if launched, the grenade does 0 damage
+        void* grenadeController = *reinterpret_cast<void**>(addr + 0x42C);
+        if (grenadeController) {
+            *reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(grenadeController) + 0x18) = 0.0f; // DamageExplosion
+            *reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(grenadeController) + 0x1c) = 0.0f; // radioExpansion
+        }
     }
 
     if (IsOneShotKillEnabled() && gEnemySetCurrentHealth) {
