@@ -188,7 +188,6 @@ AdsBoolInstance_t orig_UnityIsVideoAvailable = nullptr;
 AdsBoolInstance_t orig_UnityHasVideo = nullptr;
 AdsCoroutineThreeStrings_t orig_UnityShowAdCoroutine = nullptr;
 bool gGodMode = false;
-bool gInfiniteLife999 = false;
 bool gHookInstalled = false;
 bool gEnemyLines = false;
 bool gEnemySkeleton = false;
@@ -445,9 +444,6 @@ void ProcessAutomaticAdsWork() {
     }
 }
 
-bool IsInfiniteLifeEnabled() {
-    return gHookInstalled && gInfiniteLife999;
-}
 
 bool IsGodModeEnabled() {
     return gHookInstalled && gGodMode;
@@ -597,6 +593,17 @@ void ProcessAllEnemyModifications() {
 
 typedef void (*SetTimeScale_t)(float);
 SetTimeScale_t gSetTimeScale = nullptr;
+
+void ApplyGodMode() {
+    if (!gLocalPlayerControl) return;
+
+    if (IsGodModeEnabled()) {
+        auto actualLifePtr = reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(gLocalPlayerControl) + 0x70);
+        auto initialLifePtr = reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(gLocalPlayerControl) + 0x6C);
+        
+        *actualLifePtr = *initialLifePtr;
+    }
+}
 
 void ApplyNoRecoil() {
 
@@ -1465,99 +1472,6 @@ void LogInfo(const char* message) {
     __android_log_print(ANDROID_LOG_INFO, kLogTag, "%s", message ? message : "");
 }
 
-void Hooked_ApplyDamage(void* instance,
-                        float damage,
-                        Vec3 directionDamage,
-                        Vec3 impactPoint,
-                        Vec3 hitNormal,
-                        void* damageCreator,
-                        int originDamage,
-                        void* originObject) {
-    if (instance) {
-        UpdateLocalPlayerControl(instance);
-    }
-
-    ProcessAutomaticAdsWork();
-    ProcessPendingEconomyWork();
-
-    if (IsInfiniteLifeEnabled()) {
-        SetLocalPlayerLife999(instance);
-        if (orig_ApplyDamage) {
-            orig_ApplyDamage(
-                    instance,
-                    0.0f,
-                    directionDamage,
-                    impactPoint,
-                    hitNormal,
-                    damageCreator,
-                    originDamage,
-                    originObject);
-        }
-        SetLocalPlayerLife999(instance);
-        return;
-    }
-
-    if (IsGodModeEnabled()) {
-        if (orig_ApplyDamage) {
-            orig_ApplyDamage(
-                    instance,
-                    0.0f,
-                    directionDamage,
-                    impactPoint,
-                    hitNormal,
-                    damageCreator,
-                    originDamage,
-                    originObject);
-        }
-        return;
-    }
-
-    if (orig_ApplyDamage) {
-        orig_ApplyDamage(
-                instance,
-                damage,
-                directionDamage,
-                impactPoint,
-                hitNormal,
-                damageCreator,
-                originDamage,
-                originObject);
-    }
-}
-
-void Hooked_ApplyDirectDamage(void* instance,
-                              float damage,
-                              Vec3 directionDamage,
-                              Vec3 impactPoint,
-                              int originDamage) {
-    if (instance) {
-        UpdateLocalPlayerControl(instance);
-    }
-
-    ProcessAutomaticAdsWork();
-    ProcessPendingEconomyWork();
-
-    if (IsInfiniteLifeEnabled()) {
-        SetLocalPlayerLife999(instance);
-        if (orig_ApplyDirectDamage) {
-            orig_ApplyDirectDamage(instance, 0.0f, directionDamage, impactPoint, originDamage);
-        }
-        SetLocalPlayerLife999(instance);
-        return;
-    }
-
-    if (IsGodModeEnabled()) {
-        if (orig_ApplyDirectDamage) {
-            orig_ApplyDirectDamage(instance, 0.0f, directionDamage, impactPoint, originDamage);
-        }
-        return;
-    }
-
-    if (orig_ApplyDirectDamage) {
-        orig_ApplyDirectDamage(instance, damage, directionDamage, impactPoint, originDamage);
-    }
-}
-
 void Hooked_SendShootCommand(void* instance) {
     if (instance) {
         UpdateLocalPlayerControl(instance);
@@ -1587,6 +1501,7 @@ void Hooked_MoveCam(void* instance) {
     ProcessAllEnemyModifications();
     ApplySpeedHack();
     ApplyNoRecoil();
+    ApplyGodMode();
 
     if (orig_MoveCam) {
         orig_MoveCam(instance);
@@ -1703,15 +1618,7 @@ void* InstallHooksThread(void*) {
 #if defined(__aarch64__)
 
 #else
-    if (target) {
-        MSHookFunction(target, reinterpret_cast<void*>(Hooked_ApplyDamage), reinterpret_cast<void**>(&orig_ApplyDamage));
-    }
-    if (directDamageTarget) {
-        MSHookFunction(
-                directDamageTarget,
-                reinterpret_cast<void*>(Hooked_ApplyDirectDamage),
-                reinterpret_cast<void**>(&orig_ApplyDirectDamage));
-    }
+
     if (shootCommandTarget) {
         MSHookFunction(
                 shootCommandTarget,
@@ -2118,45 +2025,42 @@ jobjectArray SettingsList(JNIEnv* env, jobject) {
 
 jobjectArray GetFeatureList(JNIEnv* env, jobject) {
     static const char* const kFeatures[] = {
-            OBFUSCATE("Category_Combate"),
-            OBFUSCATE("1_Toggle_Aimbot (mira na cabeca)"),
-            OBFUSCATE("2_Toggle_Trigger bot (1 tiro por disparo)"),
-            OBFUSCATE("3_SeekBar_Multiplicador de dano_1_20"),
-            OBFUSCATE("4_Button_Matar todos agora"),
-            OBFUSCATE("5_Toggle_Auto kill continuo"),
-            OBFUSCATE("6_SeekBar_Raio do trigger_30_400"),
-            OBFUSCATE("7_SeekBar_Dano por tiro_50_5000"),
-            OBFUSCATE("Category_Visual"),
-            OBFUSCATE("8_Toggle_Draw line inimigos locais"),
-            OBFUSCATE("9_Toggle_Draw esqueleto inimigos"),
-            OBFUSCATE("10_Spinner_Cor do ESP_Verde,Vermelho,Azul,Ciano,Amarelo,Branco,Rosa,Laranja"),
-            OBFUSCATE("11_Toggle_ESP apenas alertas"),
-            OBFUSCATE("12_Toggle_ESP apenas inimigos atirando"),
-            OBFUSCATE("13_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
-            OBFUSCATE("Category_Defesa"),
-            OBFUSCATE("14_Toggle_God mode"),
-            OBFUSCATE("15_Toggle_Vida infinita 999"),
-            OBFUSCATE("Category_Util"),
-            OBFUSCATE("16_Button_Status do hook ARMv7"),
-            OBFUSCATE("Category_Economia"),
-            OBFUSCATE("17_Button_Add Gold infinito"),
-            OBFUSCATE("18_Button_Add Money infinito"),
-            OBFUSCATE("19_Button_Set Gold infinito"),
-            OBFUSCATE("20_Button_Set Money infinito"),
-            OBFUSCATE("Category_Arsenal"),
-            OBFUSCATE("23_Toggle_Municao infinita"),
-            OBFUSCATE("24_Toggle_Sem recuo (no recoil)"),
-            OBFUSCATE("25_SeekBar_Speed hack_1_5"),
+            OBFUSCATE("Category_Apelonas"),
+            OBFUSCATE("1_Toggle_God mode (imortal)"),
+            OBFUSCATE("2_Toggle_Aimbot (mira na cabeca)"),
+            OBFUSCATE("3_Toggle_One shot kill"),
+            OBFUSCATE("4_Toggle_Municao infinita"),
+            OBFUSCATE("5_Toggle_Sem recuo (no recoil)"),
+            OBFUSCATE("6_SeekBar_Speed hack_1_5"),
+            OBFUSCATE("7_SeekBar_Multiplicador de dano_1_20"),
+            OBFUSCATE("Category_AutoKill & Trigger"),
+            OBFUSCATE("8_Toggle_Trigger bot (1 tiro por disparo)"),
+            OBFUSCATE("9_SeekBar_Raio do trigger_30_400"),
+            OBFUSCATE("10_SeekBar_Dano por tiro_50_5000"),
+            OBFUSCATE("11_Toggle_Auto kill continuo"),
+            OBFUSCATE("12_Button_Matar todos agora"),
             OBFUSCATE("Category_Inimigos"),
-            OBFUSCATE("26_Toggle_Congelar inimigos"),
-            OBFUSCATE("27_Toggle_Inimigos nao atacam"),
-            OBFUSCATE("28_Toggle_Remover escudo inimigos"),
-            OBFUSCATE("29_Toggle_Desativar granadas inimigas"),
-            OBFUSCATE("30_Toggle_One shot kill"),
-            OBFUSCATE("31_Toggle_Mostrar info no ESP"),
-            OBFUSCATE("Category_Ads"),
-            OBFUSCATE("32_Button_Desativar ads"),
-            OBFUSCATE("33_Button_Desativar videos"),
+            OBFUSCATE("13_Toggle_Congelar inimigos"),
+            OBFUSCATE("14_Toggle_Inimigos nao atacam"),
+            OBFUSCATE("15_Toggle_Remover escudo inimigos"),
+            OBFUSCATE("16_Toggle_Desativar granadas inimigas"),
+            OBFUSCATE("Category_Visual & ESP"),
+            OBFUSCATE("17_Toggle_Draw line inimigos locais"),
+            OBFUSCATE("18_Toggle_Draw esqueleto inimigos"),
+            OBFUSCATE("19_Toggle_Mostrar info no ESP"),
+            OBFUSCATE("20_Spinner_Cor do ESP_Verde,Vermelho,Azul,Ciano,Amarelo,Branco,Rosa,Laranja"),
+            OBFUSCATE("21_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
+            OBFUSCATE("22_Toggle_ESP apenas alertas"),
+            OBFUSCATE("23_Toggle_ESP apenas inimigos atirando"),
+            OBFUSCATE("Category_Economia"),
+            OBFUSCATE("24_Button_Add Gold infinito"),
+            OBFUSCATE("25_Button_Add Money infinito"),
+            OBFUSCATE("26_Button_Set Gold infinito"),
+            OBFUSCATE("27_Button_Set Money infinito"),
+            OBFUSCATE("Category_Setup & Util"),
+            OBFUSCATE("28_Button_Desativar ads"),
+            OBFUSCATE("29_Button_Desativar videos"),
+            OBFUSCATE("30_Button_Status do hook ARMv7"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -2171,211 +2075,131 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
 
     switch (featNum) {
         case 1:
-            gAimBot = boolean;
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Aimbot %s | lookAt=%s | moveCam=%s",
-                    gAimBot ? "ON" : "OFF",
-                    gTransformLookAt ? "ok" : "null",
-                    orig_MoveCam ? "hookeado" : "null");
+            gGodMode = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "God mode %s | hook=%s", gGodMode ? "ON" : "OFF", gHookInstalled ? "instalado" : "pendente");
             break;
         case 2:
-            gTriggerBot = boolean;
-            if (!gTriggerBot) {
-                gLastTriggerTarget = nullptr;
-            }
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Trigger bot %s | enemyApply=%p",
-                    gTriggerBot ? "ON" : "OFF",
-                    reinterpret_cast<void*>(gEnemyApplyDamage));
+            gAimBot = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Aimbot %s", gAimBot ? "ON" : "OFF");
             break;
         case 3:
-            gDamageMultiplier = static_cast<float>(value);
-            if (gDamageMultiplier < 1.0f) {
-                gDamageMultiplier = 1.0f;
-            }
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Multiplicador de dano ajustado para %.1fx",
-                    gDamageMultiplier);
-            break;
-        case 4: {
-            gKillAllNowRequested = true;
-            const EnemyListSnapshot snapshot = ReadLocalEnemyList();
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Kill-all solicitado | inimigos ativos=%d total=%d",
-                    snapshot.active,
-                    snapshot.total);
-            break;
-        }
-        case 5:
-            gAutoKillAll = boolean;
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Auto kill continuo %s",
-                    gAutoKillAll ? "ON" : "OFF");
-            break;
-        case 6:
-            gTriggerRadiusPixels = static_cast<float>(value);
-            if (gTriggerRadiusPixels < 30.0f) {
-                gTriggerRadiusPixels = 30.0f;
-            }
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Raio trigger ajustado para %.1f px",
-                    gTriggerRadiusPixels);
-            break;
-        case 7:
-            gTriggerDamage = static_cast<float>(value);
-            if (gTriggerDamage < 50.0f) {
-                gTriggerDamage = 50.0f;
-            }
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Dano trigger/kill ajustado para %.1f",
-                    gTriggerDamage);
-            break;
-        case 8:
-            gEnemyLines = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Draw line inimigos %s", gEnemyLines ? "ON" : "OFF");
-            break;
-        case 9:
-            gEnemySkeleton = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Draw esqueleto inimigos %s", gEnemySkeleton ? "ON" : "OFF");
-            break;
-        case 10:
-            gEspColorPreset = value;
-            if (gEspColorPreset < 0 || gEspColorPreset > 7) {
-                gEspColorPreset = 3;
-            }
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Cor do ESP=%d (%s)",
-                    gEspColorPreset,
-                    GetEspColorPresetName());
-            break;
-        case 11:
-            gEspOnlyAware = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "ESP apenas alertas %s", gEspOnlyAware ? "ON" : "OFF");
-            break;
-        case 12:
-            gEspOnlyShooting = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "ESP apenas atirando %s", gEspOnlyShooting ? "ON" : "OFF");
-            break;
-        case 13:
-            gLineOriginMode = value;
-            if (gLineOriginMode < 0 || gLineOriginMode > 6) {
-                gLineOriginMode = 2;
-            }
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Origem da linha=%d (%s)",
-                    gLineOriginMode,
-                    GetLineOriginModeName());
-            break;
-        case 14:
-            gGodMode = boolean;
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Super dano %s | hook=%s",
-                    gGodMode ? "ON" : "OFF",
-                    gHookInstalled ? "instalado" : "pendente");
-            break;
-        case 15:
-            gInfiniteLife999 = boolean;
-            if (IsInfiniteLifeEnabled()) {
-                SetLocalPlayerLife999(gLocalPlayerControl);
-            }
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Vida infinita 999 %s",
-                    gInfiniteLife999 ? "ON" : "OFF");
-            break;
-        case 16:
-            __android_log_print(
-                    ANDROID_LOG_INFO,
-                    kLogTag,
-                    "Status hook=%s | player=%p",
-                    gHookInstalled ? "instalado" : "pendente",
-                    gLocalPlayerControl);
-            break;
-        case 17:
-            gAddGoldRequested = true;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddGold infinito enfileirado");
-            break;
-        case 18:
-            gAddMoneyRequested = true;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddMoney infinito enfileirado");
-            break;
-        case 19:
-            gSetGoldRequested = true;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetGold infinito enfileirado");
-            break;
-        case 20:
-            gSetMoneyRequested = true;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetMoney infinito enfileirado");
-            break;
-        case 23:
-            gInfiniteAmmo = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Municao infinita %s", gInfiniteAmmo ? "ON" : "OFF");
-            break;
-        case 24:
-            gNoRecoil = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "No recoil %s", gNoRecoil ? "ON" : "OFF");
-            break;
-        case 25:
-            gSpeedHack = true;
-            gSpeedMultiplier = static_cast<float>(value);
-            if (gSpeedMultiplier < 1.0f) {
-                gSpeedMultiplier = 1.0f;
-                gSpeedHack = false;
-            }
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Speed hack %.1fx", gSpeedMultiplier);
-            break;
-        case 26:
-            gFreezeEnemies = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Freeze enemies %s", gFreezeEnemies ? "ON" : "OFF");
-            break;
-        case 27:
-            gDisableEnemyDamage = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Disable enemy damage %s", gDisableEnemyDamage ? "ON" : "OFF");
-            break;
-        case 28:
-            gRemoveEnemyShield = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Remove shield %s", gRemoveEnemyShield ? "ON" : "OFF");
-            break;
-        case 29:
-            gDisableEnemyGrenades = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Disable grenades %s", gDisableEnemyGrenades ? "ON" : "OFF");
-            break;
-        case 30:
             gOneShotKill = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "One shot kill %s", gOneShotKill ? "ON" : "OFF");
             break;
-        case 31:
+        case 4:
+            gInfiniteAmmo = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Municao infinita %s", gInfiniteAmmo ? "ON" : "OFF");
+            break;
+        case 5:
+            gNoRecoil = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "No recoil %s", gNoRecoil ? "ON" : "OFF");
+            break;
+        case 6:
+            gSpeedHack = true;
+            gSpeedMultiplier = static_cast<float>(value);
+            if (gSpeedMultiplier < 1.0f) { gSpeedMultiplier = 1.0f; gSpeedHack = false; }
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Speed hack %.1fx", gSpeedMultiplier);
+            break;
+        case 7:
+            gDamageMultiplier = static_cast<float>(value);
+            if (gDamageMultiplier < 1.0f) { gDamageMultiplier = 1.0f; }
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Multiplicador de dano ajustado para %.1fx", gDamageMultiplier);
+            break;
+        case 8:
+            gTriggerBot = boolean;
+            if (!gTriggerBot) { gLastTriggerTarget = nullptr; }
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Trigger bot %s", gTriggerBot ? "ON" : "OFF");
+            break;
+        case 9:
+            gTriggerRadiusPixels = static_cast<float>(value);
+            if (gTriggerRadiusPixels < 30.0f) { gTriggerRadiusPixels = 30.0f; }
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Raio trigger %.1f px", gTriggerRadiusPixels);
+            break;
+        case 10:
+            gTriggerDamage = static_cast<float>(value);
+            if (gTriggerDamage < 50.0f) { gTriggerDamage = 50.0f; }
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Dano trigger %.1f", gTriggerDamage);
+            break;
+        case 11:
+            gAutoKillAll = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Auto kill continuo %s", gAutoKillAll ? "ON" : "OFF");
+            break;
+        case 12:
+            gKillAllNowRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Kill-all solicitado");
+            break;
+        case 13:
+            gFreezeEnemies = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Freeze enemies %s", gFreezeEnemies ? "ON" : "OFF");
+            break;
+        case 14:
+            gDisableEnemyDamage = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Disable enemy damage %s", gDisableEnemyDamage ? "ON" : "OFF");
+            break;
+        case 15:
+            gRemoveEnemyShield = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Remove shield %s", gRemoveEnemyShield ? "ON" : "OFF");
+            break;
+        case 16:
+            gDisableEnemyGrenades = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Disable grenades %s", gDisableEnemyGrenades ? "ON" : "OFF");
+            break;
+        case 17:
+            gEnemyLines = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Draw line inimigos %s", gEnemyLines ? "ON" : "OFF");
+            break;
+        case 18:
+            gEnemySkeleton = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Draw esqueleto %s", gEnemySkeleton ? "ON" : "OFF");
+            break;
+        case 19:
             gEnemyInfoEsp = boolean;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Enemy info ESP %s", gEnemyInfoEsp ? "ON" : "OFF");
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Info ESP %s", gEnemyInfoEsp ? "ON" : "OFF");
             break;
-        case 32:
+        case 20:
+            gEspColorPreset = value;
+            if (gEspColorPreset < 0 || gEspColorPreset > 7) gEspColorPreset = 3;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Cor ESP %d", gEspColorPreset);
+            break;
+        case 21:
+            gLineOriginMode = value;
+            if (gLineOriginMode < 0 || gLineOriginMode > 6) gLineOriginMode = 2;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Origem linha %d", gLineOriginMode);
+            break;
+        case 22:
+            gEspOnlyAware = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "ESP apenas alertas %s", gEspOnlyAware ? "ON" : "OFF");
+            break;
+        case 23:
+            gEspOnlyShooting = boolean;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "ESP apenas atirando %s", gEspOnlyShooting ? "ON" : "OFF");
+            break;
+        case 24:
+            gAddGoldRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddGold enfileirado");
+            break;
+        case 25:
+            gAddMoneyRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddMoney enfileirado");
+            break;
+        case 26:
+            gSetGoldRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetGold enfileirado");
+            break;
+        case 27:
+            gSetMoneyRequested = true;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetMoney enfileirado");
+            break;
+        case 28:
             gDisableAdsRequested = true;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Desativar ads enfileirado");
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Ads enfileirado");
             break;
-        case 33:
+        case 29:
             gDisableVideosRequested = true;
-            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Desativar videos enfileirado");
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Videos enfileirado");
+            break;
+        case 30:
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Status hook=%s player=%p", gHookInstalled ? "instalado" : "pendente", gLocalPlayerControl);
             break;
         default:
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Feature sem ação dedicada: %d", featNum);
