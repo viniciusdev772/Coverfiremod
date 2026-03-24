@@ -1,0 +1,33 @@
+Resumo do Grupo - Tecnologia & Automação 📆 - 17/05/2025
+
+👥 Top 5 Participantes Ativos:
+1. Guilherme Lazarotto - 37 mensagens
+2. felipecavazzani - 28 mensagens
+3. vini - 25 mensagens
+4. TonyBots - 22 mensagens
+5. Hall - 15 mensagens
+
+📌 Assunto Principal: 
+Discussões intensas sobre fluxos de automação…
+
+💡 Assuntos Relevantes:
+- Dicas Técnicas e Solução de Problemas:
+  - Paulo Costa, Matheus Silveira, Valnei e outros debateram fluxos de atendimento automatizado ……
+
+🔗 Links Compartilhados:
+- Grupo do curso N8N Fácil: https://chat.whatsapp.com/L4rEIvjTWOMB8hm5bOQfVO
+- Webhook de teste (chat-RAG): https://webhook.dev.radtec.site/webhook/chat-rag
+
+Tema: Automação de Notificações WhatsApp (n8n + Redis) ⏰ 00:14 – 13:10
+- Participantes: Paulo Costa, Matheus Silveira, Valnei, Bruno, Guilherme Lazarotto, 2D, Dettrê, Souza
+- Resumo: Analisaram detalhadamente fluxos n8n para captar intenções do cliente e acionar vendedores via WhatsApp, trabalhando com triggers, subfluxos e Redis para controle de mensagens. Foram compartilhados exemplos de fluxos, problemas de fila e sugestões de ajuste no processamento.
+
+
+Destaques do Dia 🔍
+- Técnicos: Automação de atendimento com n8n, integração WhatsApp/Evolution, gerenciamento de mensagens com Redis e exibição dinâmica de QR Codes.
+- Inovação: Estratégias para triggers inteligentes, uso de buffers separados no Redis, painéis White Label, e compartilhamento de fluxos otimizados.
+- Colaboração: Resolução coletiva de problemas, troca de experiências sobre infraestrutura, hospedagem e divulgação de recursos para capacitação técnica.
+
+Encerramento 🌟
+Dia marcado por muita colaboração técnica, soluções práticas para automações e fortalecimento da comunidade através de compartilhamento de conhecimento e recursos.
+

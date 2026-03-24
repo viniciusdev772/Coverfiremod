@@ -1,0 +1,324 @@
+24/03/2026 07:03 - As mensagens e ligações são protegidas com a criptografia de ponta a ponta. Somente as pessoas que fazem parte da conversa podem ler, ouvir e compartilhar esse conteúdo. *Saiba mais*
+24/03/2026 08:08 - +55 84 8756-1606: Bom dia!
+
+Alguem aqui ja integrou o GLPI com o N8N? para abertura de chamados.
+24/03/2026 08:28 - +55 66 9997-3063: Eu ja
+24/03/2026 08:29 - +55 66 9997-3063: <Mídia oculta>
+24/03/2026 08:30 - +55 84 8756-1606: sim
+24/03/2026 08:33 - +55 84 8756-1606: Sim
+24/03/2026 08:42 - +55 82 8739-8612: Para que serve cada coisa dessa ?
+24/03/2026 08:46 - +55 31 8919-5043: Bom dia pessoal! Tem como executar um schedule no final de um fluxo em um horário passado por parâmetro?
+24/03/2026 08:48 - +55 31 8919-5043: Ex. Qdo terminar o processamento do fluxo atual, quero agendar o mesmo fluxo para amanhã às 09h, esse horário e data é dinâmico
+24/03/2026 08:51 - Wesley: Schedule segue outra lógica, ele é um gatilho inicial definido péla hora e não por outro evento externo.
+24/03/2026 08:52 - +55 31 8919-5043: Sim exatamente, tem alguma outra maneira ou  node que faça
+24/03/2026 08:55 - +55 15 99194-4281: Você quer mexer em outro flow
+24/03/2026 08:55 - +55 15 99194-4281: Ou no mesmo?
+24/03/2026 09:01 - +55 31 8919-5043: Na realidade eu quero agendar o mesmo fluxo corrente
+24/03/2026 09:02 - +55 31 8919-5043: Ele vai ser executado e se não finalizar o processo reinicia no dia seguinte em um horário específico
+24/03/2026 09:34 - +55 31 9654-1234: Mensagem apagada
+24/03/2026 10:45 - +55 31 9654-1234: Quando o fluxo principal não terminar no dia e hora que vc quer, vc vai achar uma forma de gravar num banco de dados que o fluxo principal não terminou. 
+O outro workflow tem um schedule que roda de 5 em 5 minutos. Depois do schedule vc busca no banco de dados os dados do fluxo principal. O próximo node é um IF que vai ter 2 condições:
+1. Fluxo principal não finalizado
+2. Horário correto do disparo
+Se ambas as condições forem verdadeiras, ele dá continuidade ou reinicia o fluxo principal.
+24/03/2026 10:46 - +55 21 98973-2007: Pra controla , fazer e criar automação
+24/03/2026 10:47 - +55 21 98973-2007: Bom dia
+24/03/2026 10:54 - +55 17 99165-0320: Vc é o cara man, passa pra nós depois
+24/03/2026 11:17 - +55 21 98973-2007: Se tem que pagar a mentoria do Bruno pra te ensina te pegar na mão ✋️ primeiro aprende a andar pra depois correr
+24/03/2026 11:19 - Guilherme Lazarotto: Bom dia pessoal, estou testando o Stitch hoje para design de páginas e sistemas
+24/03/2026 11:19 - Guilherme Lazarotto: http://stitch.withgoogle.com/
+24/03/2026 11:19 - Guilherme Lazarotto: Nova ferramenta do Google para gerar designs
+24/03/2026 11:20 - +55 31 9654-1234: Vi isso ontem, parece que vai quebrar o Figma!
+24/03/2026 11:20 - Guilherme Lazarotto: Sim!
+24/03/2026 11:20 - +55 17 99165-0320: Quanto é a consultoria já que vc tá vendendo pra ele
+24/03/2026 11:21 - +55 17 99165-0320: 2x vc já me disse sobre isso vcs são parceiros de negócios?
+24/03/2026 11:21 - Wesley: Já vou testar
+24/03/2026 11:21 - +55 17 99165-0320: Mensagem apagada
+24/03/2026 11:21 - +55 17 99165-0320: Eu tô precisando dependendo do valor a gente paga ou manda fazer
+24/03/2026 11:22 - +55 35 9878-1412: kkkkkkkkk
+24/03/2026 11:24 - +55 31 9654-1234: Se quiser mesmo, eu cobro R$150/h
+24/03/2026 11:29 - +55 21 98973-2007: Quisera eu que fosse meu sócio,  seria uma honra aprender e ganhar dinheiro tudo junto
+24/03/2026 11:29 - +55 17 99165-0320: Isso ai
+24/03/2026 11:29 - +55 17 99165-0320: Com certeza
+24/03/2026 11:29 - +55 21 98973-2007: Novo não né ,  teve uma atualização nova deixando ele bem melhor
+24/03/2026 11:29 - +55 17 99165-0320: É bacana vc indicar ele
+24/03/2026 11:34 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 11:36 - +55 88 8885-6584: Galera, o lovable vcs assinam pelo próprio site deles ou usam algum outro alternativo? Pra pagar mais barato
+24/03/2026 11:36 - +55 17 99165-0320: Que top mano
+24/03/2026 11:36 - +55 17 99165-0320: Obrigado por compartilhar irmão
+24/03/2026 11:41 - Wesley: <Mídia oculta>
+24/03/2026 11:44 - +55 21 98973-2007: Uma vez fui no privado do @⁨Guilherme Lazarotto⁩ perguntando se ele não queria pegar uma cliente pra fazer uma automação de scraper pra uma amiga que mora nos EUA.   Ele respondeu que não podia pegar porque tava  focado no curso e tinha muita coisa pra fazer.  Ses vê o comprometimento do cara
+24/03/2026 11:45 - +55 21 98973-2007: Aquilo que falei se não dói conta de fazer vou buscar os melhores pra fazer.   Mesmo que eu não ganhe nada as pessoas confiam em você e voltam.   Nome é a coisa mas importante que temos
+24/03/2026 11:45 - Guilherme Lazarotto: Agora nós temos uma empresa de automações também que está no começo, nessa época ainda estava mais no início ainda kkkk
+24/03/2026 11:46 - Guilherme Lazarotto: Mas não sou eu sozinho daí consigo ficar de olho
+24/03/2026 11:46 - Guilherme Lazarotto: Quando era sozinho fica complicado cuidar muitas coisas
+24/03/2026 11:46 - +55 21 98973-2007: Show mam.  Você é o Bruno o Vinao aí.   Ajudam e se comprometem de mais.  Obrigado por tudo
+24/03/2026 11:48 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 11:48 - +55 21 98973-2007: Usando Stitch
+24/03/2026 11:48 - +55 21 98973-2007: Quero ver
+24/03/2026 11:55 - +55 17 99165-0320: Com certeza, me aceite como amigo, amigo, tamo junto
+24/03/2026 12:00 - +55 21 98973-2007: Show mam
+24/03/2026 12:00 - +55 21 98973-2007: Cadê o briefing
+24/03/2026 12:00 - +55 17 99165-0320: Cara tá corrido kkk, mas vou fazer
+24/03/2026 12:02 - +55 61 9902-6927: Novamente meu agente cpm problema
+24/03/2026 12:02 - +55 61 9902-6927: <Mídia oculta>
+24/03/2026 12:02 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 12:03 - +55 21 98973-2007: Ouve ai
+24/03/2026 12:04 - +55 17 99165-0320: Verdade
+24/03/2026 12:06 - Wesley: Dominio customizável? está tentando acessar o N8N?
+24/03/2026 12:07 - +55 31 9654-1234: <Mídia oculta>
+24/03/2026 12:08 - +55 31 9654-1234: Tenta reiniciar seu PC
+24/03/2026 12:08 - Wesley: Já testou na marra kkk
+24/03/2026 12:09 - Wesley: De vez em quando dá essas falhas, porém é algo de momento, logo em seguida o sistema volta.
+24/03/2026 12:09 - +55 85 9167-0420: pode ser só cache, Ctrl + F5 na página
+24/03/2026 12:09 - +55 85 9167-0420: ou abrir na guia anônima
+24/03/2026 12:16 - +55 85 9167-0420: <Mídia oculta>
+24/03/2026 12:16 - +55 85 9167-0420: Vocês concordam?
+24/03/2026 12:18 - Godoy: pelos MEUS TESTES sim
+24/03/2026 12:18 - Godoy: o claude tá bem superior mesmo
+24/03/2026 12:19 - +55 35 9878-1412: por hora estou usando somente o claude sonnet e já sinto uma melhora considerável em relação ao chat gpt, mas de acordo com a grande maioria dos usuários, a versão opus é ainda melhor, então quero experimentar
+24/03/2026 12:21 - +55 21 98973-2007: Não a toa o pentagono queria o claude como centro nervoso de suas operações,  eles testaram todas as ias no mesmo cenario e a melhor foi a da cluade,  problema que os seo da claude falam que numa hipoteca cenario que guerra nuclear , em todas as situações testadas ela meteu bala,  o que os seo acham muito perigoso sem intervenção humana,  mas os EUA estão usando claude sim por baixos dos panos
+24/03/2026 12:21 - +55 48 8849-8330: Claude é mto melhor, acredito q é melhor ainda se usado via terminal/extensão, fizemos testes aqui na empresa e tivemos resultados melhores do q usar o Claude acoplado nas IDEs
+24/03/2026 12:23 - +55 85 9167-0420: Vai por mim, opus não é upgrade do sonnet como pensam. Pra mim é OUTRO MODELO totalmente diferente pela incrível capacidade dele...
+24/03/2026 12:23 - +55 85 9167-0420: Seu projeto criado no Claude Sonnet pode ser enviado pro Claude Opus e na visão dele, não é impossível de estar tudo errado, como se não fosse um upgrade do sonnet
+24/03/2026 12:24 - Wesley: Lúcido apenas
+24/03/2026 12:28 - Dr. Adailto Richard Mendes: Alguém usa o claude como agent de ia?
+24/03/2026 12:30 - +55 85 9167-0420: Como assim? Como modelo de conversação da automação?
+24/03/2026 12:30 - Dr. Adailto Richard Mendes: Isso, perdão
+24/03/2026 12:31 - Dr. Adailto Richard Mendes: Perdão novamente
+24/03/2026 12:31 - Dr. Adailto Richard Mendes: Como chat modelo pro agent criado no n8n
+24/03/2026 12:33 - +55 31 9654-1234: O problema de usar os modelos da Anthropic é que eles são caros.
+24/03/2026 12:34 - +55 31 9654-1234: https://platform.claude.com/docs/en/about-claude/pricing
+24/03/2026 12:34 - Wesley: Falam que é muito bom para seguir regras, tava vendo um modelo aqui que está se mostrando supeior é um "Grok 4.1 fast"
+24/03/2026 12:34 - Wesley: Dizem que é melhor que o 4.1 Mini
+24/03/2026 12:35 - Dr. Adailto Richard Mendes: Eu tenho um prompt relativamente grande que vem dando um erro no cálculo de prescrição (prazo pra poder ajuizar um processo), o limite é 2 anos, ai as vezes passa uns casos que a ia devia brecar e não brecou
+24/03/2026 12:38 - +55 31 9654-1234: https://www.perplexity.ai/search/compare-os-valores-dos-modelos-GEfJccXATPuLWNwWqvJyww
+24/03/2026 12:39 - +55 98 8170-6504: <Mídia oculta>
+24/03/2026 12:39 - +55 98 8170-6504: alguem sabe resolver isso?
+24/03/2026 12:41 - +55 31 9654-1234: <Mídia oculta>
+24/03/2026 12:41 - +55 31 9654-1234: <Mídia oculta>
+24/03/2026 12:44 - +55 98 8170-6504: fiz isso e estava conectado, acaberi que apaguei essa credencial e criei outra
+24/03/2026 12:44 - +55 98 8170-6504: fiquei dando um f5 por uns 2 min e apos isso carregou as tabelas
+24/03/2026 12:45 - +55 98 8170-6504: acho q pode ter sido lentidao no meu servidor, ou a propria internet oscilando sei la kkk
+24/03/2026 13:21 - +55 85 9167-0420: <Mídia oculta>
+24/03/2026 13:21 - +55 85 9167-0420: O massa que a conversa é pedindo pra fazer uma logo com efeito de vidro .
+24/03/2026 13:21 - +55 85 9167-0420: Ou seja, ele pegou contexto de outra conversa e usou
+24/03/2026 13:24 - +55 21 98973-2007: Vale a pena.   Pro que uso aqui vale muito a pena.  Mas faço aquilo que falei.  Uso o copilot mas barato ali.  E depois pra algumas coisas aí coloco claude. O que ele faz no código nem uma outra faz e soureal
+24/03/2026 13:25 - +55 21 98973-2007: Fiz deploy ontem da aplicação na vps.  Tá soureal o que o claude fez com a automação do n8n.
+24/03/2026 13:25 - +55 88 8103-6101: Ele faz isso, eu fico com raiva…kkkk
+24/03/2026 13:26 - +55 31 9654-1234: Sim sim, pra código funciona que é uma beleza, mas eu tava respondendo a outra pergunta, o rapaz queria saber da performance desses modelos como agente de ia.
+24/03/2026 13:28 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 13:30 - +55 21 98973-2007: Obsidian para segundo cérebro do claude
+24/03/2026 13:31 - +55 21 98973-2007: É tipo skills que você faz dentro do Obsidian pra ele sempre consultar quando precisa
+24/03/2026 13:32 - +55 21 98973-2007: E tudo muito novo ainda.  Vai sai muita coisa ainda.
+24/03/2026 13:33 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 13:33 - +55 21 98973-2007: Quanto vale isso se loco
+24/03/2026 13:34 - +55 51 9635-8369: Mensagem apagada
+24/03/2026 13:35 - +55 21 98973-2007: Aqui
+24/03/2026 13:35 - +55 21 98973-2007: Tá lá em cima esse notion
+24/03/2026 13:36 - +55 21 98973-2007: https://proud-actress-809.notion.site/Claude-Code-agora-pode-controlar-seu-navegador-32bb865752fd8086a574dcec45273eec?source=copy_link
+24/03/2026 13:38 - +55 31 9654-1234: Qualquer agente de ia pode controlar seu navegador, pesquisa aí MCP Playwright
+24/03/2026 13:39 - +55 21 98973-2007: Sim mam.   Não é esse o caso.   Mas o que ele faz ainda não fiz nem uma outra fazer com tanta perfeição esse e o caso
+24/03/2026 13:43 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 13:44 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 13:45 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 13:50 - Douglas Rosato: Qual valor do claude ?
+24/03/2026 13:50 - Douglas Rosato: Tem gratuito pra teste ? Kkk
+24/03/2026 13:51 - +55 21 98973-2007: Esse é o problema mam.  Não e barata
+24/03/2026 13:51 - +55 21 98973-2007: Mas pro meu caso de uso vale a pena
+24/03/2026 13:52 - +55 21 98973-2007: Acho que pra qualquer um vale a pena
+24/03/2026 13:52 - Wesley: Tem free, porém vc tem os modelos base, para modelos complexos tem que tirar uns 17+ dólares https://claude.com/pricing
+24/03/2026 13:52 - +55 34 9721-0874: Eu tô querendo pegar ele, junto com antigravity, qnt tá o modelo bom deles?
+24/03/2026 13:53 - +55 43 9107-3357: <Mídia oculta>
+24/03/2026 13:54 - +55 21 98973-2007: usa os dois mam,  vscode , antigravity  -  vscode com a  gitcopilot pra coisas bobas, e so usa  o claude code quando realmente achar necessario
+24/03/2026 13:55 - +55 21 98973-2007: vou abrir uma parada aqui pera ai
+24/03/2026 13:57 - +55 34 9721-0874: Graças ao antigravity tô conseguindo criar um sistema topzim, mas o claud creio q vai me ajudar, só q o modelo de 100 Reais n sei se dura bastante
+24/03/2026 13:58 - +55 21 98973-2007: Mam com antigravity se faz muita coisa tbem
+24/03/2026 13:59 - +55 34 9721-0874: Sim, já consegui colocar um projeto rodar nele, mas tô testando ainda pq n entendo muito de engenharia de software
+24/03/2026 14:01 - Douglas Rosato: Aqui tá rodando tudo no cursor + gpt codex
+24/03/2026 14:36 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 14:52 - +353 83 177 2272: Muito bom
+24/03/2026 14:52 - ‎+55 19 99971-0105 entrou usando o link do grupo
+24/03/2026 14:52 - +353 83 177 2272: criei um software juridico e fazendo a venda casada com o agente de ia para atender os clientes dos escritorios
+24/03/2026 15:00 - +55 11 96694-0515: <Mídia oculta>
+24/03/2026 15:01 - Wesley: Aumenta a caixa de dialogo no postgres
+24/03/2026 15:03 - +55 79 8820-6314: <Mídia oculta>
+24/03/2026 15:04 - +55 11 96694-0515: Eu colquei 40
+24/03/2026 15:05 - +55 11 96694-0515: Eh mto?
+24/03/2026 15:09 - +55 11 98108-2421: é muito, coloca umas 15 que tá bom
+24/03/2026 15:09 - +55 11 96694-0515: <Mídia oculta>
+24/03/2026 15:11 - Wesley: Abre a aba executions das horas 14:58 para vizualizar pq ele respondeu dnv
+24/03/2026 15:11 - Wesley: Oq chegou para o agente responder dnv a mesma coisa" <Mensagem editada>
+24/03/2026 15:17 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 15:17 - +55 21 98973-2007: help
+24/03/2026 15:17 - +55 21 98973-2007: hlep
+24/03/2026 15:17 - +55 21 98973-2007: help
+24/03/2026 15:17 - +55 21 98973-2007: @⁨Guilherme Lazarotto⁩
+24/03/2026 15:18 - +55 43 9107-3357: MDssss
+24/03/2026 15:18 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 15:19 - +55 21 98973-2007: ajuda ai galera
+24/03/2026 15:19 - +55 85 9167-0420: ```MEUVPS```
+24/03/2026 15:19 - +55 31 9654-1234: eu não tenho cupom pra quem já tem conta, meu link é pra novos assinantes
+24/03/2026 15:20 - +55 21 98973-2007: mesmo assim eu te  amo
+24/03/2026 15:20 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 15:20 - +55 21 98973-2007: @⁨Guilherme Lazarotto⁩
+24/03/2026 15:20 - +55 21 98973-2007: ou acorda ,  sei que se tem um ai
+24/03/2026 15:20 - +55 85 9167-0420: BRBRANDEMAIL
+24/03/2026 15:20 - +55 85 9167-0420: N8NBRASIL
+24/03/2026 15:21 - +55 21 98973-2007: nada
+24/03/2026 15:21 - +55 31 9654-1234: Tem sim, veja com o @⁨Wesley⁩
+24/03/2026 15:21 - +55 21 98973-2007: nem um desses funcionou
+24/03/2026 15:21 - +55 85 9167-0420: já era então <Mensagem editada>
+24/03/2026 15:21 - +55 85 9167-0420: tenho não
+24/03/2026 15:21 - +55 21 98973-2007: e foi não
+24/03/2026 15:21 - +55 21 98973-2007: nenhum deles
+24/03/2026 15:22 - +55 21 98973-2007: 😭😭😭
+24/03/2026 15:22 - Wesley: Tenta GUILHERMELAZ
+24/03/2026 15:23 - +55 21 98973-2007: cara minha internet tambem ta uma B....
+24/03/2026 15:23 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 15:24 - +55 21 98973-2007: Se funciona aviso , recarregando aqui,  ja ia pagar mesmo sem
+24/03/2026 15:24 - +55 31 9654-1234: Não foi
+24/03/2026 15:24 - +55 31 9654-1234: <Mídia oculta>
+24/03/2026 15:25 - +55 21 98973-2007: esses cara cancelaram tudo,  olho grande da poha
+24/03/2026 15:25 - +55 21 98973-2007: essa hostinger te conta
+24/03/2026 15:26 - Wesley: Deve ser só para domínios...
+24/03/2026 15:26 - +55 21 98973-2007: valeu galera, obrigado  ai,   ses são foda
+24/03/2026 15:27 - +55 31 9654-1234: Também não deu pra domínios kkkk
+24/03/2026 15:28 - +55 21 98973-2007: Hostinger olho grande ,  ia salvar minha nicotina kkkkk
+24/03/2026 15:29 - +55 31 9654-1234: Mas pra novos assinantes, meu link aqui dá 20% de desconto no plano de 12 ou 24 meses. Faz um com um novo email. 
+
+https://www.hostinger.com/br?REFERRALCODE=112549A19760311
+24/03/2026 15:29 - Wesley: Vish será que expirou
+24/03/2026 15:30 - +55 31 9654-1234: <Mídia oculta>
+24/03/2026 15:31 - +55 21 98973-2007: interessante
+24/03/2026 15:31 - +55 21 98973-2007: to vendo se consigo cliar uma nova conta nesse link se a internet ajudar
+24/03/2026 15:41 - +55 17 98111-5225: Pessoal, alguém já conseguiu fazer web scraping para pesquisa de preços no site AliExpress e Mercado Livre?
+24/03/2026 15:45 - +55 65 9619-6940: boa tarde pessoal, alguém sabe de alguma forma de utilizar o claude mesmo com o limite excedido de conversa? Eu paguei o plano pro mas parece que não adiantou nada kkkkkkkkk
+24/03/2026 15:45 - +55 31 9654-1234: Entra em contato com o suporte deles. É impossível usar os modelos com limite excedido.
+24/03/2026 15:46 - Wesley: Só se fazer uma recarga extra, pior que não dura nadakkk nem compensa melhor esperar uma nova sessão
+24/03/2026 15:47 - +55 31 9654-1234: <Mídia oculta>
+24/03/2026 15:47 - +55 65 9619-6940: puts
+24/03/2026 15:47 - +55 65 9619-6940: paia demais
+24/03/2026 15:47 - +55 65 9619-6940: mesmo assim, mt obrigada
+24/03/2026 16:06 - +55 48 9177-6390: pessoal, eu troquei do evoapi para o uazapi. Testei no celular e deu certo. Testei no Wpp Web e deu a mensagem "Você recbeeu uma mensagem de visualização única..."
+
+O Claude me disse que não funciona no desktop, só no celular, procede? <Mensagem editada>
+24/03/2026 16:06 - +55 48 9177-6390: *me refiro aos botões*
+24/03/2026 16:08 - +55 85 9167-0420: Mensagens de visualização únicas são acessíveis apenas no celular
+24/03/2026 16:08 - +55 85 9167-0420: 
+24/03/2026 16:08 - +55 85 9167-0420: Essa foto não é possível de se ver pelo web ou whatsapp de pc, apenas por celular
+24/03/2026 16:10 - +55 31 9654-1234: <Mídia oculta>
+24/03/2026 16:10 - Wesley: o WhatsApp Web é cheio de problemas, e esse é um deles infelizmente. contacta o suporte oficial do Uazapi
+24/03/2026 16:10 - +55 85 9167-0420: Ocorre com botões também
+24/03/2026 16:11 - +55 85 9167-0420: nesses casos
+24/03/2026 16:11 - Wesley: Ae na própria doc eles já esclarecem.
+24/03/2026 16:19 - +55 14 99762-5599: Qual ubuntu tem que ser a VPS?
+24/03/2026 16:20 - +55 31 9654-1234: 24.04
+24/03/2026 16:21 - +55 14 99762-5599: estou pegando uma VPS nova
+24/03/2026 17:09 - +55 21 98973-2007: Po tô com 3 mam.  Cuidado pra num viciar kkkkkk
+24/03/2026 17:30 - +55 31 9654-1234: Vicia mesmo! Eu tenho 6. 5 na hostinger e 1 na contabo que peguei com desconto vitalício na promoção de black fridays ano passado.
+24/03/2026 17:31 - +55 31 9654-1234: Os da hostinger, 2 são de clientes, 1 é da minha empresa, 1 é pra testes e 1 é pra gravar aulas do chatwoot
+24/03/2026 17:32 - +55 35 9878-1412: hostinger tá melhor que contabo?
+24/03/2026 17:33 - +55 31 9654-1234: Em que sentido? Eu sempre achei a Contabo muito lenta, demora pra rodar as paradas, pro bot responder, demora até pra digitar quando estou conectado via ssh
+24/03/2026 17:35 - +55 31 9654-1234: Mas minha op não faz disparos, meus chatbots são puramente de atendimento, portanto eu não tenho os problemas que a galera que faz disparos tem. Nunca tive nenhum numero banido, nem meus clientes.
+24/03/2026 17:38 - Vinão: Latência alta. Não é brasileira
+24/03/2026 17:39 - Vinão: <Mídia oculta>
+24/03/2026 17:41 - Vinão: Qual serviço do Google vc foi banido ? Eu tomei no Admob
+24/03/2026 17:42 - Wesley: Do Google Stitch
+24/03/2026 17:42 - Wesley: Deu nem tempo de testar
+24/03/2026 17:45 - +55 85 9167-0420: Que telas você foi gerar?? 🫣🤭
+24/03/2026 17:46 - Wesley: Fui colocar um design css embutido nas instruções, ae ele deve ter associado com algum comando maliciosokkkk
+24/03/2026 19:07 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 19:08 - +55 21 98973-2007: https://community.n8n.io/t/create-workflows-via-mcp-now-in-beta/280856
+24/03/2026 19:10 - +55 85 9167-0420: Traduz
+24/03/2026 19:10 - +55 85 9167-0420: Da pra criar e atualizar workflows diretamente via Claude??
+24/03/2026 19:11 - +55 21 98973-2007: Esta funcionalidade já está disponível na versão beta 2.14.0 e pode ser acessada por todos — nas versões em nuvem, comunidade auto-hospedada e empresarial.
+
+Este tem sido um dos pedidos mais frequentes, e entendemos o motivo. Muitos de vocês nos disseram que desejam criar e modificar fluxos de trabalho diretamente de suas ferramentas de IA, sem precisar alternar para o editor a cada alteração.
+
+Isso também faz parte de um esforço maior que se tornou um foco central para nós no nível do produto: fazer com que o n8n funcione melhor em conjunto com outras ferramentas. Independentemente da ferramenta que você esteja usando, o n8n pode ser um participante de primeira classe, e não algo isolado em seu próprio editor. Por exemplo, usar o n8n em conjunto com o Claude Code, Cursor ou Codex.
+
+Já vimos isso acontecer em nossa comunidade, alguns dos quais estavam à nossa frente.
+
+A propósito, o repositório czlonkowski/n8n-mcp tem ajudado usuários a criar fluxos de trabalho do n8n com um servidor MCP há algum tempo, com mais de 14 mil estrelas no GitHub. Agradecemos o trabalho investido e encorajamos você a conferir, caso ainda não o tenha feito.
+
+Também queremos garantir que as ferramentas externas usadas para desenvolver com o n8n (os clientes MCP) tenham o máximo de compreensão possível do n8n. Isso significa acesso a funcionalidades internas que não são expostas pela API pública, e é por isso que estamos desenvolvendo isso nativamente.
+
+A versão beta pública já está disponível, e um anúncio completo será feito em breve, mas queríamos compartilhá-la primeiro com os membros da nossa comunidade.
+
+Veja como se conectar ao servidor MCP do n8n — observe que esta página ainda não foi atualizada para refletir os novos recursos do MCP.
+24/03/2026 19:13 - +55 21 98973-2007: claro
+24/03/2026 19:14 - +55 21 98973-2007: se nem imagina o quanto ele pode fazer no n8n
+24/03/2026 19:17 - +55 85 9167-0420: Esse MCP já tá disponível?
+24/03/2026 19:17 - +55 85 9167-0420: vai ser a combinação perfeita
+24/03/2026 19:17 - +55 85 9167-0420: claude e N8N via mcp
+24/03/2026 19:17 - +55 85 9167-0420: o potencial disso é inimaginável
+24/03/2026 19:17 - +55 85 9167-0420: vi aqui, ainda será disponibilizado? ta disponível pra beta?
+24/03/2026 19:18 - +55 21 98973-2007: cara mas voce usa MCP personalizado pra ele fazer tudo no n8n já uso a um tempinho assim
+24/03/2026 19:19 - +55 85 9167-0420: mas até onde sei ele não edita
+24/03/2026 19:19 - +55 85 9167-0420: só vê o seu workflow e sugere um json
+24/03/2026 19:20 - +55 21 98973-2007: kkkk   ele constroi mam,  eu já  fiz fluxo no n8n ate no vscode via mcp mam
+24/03/2026 19:20 - +55 85 9167-0420: passa a sensi
+24/03/2026 19:20 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 19:21 - +55 21 98973-2007: Mensagem apagada
+24/03/2026 19:21 - +55 21 98973-2007: se tem o antigravity ai , e mas fácil so pedir pra ele instalar dois repositorios pra voce vou mandar ai
+24/03/2026 19:22 - +55 21 98973-2007: - Instale este servidor MCP: [https://github.com/czlonkowski/n8n-mcp](https://github.com/czlonkowski/n8n-mcp)
+        
+    - Instale estas skills: [https://github.com/czlonkowski/n8n-skills](https://github.com/czlonkowski/n8n-skills)
+24/03/2026 19:23 - +55 21 98973-2007: manda isso la no antigravity , ele vai fazer tudo instala o mcp e as skills ,  poe sua url e api ,  ele mesmo vai te explicar ,   depois pede pra ele montar um fluxo pra voce e veja a magica acontecer
+24/03/2026 19:24 - +55 21 98973-2007: mas pede para ele usar x skills e  tal   ,  e porque tudo tem um hackzinho,  mas se vai aprender usando
+24/03/2026 19:36 - Vinão: https://github.com/gsd-build/get-shit-done
+
+interessante esse plugin para os vibe coders do grupo
+24/03/2026 19:39 - +55 21 98973-2007: O Gemini disse
+O projeto "Get Shit Done" (GSD), disponível no GitHub sob a organização gsd-build, é um sistema de desenvolvimento focado em engenharia de contexto e meta-prompting. Ele foi desenhado para ser utilizado em conjunto com ferramentas de IA de linha de comando (CLI), como o Claude Code, Gemini CLI, Copilot e Cursor.
+
+Aqui estão os pontos principais sobre o projeto:
+
+1. O que é?
+É uma camada de orquestração que resolve o problema do "context rot" (degradação da qualidade da IA à medida que a janela de contexto fica cheia). O GSD estrutura a interação com a IA através de documentos e planos de ação em XML, garantindo que ela saiba exatamente o que fazer sem se perder em conversas longas.
+
+2. Como Funciona (Fluxo de Trabalho)
+O sistema divide o desenvolvimento em etapas claras:
+
+/gsd:new-project: O sistema faz perguntas até entender completamente a sua ideia, define requisitos e cria um roteiro (roadmap).
+
+/gsd:discuss-phase: Define detalhes específicos de uma fase antes de começar a codificar (layout, comportamento de API, etc.).
+
+/gsd:plan-phase: Cria planos de tarefas atómicos e estruturados.
+
+/gsd:execute-phase: A IA executa as tarefas em "ondas" paralelas, criando commits automáticos para cada tarefa concluída.
+
+/gsd:verify-work: Um processo de verificação para garantir que o que foi construído realmente funciona e atende aos requisitos.
+
+3. Diferenciais
+Gestão de Contexto: Em vez de manter tudo numa única conversa, o GSD usa agentes paralelos e contextos "frescos" para cada sub-tarefa, mantendo a performance da IA alta.
+
+Foco em Resultados: Criado para programadores a solo ou pequenas equipas que querem construir produtos reais rapidamente, sem a burocracia de ferramentas empresariais pesadas (como Jira ou processos ágeis complexos).
+
+Suporte Multi-Runtime: Funciona com Claude Code, OpenCode, Gemini, Codex, Copilot, Cursor e Antigravity.
+
+Commits Atómicos: Cada pequena tarefa gera um commit próprio no Git, resultando num histórico de código muito limpo e organizado.
+24/03/2026 19:39 - +55 21 98973-2007: parece ser top ela
+24/03/2026 19:40 - +55 53 9142-1888: Usa mais de uma VPS por cliente?
+24/03/2026 19:40 - +55 53 9142-1888: Se sim, qual a melhor maneira de separar os projetos? <Mensagem editada>
+24/03/2026 19:40 - +55 53 9142-1888: um n8n p cada cliente? ou separado
+24/03/2026 19:41 - Douglas Rosato: uma duvida da pra saber quais sites tem api liberada pra incluir no projeto?
+24/03/2026 19:47 - +55 89 8129-0894: Pessoal, dá para usar o claude cowork para responder o WhatsApp?
+24/03/2026 19:50 - Vinão: https://github.com/mksglu/context-mode
+outro mcp que é mais recomendado para claude code
+24/03/2026 19:51 - +55 21 98973-2007: Já guardei
+24/03/2026 19:51 - +55 21 98973-2007: Vou ver depois.   Obrigado vināo
+24/03/2026 19:52 - +55 21 98973-2007: Já viu toy store.   Ao infinito e além
+24/03/2026 19:53 - +55 89 8129-0894: Kkkkkkkkkk
+24/03/2026 19:56 - +55 21 98973-2007: Cara saiu uma atualização da memoria do claude code ,  memory 2.0 com uma função la que vi,  que Auto Dream   o cara ta explicando aqui que ele sonha agora com suas skills e seus projetos,  as batalhas das ias tão foda, isso beneficia a gente as concorrentes vão ter que mostrar serviço agora
+24/03/2026 19:56 - +55 21 98973-2007: <Mídia oculta>
+24/03/2026 19:57 - +55 31 9654-1234: 1 VPS por cliente. Eu tenho uns clientes que preferiram gerenciar seus próprios VPS, pra diminuir custos. Estes eu só dou manutenção em sistema.. 
+Eu mesmo gerencio o de 2 clientes (e cobro manutenção por isso)
+24/03/2026 19:57 - +55 21 99542-1243: Não sei vcs, mas eu já não tô conseguindo acompanhar a evolução das IAs... Terceira idade é Phogo... 🤦‍♂️🤦‍♂️🤦‍♂️🤦‍♂️
+24/03/2026 19:59 - +55 21 98973-2007: Cara mas os cara das ia numa grande parte já tem idade .  Tem uns cara bem coroa .  Eu tenho mas 50 po.   Idade tá na cabeça.  Eu pareço novo mas sou bem veinho
+24/03/2026 19:59 - +55 31 9654-1234: Não tem jeito. Em tecnologia, vc precisa escolher uma área e virar especialista nela, não tenta acompanhar tudo pq não dá, no final das contas a gente fica frustrado pq perdeu tempo e aprendeu pouco.
+24/03/2026 20:00 - +55 31 9654-1234: 49 aqui, faço 50 em novembro
+24/03/2026 20:00 - +55 21 99542-1243: 🤣🤣🤣🤣
+24/03/2026 20:01 - +55 85 9167-0420: queria uma ia pra ouvir as atualizações mais recentes sobre ia enquanto faço os trabalhos...
+24/03/2026 20:01 - +55 31 9654-1234: Perplexity. Assina o Pro. Tem como criar tarefas de pesquisa automática que chega no seu e-mail.

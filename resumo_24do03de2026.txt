@@ -1,0 +1,96 @@
+*Resumo do Grupo - Curso N8N Fácil - Guilherme Lazarotto* 📆 24/03/2026
+
+📌 *Assunto Principal:*
+Discussões intensas sobre modelos de IA (Claude vs ChatGPT), lançamento do N8N MCP em beta para criação de workflows via IA, novas ferramentas de design e desenvolvimento, e trocas técnicas sobre infraestrutura, automações e soluções práticas com n8n.
+
+💡 *Assuntos Relevantes:*
+
+🔧 _Dicas Técnicas e Solução de Problemas:_
+Debateram como reagendar fluxos n8n dinamicamente usando banco de dados e Schedule auxiliar, soluções para cache e falhas momentâneas no n8n, e limitações de botões interativos no WhatsApp Web.
+
+🚀 _Ferramentas e Inovação:_
+Google Stitch apresentado como potencial concorrente do Figma, N8N MCP em beta para construção de workflows via Claude Code/Cursor, plugin GSD para engenharia de contexto, e Memória 2.0 do Claude Code com função Auto Dream.
+
+🖥️ _Infraestrutura:_
+Comparativos entre Hostinger e Contabo, recomendação de Ubuntu 24.04 para VPS, e estratégias de gerenciamento de VPS por cliente.
+
+🔗 *Links Compartilhados:*
+• Google Stitch (design pelo Google): stitch.withgoogle.com
+• Preços do Claude: platform.claude.com/docs/en/about-claude/pricing
+• Planos do Claude: claude.com/pricing
+• Comparativo de preços de IAs (Perplexity): perplexity.ai/search/compare-os-valores-dos-modelos-GEfJccXATPuLWNwWqvJyww
+• N8N MCP Beta (criar workflows via IA): community.n8n.io/t/create-workflows-via-mcp-now-in-beta/280856
+• N8N MCP servidor: github.com/czlonkowski/n8n-mcp
+• N8N Skills: github.com/czlonkowski/n8n-skills
+• Claude controlando navegador (Notion): proud-actress-809.notion.site/Claude-Code-agora-pode-controlar-seu-navegador-32bb865752fd8086a574dcec45273eec
+• GSD (Get Shit Done): github.com/gsd-build/get-shit-done
+• Context Mode MCP: github.com/mksglu/context-mode
+• Hostinger com 20% de desconto (novos): hostinger.com/br?REFERRALCODE=112549A19760311
+
+━━━━━━━━━━━━━━━━━━━━
+
+*Tema: Integração GLPI com N8N* ⏰ 08:08 – 08:42
+Pergunta sobre integração do GLPI com o N8N para abertura de chamados. Um membro confirmou que já realizou a integração e compartilhou exemplo em mídia.
+
+*Tema: Agendamento Dinâmico de Fluxos N8N* ⏰ 08:46 – 10:45
+Discussão técnica sobre como reagendar automaticamente o mesmo fluxo para o dia seguinte em horário dinâmico quando o processamento não finaliza. Wesley esclareceu que o Schedule Trigger não atende esse cenário por ser um gatilho inicial. A solução proposta foi gravar no banco de dados que o fluxo não finalizou e criar um segundo workflow com Schedule rodando de 5 em 5 minutos, usando um node IF com duas condições: fluxo principal não finalizado e horário correto de disparo.
+
+*Tema: Google Stitch – Nova Ferramenta de Design do Google* ⏰ 11:19 – 11:48
+Guilherme Lazarotto compartilhou o Google Stitch (stitch.withgoogle.com), nova ferramenta do Google para geração de designs. Membros comentaram que pode quebrar o Figma. Wesley tentou testar, mas teve a conta banida por inserir CSS embutido nas instruções, que foi associado a comandos maliciosos.
+
+*Tema: Claude vs ChatGPT – Debate sobre Modelos de IA* ⏰ 12:16 – 13:58
+Debate extenso comparando modelos de IA. Godoy confirmou por testes que o Claude está superior. Membros destacaram que o Claude Opus não é um upgrade do Sonnet, mas um modelo totalmente diferente com capacidades próprias. Um membro relatou que o Pentágono testou diversas IAs e o Claude foi a melhor. Testes em empresa mostraram que o Claude via terminal/extensão gera resultados superiores ao uso acoplado em IDEs. A estratégia recomendada foi usar o VS Code com Git Copilot para tarefas simples e reservar o Claude Code para tarefas complexas. Alguns membros utilizam Cursor + GPT Codex. O Antigravity também foi destacado como ferramenta poderosa para quem não tem conhecimento profundo de engenharia de software.
+
+*Tema: Claude como Agente de IA no N8N e Custos* ⏰ 12:28 – 12:44
+Dr. Adailto perguntou sobre usar o Claude como modelo de conversação para agents no N8N. Os modelos da Anthropic foram apontados como mais caros. Wesley mencionou o Grok 4.1 fast como alternativa. Dr. Adailto relatou problemas com cálculo de prescrição jurídica onde a IA deixava passar casos além do limite de 2 anos.
+
+*Tema: Obsidian como Segundo Cérebro do Claude* ⏰ 13:30 – 13:33
+Compartilhamento do uso do Obsidian para criar skills que o Claude consulta automaticamente, funcionando como um segundo cérebro permanente da IA.
+
+*Tema: Problemas com N8N e Soluções Rápidas* ⏰ 12:02 – 12:09
+Membro relatou problemas com o agente e domínio customizável. Soluções sugeridas: limpar cache com Ctrl+F5, abrir em guia anônima, reiniciar o PC. Wesley explicou que essas falhas são momentâneas e o sistema se recupera rapidamente.
+
+*Tema: Software Jurídico com IA* ⏰ 14:52 – 14:52
+Membro compartilhou que criou um software jurídico e está fazendo venda casada com agente de IA para atender clientes de escritórios de advocacia.
+
+*Tema: Configuração de Postgres e Execuções no N8N* ⏰ 15:00 – 15:11
+Membro relatou problemas com resposta duplicada do agente. Wesley orientou aumentar a caixa de diálogo no Postgres e verificar a aba Executions para identificar por que o agente respondeu novamente. Outro membro teve falha ao carregar tabelas, resolvida ao recriar a credencial e aguardar o carregamento.
+
+*Tema: Cupons Hostinger e Desconto* ⏰ 15:17 – 15:31
+Busca coletiva por cupons de desconto da Hostinger. Vários códigos foram testados (MEUVPS, BRBRANDEMAIL, N8NBRASIL, GUILHERMELAZ) sem sucesso, todos expirados. Foi compartilhado link de referência com 20% de desconto para novos assinantes em planos de 12 ou 24 meses.
+
+*Tema: Web Scraping para Pesquisa de Preços* ⏰ 15:41 – 15:41
+Pergunta sobre web scraping para pesquisa de preços no AliExpress e Mercado Livre. Sem resposta conclusiva no grupo.
+
+*Tema: Limite do Claude Pro* ⏰ 15:45 – 15:47
+Membro relatou que pagou o plano Pro do Claude, mas o limite excedeu rapidamente. Wesley comentou que a recarga extra não compensa e o melhor é aguardar uma nova sessão. Recomendação de contatar o suporte se houver problemas.
+
+*Tema: Botões WhatsApp Web vs Celular (EvoAPI/Uazapi)* ⏰ 16:06 – 16:14
+Membro migrou do EvoAPI para o Uazapi e descobriu que botões interativos e mensagens de visualização única só funcionam no celular, não no WhatsApp Web/Desktop. Wesley confirmou os problemas conhecidos do WhatsApp Web e recomendou contatar o suporte oficial do Uazapi, que já esclarece essas limitações em sua documentação.
+
+*Tema: Infraestrutura e VPS* ⏰ 16:19 – 17:45
+Discussão sobre qual versão de Ubuntu usar para VPS (recomendado 24.04). Membros compartilharam experiências com múltiplas VPS. Comparação entre Hostinger e Contabo: Contabo apresenta latência alta por não ser brasileira, lentidão na resposta dos bots e na conexão SSH. Viñao confirmou o problema de latência. Recomendação de 1 VPS por cliente, com opção de o próprio cliente gerenciar sua VPS para reduzir custos. Chatbots de atendimento puro (sem disparos) não geram banimentos de número.
+
+*Tema: N8N MCP – Criar Workflows via IA (Beta)* ⏰ 19:07 – 19:24
+Grande novidade: o N8N lançou em beta pública (versão 2.14.0) a possibilidade de criar e atualizar workflows diretamente via MCP, dispensando a necessidade de alternar para o editor a cada alteração. Integração com Claude Code, Cursor e Codex. Foram compartilhados os repositórios n8n-mcp e n8n-skills para quem usa Antigravity. A orientação foi pedir ao Antigravity para instalar os repositórios, configurar URL e API, e construir fluxos direto pelo VS Code. Membros já utilizavam MCP customizado para construir fluxos completos no N8N, inclusive via VS Code.
+
+*Tema: GSD e Ferramentas para Desenvolvedores* ⏰ 19:36 – 19:56
+Vinão compartilhou o GSD (Get Shit Done), sistema de desenvolvimento focado em engenharia de contexto e meta-prompting que resolve o problema de degradação de qualidade da IA em conversas longas. Funciona com Claude Code, Gemini, Codex, Copilot, Cursor e Antigravity. Divide o desenvolvimento em etapas claras com commits atômicos. Também compartilhou o Context Mode MCP, recomendado para Claude Code. A atualização da Memória 2.0 do Claude Code com função Auto Dream também foi destaque, onde o modelo passa a "sonhar" com skills e projetos do usuário.
+
+*Tema: Especialização em Tecnologia e Ferramentas de Pesquisa* ⏰ 19:57 – 20:01
+Reflexão sobre a dificuldade de acompanhar a evolução das IAs. O conselho foi escolher uma área e virar especialista, em vez de tentar acompanhar tudo e acabar frustrado. A ferramenta Perplexity Pro foi recomendada para criar tarefas de pesquisa automática que chegam por e-mail, permitindo acompanhar atualizações sem perder tempo.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🔍 *Destaques do Dia*
+
+🔧 *Técnicos:* Solução para reagendamento dinâmico de fluxos N8N usando banco de dados e Schedule auxiliar com node IF de dupla condição. Configuração de Postgres para agentes. Limitações de botões no WhatsApp Web. Ubuntu 24.04 recomendado para VPS.
+
+🚀 *Inovação:* Google Stitch como potencial substituto do Figma. N8N MCP em beta para criação de workflows via Claude Code/Cursor/Codex. GSD para engenharia de contexto com commits atômicos. Memória 2.0 do Claude Code com Auto Dream. Obsidian como segundo cérebro para IA. Software jurídico com venda casada de agente IA.
+
+🤝 *Colaboração:* Busca coletiva por cupons de desconto. Troca aberta de experiências sobre custos e limites de ferramentas de IA. Compartilhamento generoso de repositórios, links e dicas práticas. Debate saudável sobre modelos de IA com testes reais.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🌟 *Encerramento*
+Dia extremamente produtivo marcado por muita colaboração técnica e inovação. O destaque vai para o lançamento do N8N MCP em beta, permitindo criar workflows diretamente via IA, e o debate rico sobre modelos de IA que ajudou membros a escolherem as melhores ferramentas para cada cenário. A comunidade segue se fortalecendo pela troca constante de conhecimento, soluções práticas e o espírito colaborativo que define o grupo.
