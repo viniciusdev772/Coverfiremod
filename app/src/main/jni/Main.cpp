@@ -203,6 +203,7 @@ bool gSetMoneyRequested = false;
 bool gDisableAdsRequested = false;
 bool gDisableVideosRequested = false;
 bool gAimBot = false;
+int gAimBotTarget = 0;
 bool gInfiniteAmmo = false;
 bool gNoRecoil = false;
 bool gFireRateBoost = false;
@@ -960,7 +961,7 @@ bool TryGetEnemyBonePosition(void* enemy, uintptr_t boneOffset, Vec3* outPositio
 
 bool TryGetScreenSize(int* outWidth, int* outHeight);
 
-bool TryGetEnemyHeadPosition(void* enemy, Vec3* outPosition) {
+bool TryGetEnemyAimPosition(void* enemy, Vec3* outPosition) {
     if (!enemy || !outPosition || !gTransformGetPosition_Injected) {
         return false;
     }
@@ -968,29 +969,39 @@ bool TryGetEnemyHeadPosition(void* enemy, Vec3* outPosition) {
     const auto addr = reinterpret_cast<uintptr_t>(enemy);
 
     auto* head = *reinterpret_cast<void**>(addr + kEnemyHeadTransformOffset);
+    auto* spine = *reinterpret_cast<void**>(addr + kEnemySpine2TransformOffset);
+    auto* hips = *reinterpret_cast<void**>(addr + kEnemyHipsTransformOffset);
+
+    if (gAimBotTarget == 0 && head) {
+        gTransformGetPosition_Injected(head, outPosition);
+        return true;
+    } else if (gAimBotTarget == 1 && spine) {
+        gTransformGetPosition_Injected(spine, outPosition);
+        return true;
+    } else if (gAimBotTarget == 2 && hips) {
+        gTransformGetPosition_Injected(hips, outPosition);
+        return true;
+    }
+
+    // Fallbacks
     if (head) {
         gTransformGetPosition_Injected(head, outPosition);
         return true;
     }
-
-    auto* spine = *reinterpret_cast<void**>(addr + kEnemySpine2TransformOffset);
     if (spine) {
         gTransformGetPosition_Injected(spine, outPosition);
-        outPosition->y += 0.25f;
         return true;
     }
-
-    auto* hips = *reinterpret_cast<void**>(addr + kEnemyHipsTransformOffset);
     if (hips) {
         gTransformGetPosition_Injected(hips, outPosition);
-        outPosition->y += 0.5f;
         return true;
     }
 
     if (!TryGetEnemyWorldPosition(enemy, outPosition)) {
         return false;
     }
-    outPosition->y += 1.6f;
+
+    outPosition->y += 1.0f; // Default body center
     return true;
 }
 
@@ -1025,7 +1036,7 @@ bool IsEnemyVisibleFromCamera(const Vec3& camPos, void* enemy) {
     }
 
     Vec3 headPos{};
-    if (!TryGetEnemyHeadPosition(enemy, &headPos)) {
+    if (!TryGetEnemyAimPosition(enemy, &headPos)) {
         return false;
     }
 
@@ -1132,7 +1143,7 @@ void AimCameraAtEnemy(void* playerInstance) {
     }
 
     Vec3 headPos{};
-    if (!TryGetEnemyHeadPosition(enemy, &headPos)) {
+    if (!TryGetEnemyAimPosition(enemy, &headPos)) {
         return;
     }
 
@@ -1285,7 +1296,7 @@ bool FireDirectAutoKillDamage(void* enemy) {
 
     Vec3 force{};
     Vec3 hitPoint{};
-    if (!TryGetEnemyHeadPosition(enemy, &hitPoint) && !TryGetEnemyWorldPosition(enemy, &hitPoint)) {
+    if (!TryGetEnemyAimPosition(enemy, &hitPoint) && !TryGetEnemyWorldPosition(enemy, &hitPoint)) {
         return false;
     }
 
@@ -2035,40 +2046,41 @@ jobjectArray GetFeatureList(JNIEnv* env, jobject) {
     static const char* const kFeatures[] = {
             OBFUSCATE("Category_Apelonas"),
             OBFUSCATE("1_Toggle_God mode (imortal)"),
-            OBFUSCATE("2_Toggle_Aimbot (mira na cabeca)"),
-            OBFUSCATE("3_Toggle_One shot kill"),
-            OBFUSCATE("4_Toggle_Municao infinita"),
-            OBFUSCATE("5_Toggle_Sem recuo (no recoil)"),
-            OBFUSCATE("6_SeekBar_Speed hack_1_5"),
-            OBFUSCATE("7_SeekBar_Multiplicador de dano_1_20"),
+            OBFUSCATE("2_Toggle_Aimbot"),
+            OBFUSCATE("3_Spinner_Alvo do Aimbot_Cabeca,Peito,Quadril"),
+            OBFUSCATE("4_Toggle_One shot kill"),
+            OBFUSCATE("5_Toggle_Municao infinita"),
+            OBFUSCATE("6_Toggle_Sem recuo (no recoil)"),
+            OBFUSCATE("7_SeekBar_Speed hack_1_5"),
+            OBFUSCATE("8_SeekBar_Multiplicador de dano_1_20"),
             OBFUSCATE("Category_AutoKill & Trigger"),
-            OBFUSCATE("8_Toggle_Trigger bot (1 tiro por disparo)"),
-            OBFUSCATE("9_SeekBar_Raio do trigger_30_400"),
-            OBFUSCATE("10_SeekBar_Dano por tiro_50_5000"),
-            OBFUSCATE("11_Toggle_Auto kill continuo"),
-            OBFUSCATE("12_Button_Matar todos agora"),
+            OBFUSCATE("9_Toggle_Trigger bot (1 tiro por disparo)"),
+            OBFUSCATE("10_SeekBar_Raio do trigger_30_400"),
+            OBFUSCATE("11_SeekBar_Dano por tiro_50_5000"),
+            OBFUSCATE("12_Toggle_Auto kill continuo"),
+            OBFUSCATE("13_Button_Matar todos agora"),
             OBFUSCATE("Category_Inimigos"),
-            OBFUSCATE("13_Toggle_Congelar inimigos"),
-            OBFUSCATE("14_Toggle_Inimigos nao atacam"),
-            OBFUSCATE("15_Toggle_Remover escudo inimigos"),
-            OBFUSCATE("16_Toggle_Desativar granadas inimigas"),
+            OBFUSCATE("14_Toggle_Congelar inimigos"),
+            OBFUSCATE("15_Toggle_Inimigos nao atacam"),
+            OBFUSCATE("16_Toggle_Remover escudo inimigos"),
+            OBFUSCATE("17_Toggle_Desativar granadas inimigas"),
             OBFUSCATE("Category_Visual & ESP"),
-            OBFUSCATE("17_Toggle_Draw line inimigos locais"),
-            OBFUSCATE("18_Toggle_Draw esqueleto inimigos"),
-            OBFUSCATE("19_Toggle_Mostrar info no ESP"),
-            OBFUSCATE("20_Spinner_Cor do ESP_Verde,Vermelho,Azul,Ciano,Amarelo,Branco,Rosa,Laranja"),
-            OBFUSCATE("21_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
-            OBFUSCATE("22_Toggle_ESP apenas alertas"),
-            OBFUSCATE("23_Toggle_ESP apenas inimigos atirando"),
+            OBFUSCATE("18_Toggle_Draw line inimigos locais"),
+            OBFUSCATE("19_Toggle_Draw esqueleto inimigos"),
+            OBFUSCATE("20_Toggle_Mostrar info no ESP"),
+            OBFUSCATE("21_Spinner_Cor do ESP_Verde,Vermelho,Azul,Ciano,Amarelo,Branco,Rosa,Laranja"),
+            OBFUSCATE("22_Spinner_Origem da linha_Topo,Centro,Base,Topo esquerda,Topo direita,Base esquerda,Base direita"),
+            OBFUSCATE("23_Toggle_ESP apenas alertas"),
+            OBFUSCATE("24_Toggle_ESP apenas inimigos atirando"),
             OBFUSCATE("Category_Economia"),
-            OBFUSCATE("24_Button_Add Gold infinito"),
-            OBFUSCATE("25_Button_Add Money infinito"),
-            OBFUSCATE("26_Button_Set Gold infinito"),
-            OBFUSCATE("27_Button_Set Money infinito"),
+            OBFUSCATE("25_Button_Add Gold infinito"),
+            OBFUSCATE("26_Button_Add Money infinito"),
+            OBFUSCATE("27_Button_Set Gold infinito"),
+            OBFUSCATE("28_Button_Set Money infinito"),
             OBFUSCATE("Category_Setup & Util"),
-            OBFUSCATE("28_Button_Desativar ads"),
-            OBFUSCATE("29_Button_Desativar videos"),
-            OBFUSCATE("30_Button_Status do hook ARMv7"),
+            OBFUSCATE("29_Button_Desativar ads"),
+            OBFUSCATE("30_Button_Desativar videos"),
+            OBFUSCATE("31_Button_Status do hook ARMv7"),
     };
     return NewStringArray(env, kFeatures, sizeof(kFeatures) / sizeof(kFeatures[0]));
 }
@@ -2091,122 +2103,127 @@ void Changes(JNIEnv* env, jclass, jobject context, jint featNum, jstring, jint v
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Aimbot %s", gAimBot ? "ON" : "OFF");
             break;
         case 3:
+            gAimBotTarget = value;
+            if (gAimBotTarget < 0 || gAimBotTarget > 2) gAimBotTarget = 0;
+            __android_log_print(ANDROID_LOG_INFO, kLogTag, "Alvo Aimbot ajustado para = %d", gAimBotTarget);
+            break;
+        case 4:
             gOneShotKill = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "One shot kill %s", gOneShotKill ? "ON" : "OFF");
             break;
-        case 4:
+        case 5:
             gInfiniteAmmo = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Municao infinita %s", gInfiniteAmmo ? "ON" : "OFF");
             break;
-        case 5:
+        case 6:
             gNoRecoil = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "No recoil %s", gNoRecoil ? "ON" : "OFF");
             break;
-        case 6:
+        case 7:
             gSpeedHack = true;
             gSpeedMultiplier = static_cast<float>(value);
             if (gSpeedMultiplier < 1.0f) { gSpeedMultiplier = 1.0f; gSpeedHack = false; }
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Speed hack %.1fx", gSpeedMultiplier);
             break;
-        case 7:
+        case 8:
             gDamageMultiplier = static_cast<float>(value);
             if (gDamageMultiplier < 1.0f) { gDamageMultiplier = 1.0f; }
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Multiplicador de dano ajustado para %.1fx", gDamageMultiplier);
             break;
-        case 8:
+        case 9:
             gTriggerBot = boolean;
             if (!gTriggerBot) { gLastTriggerTarget = nullptr; }
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Trigger bot %s", gTriggerBot ? "ON" : "OFF");
             break;
-        case 9:
+        case 10:
             gTriggerRadiusPixels = static_cast<float>(value);
             if (gTriggerRadiusPixels < 30.0f) { gTriggerRadiusPixels = 30.0f; }
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Raio trigger %.1f px", gTriggerRadiusPixels);
             break;
-        case 10:
+        case 11:
             gTriggerDamage = static_cast<float>(value);
             if (gTriggerDamage < 50.0f) { gTriggerDamage = 50.0f; }
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Dano trigger %.1f", gTriggerDamage);
             break;
-        case 11:
+        case 12:
             gAutoKillAll = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Auto kill continuo %s", gAutoKillAll ? "ON" : "OFF");
             break;
-        case 12:
+        case 13:
             gKillAllNowRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Kill-all solicitado");
             break;
-        case 13:
+        case 14:
             gFreezeEnemies = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Freeze enemies %s", gFreezeEnemies ? "ON" : "OFF");
             break;
-        case 14:
+        case 15:
             gDisableEnemyDamage = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Disable enemy damage %s", gDisableEnemyDamage ? "ON" : "OFF");
             break;
-        case 15:
+        case 16:
             gRemoveEnemyShield = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Remove shield %s", gRemoveEnemyShield ? "ON" : "OFF");
             break;
-        case 16:
+        case 17:
             gDisableEnemyGrenades = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Disable grenades %s", gDisableEnemyGrenades ? "ON" : "OFF");
             break;
-        case 17:
+        case 18:
             gEnemyLines = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Draw line inimigos %s", gEnemyLines ? "ON" : "OFF");
             break;
-        case 18:
+        case 19:
             gEnemySkeleton = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Draw esqueleto %s", gEnemySkeleton ? "ON" : "OFF");
             break;
-        case 19:
+        case 20:
             gEnemyInfoEsp = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Info ESP %s", gEnemyInfoEsp ? "ON" : "OFF");
             break;
-        case 20:
+        case 21:
             gEspColorPreset = value;
             if (gEspColorPreset < 0 || gEspColorPreset > 7) gEspColorPreset = 3;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Cor ESP %d", gEspColorPreset);
             break;
-        case 21:
+        case 22:
             gLineOriginMode = value;
             if (gLineOriginMode < 0 || gLineOriginMode > 6) gLineOriginMode = 2;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Origem linha %d", gLineOriginMode);
             break;
-        case 22:
+        case 23:
             gEspOnlyAware = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "ESP apenas alertas %s", gEspOnlyAware ? "ON" : "OFF");
             break;
-        case 23:
+        case 24:
             gEspOnlyShooting = boolean;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "ESP apenas atirando %s", gEspOnlyShooting ? "ON" : "OFF");
             break;
-        case 24:
+        case 25:
             gAddGoldRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddGold enfileirado");
             break;
-        case 25:
+        case 26:
             gAddMoneyRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "AddMoney enfileirado");
             break;
-        case 26:
+        case 27:
             gSetGoldRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetGold enfileirado");
             break;
-        case 27:
+        case 28:
             gSetMoneyRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "SetMoney enfileirado");
             break;
-        case 28:
+        case 29:
             gDisableAdsRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Ads enfileirado");
             break;
-        case 29:
+        case 30:
             gDisableVideosRequested = true;
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Videos enfileirado");
             break;
-        case 30:
+        case 31:
             __android_log_print(ANDROID_LOG_INFO, kLogTag, "Status hook=%s player=%p", gHookInstalled ? "instalado" : "pendente", gLocalPlayerControl);
             break;
         default:
