@@ -1,0 +1,88 @@
+*Resumo do Grupo - Curso N8N Fácil - Guilherme Lazarotto* 📆 25/03/2026
+
+📌 *Assunto Principal:*
+Dia marcado por discussões estratégicas sobre modelo de negócio e precificação de chatbots, soluções técnicas para controle de fluxo de agentes no N8N, assinaturas digitais com validade jurídica no Brasil, e uma reflexão coletiva sobre a importância de execução vs estudo na área de automações.
+
+💡 *Assuntos Relevantes:*
+
+🔧 _Dicas Técnicas e Solução de Problemas:_
+Solução para bloquear agente após finalizar atendimento usando banco de dados e IF no início do fluxo. Filtro de número pessoal com fromMe no webhook da Evolution. Instabilidades no Claude reportadas por diversos membros. Continuação do tema do dia 24 sobre problemas com a Evolution API.
+
+💼 _Negócios e Estratégia:_
+Discussão rica sobre precificação de chatbots, mensalidades vs venda única, e o conselho de que o mais importante não é quanto cobrar, mas sim quanto o cliente pode pagar. Assinaturas digitais com validade jurídica usando Zapsign, Clicksign e a recente decisão do STJ sobre ICP-Brasil.
+
+🧠 _Mentalidade e Produtividade:_
+Reflexão coletiva sobre a regra 80% execução e 20% estudo. Ser autodidata é fundamental no ramo de automações. Ferramentas de organização como ClickUp e Obsidian foram recomendadas para gestão de demandas.
+
+🔗 *Links Compartilhados:*
+• N8N MCP Beta (reforço do dia 24): community.n8n.io/t/create-workflows-via-mcp-now-in-beta/280856
+• STJ admite assinaturas fora da ICP-Brasil: migalhas.com.br/quentes/451284/stj-admite-assinaturas-digitais-fora-da-icp-brasil-entenda-o-tema
+
+━━━━━━━━━━━━━━━━━━━━
+
+*Tema: Evolution API com Falhas – Migração para Uazapi* ⏰ 00:04 – 00:09
+Membro relatou que várias mensagens de clientes não estavam sendo respondidas pela Evolution API, tanto no meio de conversa quanto para clientes novos, sem nenhum erro de execução no N8N. A recomendação foi migrar para a Uazapi (paga, mas funcional) e verificar os logs pelo console da Evolution via Easypanel. _Continuação do tema do dia 24, onde já foi discutida a migração de EvoAPI para Uazapi e as limitações de botões no WhatsApp Web._
+
+*Tema: Precificação e Modelo de Negócio para Chatbots* ⏰ 00:30 – 01:44
+Discussão estratégica sobre como vender agentes de IA. Foram abordados dois modelos: venda única da implantação (sem recorrência, instável financeiramente) ou mensalidade com gerenciamento de servidor (mais responsabilidade, mas renda recorrente). Três formas de precificar foram citadas: pelo quanto o chatbot economiza de tempo do cliente, pelos custos com margem de lucro, ou por pesquisa de mercado regional. O conselho principal foi: o mais importante não é quanto você vai cobrar, mas sim quanto o cliente pode pagar, a curto e longo prazo. Um membro reforçou que muitos profissionais perdem oportunidades por quererem ganhar muito de poucos, quando o ideal é pensar no longo prazo.
+
+*Tema: Automação de Redes Sociais com IA* ⏰ 03:08 – 03:15
+Membro compartilhou uma solução de IA que analisa engajamento, gera relatórios detalhados, prepara conteúdo e publica automaticamente, tudo dentro das regras da Meta, sem risco de bloqueio.
+
+*Tema: IA para Criação de Vídeos Curtos Legendados* ⏰ 08:21 – 08:21
+Douglas Rosato perguntou sobre IAs para criar vídeos curtos legendados automaticamente para uma agência de turismo. Sem resposta conclusiva no momento.
+
+*Tema: Manus sem Plano Gratuito* ⏰ 08:22 – 08:22
+Membro observou que o Manus removeu a opção gratuita de 300 créditos diários e agora só oferece plano pago a partir de 20 dólares.
+
+*Tema: Instabilidade no Claude* ⏰ 10:48 – 11:18
+Diversos membros reportaram problemas com o Claude: respostas que não carregavam, tokens expirados e falhas na geração de novos tokens. Wesley comentou que essas falhas acontecem esporadicamente. _Relacionado ao tema do dia 24 sobre limite do Claude Pro e custos dos modelos da Anthropic._
+
+*Tema: Execução vs Estudo – Mentalidade do Desenvolvedor* ⏰ 12:14 – 12:52
+Reflexão coletiva profunda sobre aprendizado na área de automações. A regra compartilhada foi 80% execução e 20% estudo: não adianta só estudar sem aplicar. Wesley reforçou que ser autodidata é fundamental e quem se acomoda não avança. Um membro destacou que estudar demais atrapalha perfeccionistas, e outro alertou que ferramentas podem ficar ultrapassadas em 20 dias. Um relato marcante: "Estudei 1 curso, 0 prática, pensava que quando fosse precisar eu saberia, hoje não lembro 1 ferramenta citada". _Complementa a reflexão do dia 24 sobre especialização em tecnologia._
+
+*Tema: Wait Time Ideal para Leads no WhatsApp* ⏰ 12:57 – 13:06
+Membro perguntou se 5 minutos de wait seria adequado para alto volume de leads. O consenso foi que 5 minutos é excessivo: o ideal é no máximo 60 segundos.
+
+*Tema: IAs para Criação de Slides e Apresentações* ⏰ 14:17 – 14:33
+Comparativo de ferramentas para criação de slides com IA. Foram recomendadas: Kimi.com (destaque, gerou slides completos com 1 prompt), Gemini, Z-Image (IA chinesa), Gamma.app (layouts genéricos) e Claude (slides personalizáveis). A Kimi.com permite enviar slides de modelo e personalizar o visual conforme padrão institucional.
+
+*Tema: Agente Orquestrador Pessoal – Filtro por Número* ⏰ 15:20 – 15:43
+Membro criou um agente orquestrador no N8N com várias funções (agenda, consultas, etc.) conectado ao WhatsApp via Evolution, mas o agente respondia todos que enviavam mensagem. A solução proposta foi usar o campo fromMe do webhook para filtrar apenas mensagens do próprio número, com um IF no início do fluxo. Wesley confirmou a abordagem usando IF para verificar se o número é o do dono do bot.
+
+*Tema: Ferramentas de Produtividade e Organização* ⏰ 15:50 – 15:56
+Membro relatou dificuldade em organizar demandas diárias, esquecendo tarefas de um dia para o outro. Recomendações: ClickUp (gratuito e já resolve, pago é ainda melhor) e Obsidian. Também foi sugerido criar um app próprio no Lovable para isso.
+
+*Tema: Prospecção de Leads com IA* ⏰ 15:57 – 15:57
+Pergunta sobre criação de listas de prospecção usando IA. Sem resposta conclusiva no grupo.
+
+*Tema: Assinatura Digital Jurídica – Zapsign, Clicksign e ICP-Brasil* ⏰ 16:04 – 16:28
+Discussão rica sobre assinaturas digitais para procurações jurídicas. O fluxo ideal compartilhado: lead qualificado pela IA → coleta de dados → geração automática de procuração → integração com Zapsign → assinatura online → documento armazenado. Dr. Adailto, que atua na área jurídica, confirmou que já usa esse fluxo e que de 2 mil clientes, apenas 3 a 5 casos tiveram juízes que não aceitaram. Uma decisão recente do STJ passou a admitir assinaturas digitais fora da ICP-Brasil (Clicksign, Docsign, Zapsign). O Clicksign também foi recomendado, com 2 anos de uso em empresa. _Continua a discussão iniciada no dia 24 sobre software jurídico com IA._
+
+*Tema: Bloquear Agente Após Finalizar Atendimento* ⏰ 18:08 – 18:22
+Membro relatou que estava perdendo clientes porque o agente continuava respondendo após finalizar o atendimento. A solução técnica proposta por Wesley: o agente retorna #Finalizado no output, que é filtrado por um IF e grava o número em uma tabela/banco de dados. Na próxima mensagem do mesmo número, um IF no início do fluxo verifica se já existe na tabela de atendidos e, se existir, não responde. Alternativas citadas: Supabase, Redis e NocoDB. Membros reforçaram que ajuste de prompt sozinho não resolve, sendo necessária uma ferramenta dentro do N8N.
+
+*Tema: Lovable – Comportamento com Créditos* ⏰ 18:03 – 18:29
+Membro relatou que o Lovable funciona melhor quando se tem mais créditos e fica "mais burro" quando os créditos estão baixos, chegando a responder em inglês. A dica foi usar os créditos diários gratuitos apenas para iniciar o projeto/dashboard e depois levar o código para uma IDE ou CLI com IA mais potente.
+
+*Tema: N8N com LangGraph – Evolução das Automações* ⏰ 19:44 – 19:57
+Reflexão sobre a evolução do ecossistema: fluxos do N8N estão sendo transformados em LangGraph, tornando as soluções de automação muito mais robustas. Membro reforçou o link do N8N MCP em beta (já compartilhado no dia 24) e destacou que a comunidade oficial do N8N já tem vários casos de uso de IAs construindo os próprios fluxos. Outro membro ponderou que nem todos trabalham 100% com automações e é difícil acompanhar tudo. _Conexão direta com o tema do dia 24 sobre N8N MCP e a reflexão sobre especialização._
+
+━━━━━━━━━━━━━━━━━━━━
+
+🔍 *Destaques do Dia*
+
+🔧 *Técnicos:* Solução para bloquear agente após finalizar atendimento usando banco de dados + IF. Filtro fromMe para agente pessoal no WhatsApp. Wait time ideal de 60 segundos para leads. Instabilidades no Claude com tokens expirados.
+
+💼 *Negócios:* Modelo de precificação de chatbots focado na capacidade de pagamento do cliente. Assinaturas digitais jurídicas validadas pelo STJ fora da ICP-Brasil. Fluxo completo de procuração automatizada com Zapsign/Clicksign.
+
+🚀 *Inovação:* Transformação de fluxos N8N em LangGraph para automações mais robustas. Kimi.com destacada para geração de slides com 1 prompt. Automação de redes sociais dentro das regras da Meta.
+
+🧠 *Mentalidade:* Regra 80/20 (execução vs estudo). Ser autodidata é fundamental. A experiência é o aprendizado mais duradouro. Ferramentas mudam rápido, fundamentos permanecem.
+
+🤝 *Colaboração:* Troca de experiências entre profissionais de diferentes áreas (jurídica, marketing, desenvolvimento). Solução coletiva de problemas técnicos com múltiplas abordagens. Compartilhamento de ferramentas e dicas práticas.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🌟 *Encerramento*
+Dia com equilíbrio entre técnica e estratégia. O destaque vai para a discussão sobre precificação de chatbots (que pode definir o sucesso do negócio de muitos membros), a solução elegante para bloquear agentes após atendimento, e o aprofundamento sobre assinaturas digitais com validade jurídica. A reflexão sobre execução vs estudo ressoou com muitos membros e reforça o espírito prático do grupo. A comunidade segue crescendo, conectando saberes e fortalecendo o ecossistema de automações com N8N.
