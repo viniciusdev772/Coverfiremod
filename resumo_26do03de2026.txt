@@ -1,0 +1,83 @@
+*Resumo do Grupo - Curso N8N Fácil - Guilherme Lazarotto* 📆 26/03/2026
+
+📌 *Assunto Principal:*
+Dia dominado por uma análise profunda sobre banimentos no WhatsApp e a janela de 24h da Meta, a novidade dos nomes de usuário (BSUID) que chegam ao WhatsApp em 2026, instabilidades generalizadas no WhatsApp, e muita resolução colaborativa de problemas técnicos com N8N, Evolution API e OpenAI.
+
+💡 *Assuntos Relevantes:*
+
+🔧 _Dicas Técnicas e Solução de Problemas:_
+Análise detalhada sobre o que realmente causa banimento no WhatsApp (janela de 24h, disparos fora dela, denúncias). Bugs na versão 2.13.4 do N8N com subagentes não chamando tools. Erro na Responses API da OpenAI resolvido ao desmarcar a opção. Erro de base64 na Evolution resolvido com reinício.
+
+📢 _Novidades e Atualizações:_
+WhatsApp lançará nomes de usuário (BSUID) a partir de abril de 2026, com aplicação completa até julho. Telegram já tinha esse recurso, e a Meta segue copiando. Wesley recomendou os modelos GPT 4.1 Mini e Grok 4.1 fast como boas opções custo-benefício.
+
+🖥️ _Infraestrutura e APIs:_
+Uazapi segue firme como recomendação principal (um membro roda 40 números nela). Evolution API continua funcional para alguns (inclusive para disparos), mas segue gerando problemas para outros. API Oficial da Meta apontada como o caminho mais seguro para quem não faz disparos.
+
+🔗 *Links Compartilhados:*
+• BSUID – Documentação da Meta: developers.facebook.com/documentation/business-messaging/whatsapp/business-scoped-user-ids
+• Downdetector WhatsApp: downdetector.com.br/fora-do-ar/whatsapp/
+• Aula Redis (curso): curson8n.ticto.club/content/49857/module/175990/lesson/467213
+• Aula Evolution (curso): curson8n.ticto.club/content/49857/module/158299/lesson/414473
+
+━━━━━━━━━━━━━━━━━━━━
+
+*Tema: BSUID – Nomes de Usuário no WhatsApp* ⏰ 08:53 – 10:17
+Atualização importante da Meta: o WhatsApp vai lançar nomes de usuário em 2026. É um recurso opcional para pessoas e empresas, onde o nome de usuário será exibido no app em vez do número de telefone. Para empresas, o número não será ocultado. Samuel Lima detalhou que será aplicado até julho de 2026, junto com IA interna, automações simples e uma espécie de crachá digital. O conselho foi já separar um nome de usuário bacana antes que os bons fiquem ocupados. Vinão observou que o WhatsApp segue copiando recursos do Telegram, como sempre. Um membro pediu que copiem também a transcrição de áudios, mas o WhatsApp já tem desde 2024.
+
+*Tema: Instabilidade do WhatsApp* ⏰ 11:13 – 11:57
+WhatsApp apresentou bastante instabilidade durante o dia. Link do Downdetector foi compartilhado. Membro perguntou se quem usa API não oficial estava tendo banimentos. Uazapi reportada como normal (um membro com 40 números rodando tranquilamente). _Relacionado à instabilidade do Claude reportada no dia 25 e aos problemas recorrentes com APIs discutidos nos dias 24 e 25._
+
+*Tema: Evolution API – O Abençoado que Funciona* ⏰ 12:18 – 12:19
+Um membro se declarou "o único abençoado pela Evolution", afirmando que usa para sistema de cobrança, disparo automático e até disparo em grande escala sem nenhum problema. Dois clientes rodando nela sem incidentes. _Contraste direto com o dia 24, quando a Evolution foi declarada "morta", e com o dia 25, quando mensagens não estavam sendo respondidas._
+
+*Tema: Bugs no N8N 2.13.4 – Subagentes e Tools* ⏰ 13:55 – 14:17
+Membros relataram bugs na versão 2.13.4 do N8N. Problemas identificados: subagentes não chamando tools, execuções com pin que não rodam o fluxo, e erro de tipo (number vs string) ao passar variáveis para subworkflows. Almir orientou: salvar e publicar o subworkflow, dar refresh na tool do sub no principal, ou apagar e reinserir. Wesley identificou que o erro apontava para uma variável esperando string mas recebendo number. _Complementa o tema do dia 25 sobre bugs e instabilidades recentes no N8N._
+
+*Tema: TypeBot vs N8N* ⏰ 13:26 – 14:45
+Perguntas sobre se vale a pena usar TypeBot no WhatsApp ou ficar apenas com N8N. Guilherme Lazarotto compartilhou mídias sobre o assunto. Sem consenso único, mas a tendência foi considerar o N8N mais completo.
+
+*Tema: Banimento no WhatsApp – Análise Profunda da Janela de 24h* ⏰ 14:57 – 15:28
+Discussão técnica extremamente rica sobre o que realmente causa banimentos no WhatsApp. Bruno Werneck apresentou uma análise detalhada:
+
+Os comportamentos de risco são:
+1. Disparos para números desconhecidos (spam)
+2. Disparos para números conhecidos fora da janela de 24h
+
+A janela de 24h funciona assim: quando alguém envia mensagem para um número Business, a Meta abre uma janela de 24h sem custo para resposta via API. Se a automação responde depois das 24h, a mensagem deveria ser um template (Marketing ou Utility) com custo. A Meta flagra mensagens fora dessa janela.
+
+Bruno argumentou que não faz sentido a Meta banir por conteúdo repetitivo, já que a própria API oficial é feita para bots e menus fixos. O banimento está ligado ao tipo de mensagem, não ao conteúdo. Wesley reconheceu que não tinha esse raciocínio montado e que a explicação esclareceu muito.
+
+Almir alertou que após banimento temporário, o número fica "marcado". Bruno compartilhou que está estudando as APIs oficiais da Meta para se tornar tech provider e não depender de intermediários. Um membro com 40 números na Uazapi confirmou que a API oficial se paga sozinha. _Aprofundamento dos temas de banimento e APIs discutidos nos dias 24 (EvoAPI vs Uazapi) e 25 (Evolution com falhas)._
+
+*Tema: Erro de Base64 na Evolution* ⏰ 16:00 – 16:28
+Membro enfrentou erro ao obter mídia em base64 na Evolution (URL inválida). Reiniciar a Evolution não resolveu. Membro descobriu que o node não era compatível com a versão do N8N (não estava no latest). Wesley confirmou: "É erro da Evolution, quem diria." A sugestão final, como sempre, foi migrar para a Uazapi. A conversa evoluiu para como tratar botões na Uazapi, onde cliques nos botões disparam mensagens de tipo diferente no webhook, permitindo captura e tratamento específico. _Continuação do padrão dos dias anteriores com erros na Evolution._
+
+*Tema: Modelo de IA Bom e Barato* ⏰ 16:37 – 16:56
+Membro perguntou qual modelo de IA usar (lembrava que na época usavam o GPT 4.0 Mini). Wesley recomendou o GPT 4.1 Mini como o mais interessante atualmente, e também o Grok 4.1 fast que está se mostrando bom. _Continuação da discussão do dia 24 sobre modelos de IA e custos, onde Wesley já havia mencionado o Grok 4.1 fast._
+
+*Tema: Evolution Go – Nova Versão* ⏰ 17:33 – 17:34
+Membro perguntou se Bruno já testou a nova versão da Evolution Go. Resposta direta: "Nem vou. Tenho coisa mais importante pra fazer!" _Reforça o posicionamento do dia 24 sobre a Evolution._
+
+*Tema: N8N via MCP no Facebook Ads* ⏰ 17:45 – 17:45
+Pergunta sobre conectar o N8N via MCP no Facebook Ads sem precisar criar muitas tools aleatórias. Sem resposta conclusiva no grupo. _Conecta com o tema de N8N MCP discutido no dia 24 (beta 2.14.0 para criação de workflows via IA)._
+
+*Tema: Responses API da OpenAI Causando Erro* ⏰ 19:40 – 19:55
+Dois sócios reportaram erro no agente: "The service was not able to process your request." Mesmo com créditos da OpenAI disponíveis. A solução foi desmarcar a opção "Use Responses API", que é destinada a modelos a partir do GPT-5 com tools de pesquisa na web. Após desmarcar, o fluxo voltou a funcionar imediatamente. O erro surgiu após mais de 1 mês rodando sem problemas. Bruno explicou a função da Responses API de forma resumida.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🔍 *Destaques do Dia*
+
+🔧 *Técnicos:* Análise profunda sobre janela de 24h e banimentos no WhatsApp. Solução para erro da Responses API da OpenAI (desmarcar Use Responses API). Bugs no N8N 2.13.4 com subagentes. Erro de base64 na Evolution por incompatibilidade de versão.
+
+📢 *Novidades:* Nomes de usuário (BSUID) chegando ao WhatsApp até julho de 2026, com IA interna e crachá digital. GPT 4.1 Mini e Grok 4.1 fast como modelos recomendados custo-benefício.
+
+🖥️ *Infraestrutura:* Uazapi consolidada como principal recomendação (40 números rodando). API Oficial da Meta como caminho seguro para quem não faz disparos. Evolution funcional para poucos "abençoados". Botões na Uazapi com tipo de mensagem diferente no webhook.
+
+🤝 *Colaboração:* Resolução rápida de problemas entre membros. Bruno Werneck com análise didática sobre banimentos que educou o grupo inteiro. Compartilhamento de links de aulas do curso para ajudar membros.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🌟 *Encerramento*
+Dia com forte caráter educativo. O grande destaque foi a explicação detalhada de Bruno Werneck sobre a janela de 24h da Meta e os reais motivos de banimento, que trouxe clareza para todo o grupo. A chegada dos nomes de usuário ao WhatsApp promete mudar a dinâmica do aplicativo. A comunidade segue resolvendo problemas de forma ágil e colaborativa, com a Uazapi se consolidando como a API preferida do grupo e a Evolution API vivendo seus últimos dias de glória para a maioria dos membros.
