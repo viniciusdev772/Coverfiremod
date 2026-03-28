@@ -1,0 +1,70 @@
+*Resumo do Grupo - Curso N8N Fácil - Guilherme Lazarotto* 📆 27/03/2026
+
+📌 *Assunto Principal:*
+Dia mais leve e humano do grupo, com discussões sobre TDAH e estratégias de estudo, carreira em tecnologia para iniciantes, um CRM construído no Lovable integrado ao N8N, e a irônica reviravolta da Uazapi apresentando problemas de webhook — justamente após dias sendo recomendada como solução infalível.
+
+💡 *Assuntos Relevantes:*
+
+🔧 _Dicas Técnicas e Solução de Problemas:_
+Uso do .trim() para tratar espaços em nomes de pacientes no N8N. Diferença entre RemoteJID e chatId nas APIs. Tratamento de variáveis e conversão de número para JID na Uazapi. Fluxo criativo de CRM no Lovable chamando webhooks do N8N com intenções pré-definidas.
+
+🧠 _Mentalidade e Carreira:_
+Debate profundo sobre TDAH e foco no estudo de tecnologia. Orientação para jovens iniciantes: curso de ADS (Análise e Desenvolvimento de Sistemas) como porta de entrada. Importância de avaliar a grade curricular antes de escolher uma faculdade. Matemática e álgebra como base lógica para programação.
+
+🤝 _Comunidade:_
+Elogios espontâneos ao Bruno Werneck como professor e mentor. Compartilhamento de curso gratuito de segurança (Hackers do Bem). Maritaca AI apresentada como IA brasileira emergente.
+
+🔗 *Links Compartilhados:*
+• WAHA Engines (documentação): waha.devlike.pro/docs/how-to/engines
+• Uazapi check de número: docs.uazapi.com/endpoint/post/chat~check
+• Aula de disparos (curso): curson8n.ticto.club/content/50653/modules
+• Hackers do Bem (segurança gratuito): hackersdobem.org.br
+
+━━━━━━━━━━━━━━━━━━━━
+
+*Tema: Uazapi com Problemas de Webhook* ⏰ 08:30 – 16:40
+Membro de Portugal relatou que clientes estavam registrando dados na Uazapi, mas o webhook não ativava. Outro membro confirmou o mesmo problema: nem todas as mensagens chegavam. Wesley orientou contatar o suporte da Uazapi e compartilhou o contato (VCF). O suporte demorou horas para responder, e o suporte deles é feito por IA, o que gerou piadas no grupo: "Vamos vender um agente melhor pra eles!" Só às 16:40 o suporte finalmente respondeu. Outro membro relatou que seu sócio mandou mensagem normal pelo celular e também teve problemas, sugerindo instabilidade geral do WhatsApp. _Reviravolta irônica: nos dias 24, 25 e 26, a Uazapi foi recomendada como solução infalível para quem tinha problemas com a Evolution API. Hoje, ela mesma apresentou falhas. No dia 26, um membro rodava 40 números nela sem problemas._
+
+*Tema: WAHA – Engines, JID e ChatId* ⏰ 11:40 – 12:02
+Membro perguntou sobre as engines do WAHA (Noweb, Gows). Wesley compartilhou a documentação oficial. Bruno explicou que "engine" é o "motor" que faz o app funcionar. Surgiu dúvida sobre JID vs número de telefone: o RemoteJID é apenas a nomenclatura da variável que traz o número. Para salvar em formato padrão (+55...), basta tratar com um Set. Na Uazapi, o endpoint chat/check converte número para JID. Um membro revelou que pega o chatId no lugar do RemoteJID — Wesley esclareceu que é apenas nomeação diferente da mesma variável.
+
+*Tema: Tratamento de Dados com .trim() – Sistema de Frota Médica* ⏰ 12:23 – 12:34
+Membro de Portugal desenvolve sistema para frota de veículos que transporta pacientes ao hospital. O problema: para iniciar uma nova rota, precisa finalizar com o mesmo nome de paciente, mas clientes digitavam com espaços, pontos e vírgulas extras. A solução foi o .trim() para limpar espaços. Bruno complementou que o N8N elimina espaços dentro de expressões automaticamente, então `{{ var }}` com espaços é apenas questão de legibilidade. O membro tinha a solução anotada em algum lugar mas não lembrava. Wesley zoou: "Lembra meu tempo estudando HTML 5, caderno cheio de anotação." _Conecta com a reflexão do dia 25 sobre execução vs estudo — o membro anotava mas não memorizava._
+
+*Tema: TDAH e Estratégias de Estudo em Tecnologia* ⏰ 14:42 – 15:00
+Conversa profunda e empática sobre conviver com TDAH na área de automações. O membro de Portugal revelou ter "TDAH nível hard" e dificuldade de manter foco quando uma configuração não faz sentido. Dicas compartilhadas: salvar conteúdo em vídeos e áudios curtos (máximo 5 minutos), evitar leituras longas que desanimam, quebrar tarefas em partes pequenas, salvar o progresso diário mesmo que pouco. Um membro com 3 filhos e um recém-nascido ponderou que cada pessoa tem sua realidade. Outro destacou a importância da leitura como hábito saudável. _Aprofunda a reflexão do dia 25 sobre execução vs estudo, agora com uma perspectiva de neurodivergência e adaptação pessoal._
+
+*Tema: CRM no Lovable Integrado ao N8N com Redis* ⏰ 14:57 – 15:18
+Membro criou um CRM no Lovable com funções pré-definidas (enviar mensagem de confirmação, agendamento, follow-up). Ao clicar no botão, o CRM chama um webhook do N8N enviando o número do lead e a intenção da mensagem. No fluxo, o número é convertido para chatId, o contexto é verificado no Redis, e a IA gera e envia a mensagem personalizada. Houve debate sobre se o Redis seria a melhor opção (memória temporária) vs Postgres (permanente). O membro esclareceu que para lembretes simples, o Redis é suficiente. Almir sugeriu Postgres para contexto completo. _Conecta com os temas do dia 25 sobre Lovable e créditos, e do dia 24 sobre Obsidian como memória complementar._
+
+*Tema: Delay no WhatsApp* ⏰ 16:52 – 16:52
+Membro relatou delay insano no WhatsApp durante o dia inteiro. _Continuação da instabilidade reportada no dia 26 via Downdetector._
+
+*Tema: Carreira em Tecnologia – ADS e Certificações* ⏰ 16:49 – 17:31
+Membro pediu orientação para um jovem iniciante sobre certificações Microsoft e Amazon. Respostas destacaram que certificações são boas mas requerem mais do que isso. Um profissional de marketing compartilhou conselho que recebeu: o melhor caminho é fazer ADS (Análise e Desenvolvimento de Sistemas) — curso de 2 anos, direto ao ponto —, construir portfólio, e é possível conseguir vaga júnior antes mesmo de terminar. Guilherme Lazarotto, que fez TADS, alertou para avaliar a grade curricular: alguns cursos são focados em código e mão na massa, outros em processos e UML. O ideal depende do que se quer seguir. Também foi compartilhado o curso gratuito de segurança "Hackers do Bem" (hackersdobem.org.br). _Complementa a reflexão sobre especialização do dia 24 e a mentalidade de execução do dia 25._
+
+*Tema: Elogios ao Bruno Werneck* ⏰ 17:41 – 17:53
+Membro elogiou espontaneamente uma aula particular com Bruno Werneck: "Valeu muito a pena!" e fez questão de dizer que o elogio foi espontâneo, sem pedido de propaganda. Wesley o chamou de "excelente dev/programador/professor". Outro membro confirmou: "Ele é foda. Camisa 10." Vinão brincou que seria legal o Bruno como professor de matemática. Outro membro que terá mentoria com ele na segunda também elogiou.
+
+*Tema: Matemática, Álgebra e Lógica de Programação* ⏰ 17:43 – 18:14
+Debate filosófico sobre matemática que surgiu dos elogios ao Bruno. Vinão disse que matemática ficou chata quando saiu dos números e foi pra letras (álgebra). Bruno defendeu: "É aí que começa a diversão!" Membros argumentaram que o problema não é a matemática em si, mas ser obrigado a enfrentar algo sem o conhecimento necessário. "Conhecer o problema é o primeiro passo para solucioná-lo." A conversa evoluiu para como regra de três e porcentagem são essenciais no dia a dia.
+
+*Tema: Maritaca AI – IA Brasileira* ⏰ 18:15 – 18:22
+Vinão perguntou se alguém já usou a Maritaca AI, IA brasileira que aparece no Instagram dele. O modelo chama-se "Sabiá". Membros zoaram o layout e compararam com o Google Stitch. Um membro brincou: "O cara abrasileirou a IA, daqui a pouco alguém lança o BrasaAI." _Referência ao Google Stitch discutido no dia 24._
+
+━━━━━━━━━━━━━━━━━━━━
+
+🔍 *Destaques do Dia*
+
+🔧 *Técnicos:* .trim() para limpar espaços em nomes no N8N. Diferença entre RemoteJID e chatId (mesma coisa, nomes diferentes). CRM no Lovable integrado com N8N e Redis via webhook. Endpoint chat/check da Uazapi para converter número em JID.
+
+🧠 *Mentalidade:* Estratégias práticas para estudar com TDAH: vídeos curtos de até 5 minutos, evitar leituras longas, salvar progresso diário. Matemática e álgebra como base lógica para programação. Cada pessoa aprende no seu ritmo e com suas limitações.
+
+🎓 *Carreira:* ADS como porta de entrada na tecnologia (2 anos, direto ao ponto). Avaliar grade curricular antes de escolher faculdade. Certificações Microsoft/Amazon são boas mas não suficientes sozinhas. Curso gratuito de segurança: Hackers do Bem.
+
+🤝 *Colaboração:* Elogios espontâneos ao Bruno Werneck como professor e mentor. Suporte da Uazapi demorou horas (ironia após dias de recomendação). Grupo ajudando membro com TDAH de forma empática e prática. Maritaca AI como curiosidade brasileira.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🌟 *Encerramento*
+Dia marcado pela humanidade do grupo. Enquanto os dias anteriores foram dominados por discussões técnicas pesadas (banimentos, APIs, modelos de IA), hoje a comunidade mostrou seu lado mais acolhedor: ajudando quem tem TDAH a encontrar formas de estudar, orientando jovens sobre carreira, e reconhecendo publicamente o valor de quem ensina. A ironia do destino fez a Uazapi — eleita nos dias 24, 25 e 26 como a salvação de todos os problemas — apresentar suas próprias falhas hoje. Prova de que nenhuma ferramenta é perfeita, mas uma comunidade unida resolve qualquer coisa.

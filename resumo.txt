@@ -1,257 +1,248 @@
-26/03/2026 08:53 - +55 31 9654-1234: Atualização importante da Meta sobre os BSUID (Business User ID)
+27/03/2026 02:42 - +55 21 98973-2007: isso foi mo  loucura,  ainda bem que tava veio pra  caçar pokemon
+27/03/2026 08:30 - +351 967 247 471: Bom dia, alguem tendo problemas com o UAZAPI? meus clientes estao registrando os dados mais nao ta ativando o webhook
+27/03/2026 08:30 - +351 967 247 471: ja verifiquei e aqui ta tudo certinho
+27/03/2026 08:33 - Wesley: Bom dia eles tem número de suporte para esses tipos de problema, já escreva na msg o seu erro para responderem de imediato
+27/03/2026 08:34 - Wesley: ‎uazapi.vcf (arquivo anexado)
+27/03/2026 08:34 - +351 967 247 471: Grato
+27/03/2026 09:15 - +55 53 9142-1888: Opa, mesma coisa aqui
+27/03/2026 09:16 - +55 53 9142-1888: não chega todos as mensagens
+27/03/2026 09:19 - +351 967 247 471: o agente de atendimento deles é um problema kkk
+27/03/2026 09:20 - +351 967 247 471: <Mídia oculta>
+27/03/2026 09:20 - +351 967 247 471: e tambem nao me responderam ainda.
+27/03/2026 09:21 - +55 47 9783-2789: eles demoram um pouco
+27/03/2026 09:22 - +351 967 247 471: Vamos aguardar pra ver.
+27/03/2026 09:24 - Douglas Rosato: Olharam se o texmessage tá indo de acordo ?
+27/03/2026 09:24 - +55 53 9142-1888: vamos vender um pra eles kkkkk
+27/03/2026 09:28 - +55 48 9105-9577: <Mídia oculta>
+27/03/2026 09:33 - Vinicius Inteligência em Atendimento: Meu sócio me mandou uma mensagem ontem e aconteceu isso... Mas ele mandou do celular dele normal.
+Talvez possa ser algum problema no WhatsApp mesmo
+27/03/2026 11:40 - +55 15 99194-4281: Rapaziada, bom dia
+27/03/2026 11:40 - +55 15 99194-4281: Em provedores como waha
+27/03/2026 11:40 - +55 15 99194-4281: O que é a engine?
+27/03/2026 11:40 - +55 15 99194-4281: Noweb, gows...
+27/03/2026 11:41 - Wesley: https://waha.devlike.pro/docs/how-to/engines
+Aqui na documentação deles tem sobre!
+27/03/2026 11:42 - +55 15 99194-4281: Outra coisa
+27/03/2026 11:43 - +55 15 99194-4281: Pessoal usa muito o tal do jid né?
+27/03/2026 11:43 - +55 31 9654-1234: Engine em inglês é motor. Vc pode entender que é o "motor" que faz o app funcionar.
+27/03/2026 11:43 - +55 15 99194-4281: Mas se eu salvar o contato do cliente, eu salvo o número, não o JID...
+27/03/2026 11:43 - +55 15 99194-4281: E pra fazer disparo nesse caso?
+27/03/2026 11:44 - +351 967 247 471: Ate agora nada de responderem 😂😅😅
+27/03/2026 11:44 - +351 967 247 471: <Mídia oculta>
+27/03/2026 11:47 - Wesley: RemoteJID é uma nomeclatura da váriavel que trás o número da pessoa, se vc quiser salvar o número da pessoa só fazer um tratamento em Set para deixar no formato padrão +55...etc, ae se for usar esse número em outro workflown só traz em um sistema de verificar número valido, e ele retorna aquele código RemoteJID novamente para vc usar. isso vc encontra na aula de disparos: https://curson8n.ticto.club/content/50653/modules
+27/03/2026 11:55 - +55 15 99194-4281: @⁨~Bruno Werneck⁩ tem como fazer esse " obter número" na uazapi?
+27/03/2026 11:56 - +55 17 99165-0320: Eu tô pegando o chatid no lugar do remoteJid
+27/03/2026 11:56 - Wesley: Só uma nomeação diferente da variavel numero
+27/03/2026 11:58 - +55 31 9654-1234: <Mídia oculta>
+27/03/2026 11:58 - +55 31 9654-1234: Não acredito que vc ainda não tá usando/testando a uazapi!!!
+27/03/2026 11:59 - +55 15 99194-4281: Eu não comprei ainda
+27/03/2026 11:59 - +55 15 99194-4281: To liso paizao
+27/03/2026 11:59 - +55 15 99194-4281: Dá pra fazer na uazapi?
+27/03/2026 12:00 - +55 31 9654-1234: Seria isso?
+https://docs.uazapi.com/endpoint/post/chat~check
+27/03/2026 12:01 - +55 15 99194-4281: Eu passo o número e ele me retorna o jid
+27/03/2026 12:02 - +55 15 99194-4281: Isso aí msm
+27/03/2026 12:02 - +55 15 99194-4281: Vlww
+27/03/2026 12:23 - +351 967 247 471: Galera, me da um help, preciso fazer algo em meu fluxo, alguns clientes estao enviando registros pra meu agente, porem percebo que por vezes tem  pontos, virgula ou espaço por escreita errada por parte deles, e no meu caso em especial, a validaçao é em cima do nome que ele envia no primeiro registro.
 
-_O WhatsApp vai lançar os nomes de usuário em 2026._
+Exemplo.
+Inicio de um atendimento
+ - Nome do paciente
+ - Serviço
 
-_Os nomes de usuário são um recurso opcional para pessoas e empresas. Quando um usuário do WhatsApp adotar um nome de usuário, esse nome será exibido no app em vez do número de telefone. Entretanto, os nomes de usuário comerciais não têm o objetivo de garantir a privacidade. A adoção de um nome de usuário comercial não fará com que o número de telefone da empresa seja ocultado no app._
+Final do atendimento
+ - Nome do paciente
+ - Serviço neste caso nao é validado.
 
-https://developers.facebook.com/documentation/business-messaging/whatsapp/business-scoped-user-ids <Mensagem editada>
-26/03/2026 09:00 - Wesley: Tinha visto sobre, vamos ver como vai ser essa integração, acho que já tem o esquema de json que vai vir
-26/03/2026 09:02 - +55 31 9654-1234: O artigo no link tem todos os detalhes que você precisa saber para fazer a integração, a partir do mês que vem
-26/03/2026 09:05 - Samuel Lima: Será aplicado até Julho de 2026, tanto os nomes de usuários, IA interna + Automações simples e também uma espécie de Crachá digital
-26/03/2026 09:05 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 09:06 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 09:06 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 09:06 - Samuel Lima: Sim, será aplicado até Julho essas mudanças, mas já começa na próxima semana.
-26/03/2026 09:07 - Samuel Lima: É bom já separarem um nome de usuário bacana, pq depois vai ficar difícil definir um nome que fique fácil de lembrar
-26/03/2026 09:57 - Vinão: <Mídia oculta>
-26/03/2026 09:58 - Samuel Lima: Talvez eles tiverem isso no futuro, até para ter mais receita
-26/03/2026 10:03 - Wesley: Telegram faz e o whats copia será
-26/03/2026 10:04 - Wesley: Interessante
-26/03/2026 10:06 - Vinão: Sempre foi assim kk. Percebi isso a tempos
-26/03/2026 10:14 - +55 98 8186-3085: Só falta copiarem a função de transcrever áudios 🙄
-26/03/2026 10:16 - Vinão: Whatsapp já tem também
-26/03/2026 10:17 - Vinão: Desde 2024
-26/03/2026 11:13 - +55 31 9654-1234: WhatsApp com bastante instabilidade hoje
-26/03/2026 11:13 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 11:13 - +55 31 9654-1234: https://downdetector.com.br/fora-do-ar/whatsapp/
-26/03/2026 11:57 - +55 67 8475-5500: Bom dia moçada! Quem não usa api oficial ta com banimento hoje?
-26/03/2026 11:59 - Douglas Rosato: Uazapi normal aqui
-26/03/2026 11:59 - +55 31 9654-1234: Por aqui tudo tranquilo, na uazapi, sem disparos, somente atendimento.
-26/03/2026 11:59 - +55 47 9783-2789: to com 40 usando api da uazapi, rodando tranquilo
-26/03/2026 12:07 - Wesley: Nenhum, normalmente é caso do uso de usuários em alguns casos mais extremos IP de servers em Black list
-26/03/2026 12:18 - +55 66 9997-3063: usando evolution pra sistema de cobrança e disparo automático e ta ok aq
-26/03/2026 12:19 - +55 66 9997-3063: acho q fui o único abençoado pela a evolution
-26/03/2026 12:19 - +55 66 9997-3063: uso pra tudo, tenho dois clientes nela e nada
-26/03/2026 12:19 - +55 66 9997-3063: até fluxo de disparo utilizando ela ja usei
-26/03/2026 12:19 - +55 66 9997-3063: disparo em grande escala
-26/03/2026 12:19 - +55 66 9997-3063: e nada
-26/03/2026 12:30 - +55 15 99194-4281: <Mídia oculta>
-26/03/2026 13:26 - +55 14 99762-5599: Vocês usam TypeBot no WhatsApp?
-26/03/2026 13:30 - +55 66 9997-3063: <Mídia oculta>
-26/03/2026 13:31 - +55 47 9783-2789: eu tbm pensava isso
-26/03/2026 13:31 - +55 47 9783-2789: <Mídia oculta>
-26/03/2026 13:55 - +55 11 98108-2421: Fala rapaziada, boa tarde, estão tendo dificuldades ultimamente com o N8N? To achando meio bugado de uns dias pra cá
-26/03/2026 13:56 - Almir - Minha Arte é Essa: Cara nessa última atualização algumas pessoas relataram alguns bugs nos fluxos na parte dos subagentes.
-26/03/2026 13:56 - Wesley: Qual versão vc está utilizando, cheou a conferir ou voltar alguma versão?
-26/03/2026 13:57 - +55 11 98108-2421: exato, até pra testa, eu vou nas execuções, dou pin em uma execução pra debugar e simplesmente não roda o fluxo
-26/03/2026 13:58 - +55 11 98108-2421: to na 2.13.4
-26/03/2026 13:58 - +55 11 98108-2421: que teoricamente sua a última stable deles
-26/03/2026 13:59 - +55 11 98108-2421: seria*
-26/03/2026 13:59 - Almir - Minha Arte é Essa: Um amigo me disse que em seu fluxo o subagente não estava chamando tools
-26/03/2026 14:09 - +55 11 96694-0515: <Mídia oculta>
-26/03/2026 14:09 - Wesley: Já ia sugerir essa mudança rsrs
-26/03/2026 14:10 - +55 11 96694-0515: so consigo enviar valores como string para a tool? to entendendo nada
-26/03/2026 14:10 - Almir - Minha Arte é Essa: Da uma olhada no seu subworkflow como está definido para receber a mensagem no início dele
-26/03/2026 14:11 - +55 11 96694-0515: <Mídia oculta>
-26/03/2026 14:12 - Almir - Minha Arte é Essa: De onde ele busca esse valor negociado?
-26/03/2026 14:13 - Almir - Minha Arte é Essa: A variável ali está como number
-26/03/2026 14:13 - Almir - Minha Arte é Essa: Tenta criar um set antes convertendo ela para string
-26/03/2026 14:13 - Almir - Minha Arte é Essa: E dps passe para o agente para testar pegando da saída dessa variável.
-26/03/2026 14:13 - Almir - Minha Arte é Essa: Ou então no seu subwork configurar como number o valor recebido
-26/03/2026 14:14 - Almir - Minha Arte é Essa: E passar direto
-26/03/2026 14:14 - +55 11 96694-0515: entao, eu fiz isso mas ele ainda fica esperando string
-26/03/2026 14:14 - Wesley: Erro parece apontar para "Expectativa receber uma variavel em formato de String, só que chegou #Number junto com eles
-26/03/2026 14:14 - +55 11 96694-0515: coloque na expressão pra ficar como string mas msm assim da erro
-26/03/2026 14:14 - Wesley: E aqui vc definiu todas como string
-26/03/2026 14:15 - Almir - Minha Arte é Essa: Salvou e publicou o subwork?
-26/03/2026 14:15 - +55 11 96694-0515: ja testei colocando elas como numero tb
-26/03/2026 14:15 - Almir - Minha Arte é Essa: Aí depois da um refresh na tool do sub no principal
-26/03/2026 14:15 - +55 11 96694-0515: mas n vai
-26/03/2026 14:15 - Wesley: Vc testou na ordem correta?
-26/03/2026 14:15 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 14:15 - Almir - Minha Arte é Essa: Ou apagar e inserir o sub dnv kk
-26/03/2026 14:17 - +55 11 96694-0515: vou apagar esse sub e a tool,  vou tentar de novo
-26/03/2026 14:20 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 14:45 - +55 14 99762-5599: Está compensando usar TypeBot?
-26/03/2026 14:45 - +55 14 99762-5599: Ou N8N apenas
-26/03/2026 14:46 - Guilherme Lazarotto: <Mídia oculta>
-26/03/2026 14:48 - Guilherme Lazarotto: <Mídia oculta>
-26/03/2026 14:48 - +55 66 9997-3063: pra mim até a velha vale a pena kkkkkkk
-26/03/2026 14:48 - +55 66 9997-3063: nunca me deu b o grande
-26/03/2026 14:48 - +55 66 9997-3063: so pequeno kkkkkkk
-26/03/2026 14:48 - +55 66 9997-3063: <Mídia oculta>
-26/03/2026 14:54 - +55 67 8475-5500: Parece que o problema de envio é somente na api oficial. Quando tenta enviar o template aparece mensagem de problema no pagamento.
-26/03/2026 14:57 - +55 14 99126-1063: Galera, dúvida rápida
+o meu sistema é para frota de veiculos no qual transporta pacientes de caso pro hospital, e pra iniciar uma nova rota, obrigatoriamente precisa finalizar a rota com o mesmo nome de paciente.
+27/03/2026 12:24 - ‎+258 85 206 2320 entrou usando o link do grupo
+27/03/2026 12:25 - +351 967 247 471: <Mídia oculta>
+27/03/2026 12:26 - +55 15 99194-4281: .trim() <Mensagem editada>
+27/03/2026 12:27 - +351 967 247 471: vlw mano
+27/03/2026 12:27 - +55 15 99194-4281: Tem espaço antes e depois também
+27/03/2026 12:27 - +55 15 99194-4281: Dentro dos seus colchetes
+27/03/2026 12:27 - +55 15 99194-4281: Deixa o $ e o último ) colados nos { e }
+27/03/2026 12:28 - +55 15 99194-4281: Diz aí se resolveu
+27/03/2026 12:28 - +351 967 247 471: o .trim() resolvel na mesma hora
+27/03/2026 12:29 - +55 31 9654-1234: Não precisa. O n8n elimina esses espaços automaticamente. Melhor deixar com os espaços para facilitar a leitura:
+`{{ var }}` é melhor que `{{var}}`
+27/03/2026 12:29 - +55 15 99194-4281: Maravilha fi
+27/03/2026 12:29 - +55 15 99194-4281: Só sucesso
+27/03/2026 12:29 - +55 15 99194-4281: Ó o conhecimento abençoado do Bruno aí
+27/03/2026 12:30 - +351 967 247 471: pior que tenho anotado aqui em algum canto  kkk
+27/03/2026 12:34 - +351 967 247 471: <Mídia oculta>
+27/03/2026 12:34 - +351 967 247 471: <Mídia oculta>
+27/03/2026 12:45 - +55 15 99194-4281: Caraca
+27/03/2026 12:46 - Wesley: Lembra meu tempo estudando html 5
+27/03/2026 12:46 - Wesley: Caderno cheio de anotação kkk
+27/03/2026 12:47 - +351 967 247 471: meu TDAH é nivel hard man, se até anotando eu to pedindo ajuda aqui entao significa to to pior kkk
+27/03/2026 14:30 - +55 21 98973-2007: <Mídia oculta>
+27/03/2026 14:42 - +351 967 247 471: eu uso
+27/03/2026 14:42 - +351 967 247 471: vou tentar!
+27/03/2026 14:48 - +55 21 98973-2007: <Mídia oculta>
+27/03/2026 14:52 - +55 21 98036-2005: O grande problema é você conseguir foco mano e não viajar em outras paradas.
+27/03/2026 14:52 - +55 21 98036-2005: E se tornar interessante, perder o interesse é foda.
+27/03/2026 14:52 - +55 21 98036-2005: Procura salvar em videos e audios, leitura costuma ser muito desanimador quando é longa.
+27/03/2026 14:53 - +351 967 247 471: verdade, nunca consegui terminar um livro kkk
+27/03/2026 14:53 - +351 967 247 471: o que acho interessante eu consigo absorver
+27/03/2026 14:53 - +55 21 98036-2005: Imagino
+27/03/2026 14:53 - +351 967 247 471: ai quando fica cansativo eu travo e nao aprendo, entra em um ouvido e sai pelo outro
+27/03/2026 14:53 - +55 21 98036-2005: Rs
+27/03/2026 14:54 - +55 21 98036-2005: Não salva videos longos, quebra em partes se necessário.
+27/03/2026 14:54 - +55 21 98973-2007: <Mídia oculta>
+27/03/2026 14:54 - +55 21 98036-2005: Passou de 5 minutos é complicado, facilidade de perder o foco é grande.
+27/03/2026 14:55 - +55 21 98036-2005: To ligado mano, mas o b.o da falta de atenção geralmente não é a organização.
+27/03/2026 14:55 - +55 21 98973-2007: Leitura e um hábito bom e saudável,  se soubesse disso quando era novo.  Hoje tá em outro patamar.  Todo o conhecimento tá nos livros.  Principalmente na Bíblia irmão <Mensagem editada>
+27/03/2026 14:55 - +351 967 247 471: Isso, geralmente quando eu perco o foco, é quando eu nao consigo entender uma configuraçao, quando ela nao faz sentido pra mim, mais é a maneira correta, ai eu me lasco.
+27/03/2026 14:55 - +351 967 247 471: é foda
+27/03/2026 14:56 - +55 21 98036-2005: Muitos são extremamente metódico ou um pouco metódico.
+27/03/2026 14:56 - +55 21 98036-2005: Mas se perde o foco na vibe. Rs
+27/03/2026 14:56 - +55 21 98036-2005: Geralmente começa no n8n quando vai ver ta em programação de alguma coisa.
+27/03/2026 14:57 - +55 21 98036-2005: Sim, não falei que não tem que lêr, mas se ele entende o problema, precisa arrumar meios que adapte ao problema dele.
+27/03/2026 14:57 - +55 15 99194-4281: Oi pessoal
+27/03/2026 14:58 - +55 15 99194-4281: Dêem uma olhada nesse flow que eu fiz
+27/03/2026 14:58 - +55 21 98973-2007: <Mídia oculta>
+27/03/2026 14:58 - +55 15 99194-4281: É para que o usuário clique no lovable para  enviar uma mensagem específica, de lembrete, follow up ou etc
+27/03/2026 14:58 - +55 98 8186-3085: Manda ai
+27/03/2026 14:58 - +55 21 98036-2005: Não pode é desistir, é tentar entender e ter paciência ( que é difícil).
+27/03/2026 14:59 - +351 967 247 471: é isso que faço e quando eu esqueço ou nao sei eu pergunto aqui hehe
+27/03/2026 14:59 - +55 21 98036-2005: Eu tenho 3
+27/03/2026 14:59 - +55 21 98036-2005: E um recem nascido.
+27/03/2026 14:59 - +55 21 98036-2005: Tu ta falando da sua ótica cara.
+27/03/2026 14:59 - +55 21 98036-2005: Faz um pouco cada dia, as vezes é a necessidade de fazer muita coisa.
+27/03/2026 15:00 - +55 21 98036-2005: Ai você precisa salvar o pouco que fez.
+27/03/2026 15:02 - +55 15 99194-4281: <Mídia oculta>
+27/03/2026 15:05 - +55 15 99194-4281: Aceito sugestões e comentários!
+27/03/2026 15:06 - +351 967 247 471: O contexto da intençao é no  agente?
+27/03/2026 15:07 - +55 15 99194-4281: A pessoa pelo lovable escolhe uma função pré definida:
+- " Enviar mensagem de confirmação "
+- "Enviar mensagem de agendamento"
+E etc...
+27/03/2026 15:08 - +55 15 99194-4281: Isso chama o webhook e já envia o número do lead + intenção da mensagem
+27/03/2026 15:08 - +55 21 98036-2005: Pelo lovable ou sistema que você criou na lovable?
+27/03/2026 15:09 - +55 21 98036-2005: É um site, app ou oque, explica melhor e como cliente chega por la?
+27/03/2026 15:09 - +55 15 99194-4281: Eu criei um CRM
+27/03/2026 15:09 - +55 15 99194-4281: La dentro a pessoa clica no botão para uma função pré definida
+27/03/2026 15:09 - +55 15 99194-4281: Esse botão envia para meu webhook ali do flow <Mensagem editada>
+27/03/2026 15:10 - +55 15 99194-4281: Sacou?
+27/03/2026 15:10 - +55 21 98036-2005: +ou-
+27/03/2026 15:10 - +55 21 98036-2005: Não entendo muito de crm, mas no crm não fazemos esses filtros?
+27/03/2026 15:11 - +55 21 98036-2005: Ou ele vai mover automaticamente dentro do seu CRM?
+27/03/2026 15:11 - +351 967 247 471: eu entendi, com base nao sei onde entra o JID pois a mensagem nao vem do whatsapp e sim do CRM em Si.
+27/03/2026 15:11 - +55 21 98036-2005: Você tem um ponto.
+27/03/2026 15:12 - +351 967 247 471: acredito que voce pode no cadastro do cliente adicionar o numero do zap dele e a partir dai enviar a mensagem com base na intençao
+27/03/2026 15:12 - +351 967 247 471: ja que sua ia nao faz a identificaçao e sim o IF entao acredito que é mais de boas
+27/03/2026 15:12 - Almir - Minha Arte é Essa: Dependendo do seu redis de caso não tiver o contexto da conversa ele manda uma mensagem padrão? Normalmente o redis ele é usado como uma memória temp para um atendimento rápido, se for gravar o conteúdo completo seria interessante talvez usar a memória postgres.
+27/03/2026 15:13 - +55 21 98036-2005: Só não entendi porquê fazer essa rota com IA se o CRM serve para classificarmos.
+27/03/2026 15:13 - +55 15 99194-4281: Eu vou entrar no meu CRM onde tem todos os meus clientes.
 
-O que faz um número ser banido no WhatsApp? 
+Lá eu escolho um lead.
 
-Eu tô fazendo um agente no WAHA para uso próprio para atender clientes, tirar dúvidas, agendar consultas etc. 
+Escolho qual a intenção da mensagem.
 
-Se eu usar outra API, tipo a uazapi, API oficial, tem risco menor disso acontecer?
-26/03/2026 14:59 - +55 31 9654-1234: Basicamente se vc envia mensagens para algum número que não tem vc na lista de contatos dele, vai aparecer uma mensagem para ele para fazer denuncia. Se tiver muitas denúncias, seu número é banido. Isso independe se vc usa waha, uazapi ou a API oficial
-26/03/2026 14:59 - Wesley: Normalmente cai muito por conta de disparo ou sistema pouco versátil muito repetitivo nas respostas, tipo msg fixa: meta pode indentificar padrões de uso no usúario.
-26/03/2026 15:00 - +55 14 99126-1063: Entendi! 
+" Enviar mensagem para agendar visita"
 
-Se o agente tiver tipo um comportamento de bot nas mensagens, isso chama atenção?
-26/03/2026 15:00 - +55 14 99126-1063: Eu não sabia que dava pra reportar e ser banido assim
-26/03/2026 15:01 - Wesley: É mensagem fixa por exemplo sempre segue um padrão muito rigido.
-26/03/2026 15:01 - Wesley: Ideal é simular o máximo possivel uma pessoa.
-26/03/2026 15:04 - Wesley: No sentido de comportamento, mais não fingir que é um humanokkk
-26/03/2026 15:16 - +55 31 9654-1234: Eu to trucando essa ideia ultimamente, sabe, Wesley. A Meta tem a API oficial justamente pra pessoas usarem o WhatsApp business de forma programática, e isso inclui aqueles bots burros que sempre respondem a mesma mensagem, um menu fixo, ou algo parecido, como um typebot. Não faz sentido banimento por ser um conteúdo repetitivo. 
+Ao clicar, eu chamo meu webhook N8N, e envio com o número dele e a intenção da mensagem.
 
-O que eu acredito é que mensagens de disparo, mesmo que para números conhecidos, podem gerar banimento pq a Meta tem um interesse financeiro nessas mensagens. Pela API oficial, fora da janela de 24h, todos os disparos têm algum custo, dependendo do tipo de modelo de mensagem, Marketing ou Utility. 
+No flow, eu traduzo o número para chat ID.
+27/03/2026 15:13 - +55 15 99194-4281: Pq eu não tô classificando, eu tô enviando uma mensagem com intenção específico para o cliente
+27/03/2026 15:14 - +55 15 99194-4281: Se não existir contexto, meu redis insere o contexto na memória e depois repassa para a IA, aí quando ela responder, já vai ter as infos necessárias...
+27/03/2026 15:14 - +55 15 99194-4281: Eai, deu para entender agora?
+27/03/2026 15:14 - +55 21 98036-2005: Ao meu ver o seu CRM não ta fazendo bem um trabalhp de CRM.
+27/03/2026 15:15 - +55 21 98036-2005: Não precisaria da IA para classificar, usaria rotas, com base no que vem do CRM.
+27/03/2026 15:15 - +351 967 247 471: a ia nesse caso dele acredito que gere a mensagem
+27/03/2026 15:15 - +55 15 99194-4281: Não existe nenhuma IA de classificação mankkkkkkkkk
+27/03/2026 15:15 - +351 967 247 471: isso que eu falei a cima
+27/03/2026 15:15 - +55 15 99194-4281: A IA só está gerando e enviando a mensagem
+27/03/2026 15:15 - +55 15 99194-4281: Isso ai
+27/03/2026 15:16 - +55 21 98036-2005: Compreendi
+27/03/2026 15:16 - +351 967 247 471: tenho TDAH mais nao sou burro kkk
+27/03/2026 15:16 - +55 15 99194-4281: O CRM serve para eu ir até o cliente por uma interface mais organizada
+27/03/2026 15:16 - +351 967 247 471: consegui entender melhor
+27/03/2026 15:16 - +55 15 99194-4281: Eu não disse issokkkkkk
+27/03/2026 15:16 - +351 967 247 471: eu sei
+27/03/2026 15:16 - +55 21 98036-2005: Calma mano relaxa.  Rs
+27/03/2026 15:17 - +55 21 98036-2005: Nesse caso o amigo levantou um ponto aqui.
+27/03/2026 15:17 - +351 967 247 471: Verdade
+27/03/2026 15:17 - +55 15 99194-4281: .
+27/03/2026 15:17 - +55 21 98036-2005: Muda para o postgres
+27/03/2026 15:18 - +55 15 99194-4281: Não usei memória permanente pq é só para ser um lembrete ou coisa simples
+27/03/2026 15:18 - +55 21 98036-2005: Mas ai vai perder rapido, se não tem problema, segue com ele.
+27/03/2026 16:40 - +351 967 247 471: Aleluia, a UAZAPI respondeu agora!
+27/03/2026 16:49 - +55 17 99165-0320: Pessoal tem um garoto novo aqui que quer aprender tecnologia, e fazer carreira o que vcs me falam sobre as certificações Microsoft, Amazon?
+27/03/2026 16:49 - +55 17 99165-0320: Ele tá iniciando
+27/03/2026 16:49 - +55 17 99165-0320: Da pra conseguir trampa na Microsoft?
+27/03/2026 16:51 - +55 15 99194-4281: Mensagem apagada
+27/03/2026 16:52 - +55 15 99194-4281: Meu, não sei vocês mas hoje meu whatsapp tá com um delay insano para tudo
+27/03/2026 16:53 - +55 47 9783-2789: precisa ter bastante conhecimento
+27/03/2026 16:53 - +55 47 9783-2789: as certificações são boas,
+27/03/2026 16:53 - +55 47 9783-2789: porém, requer mais do que isso
+27/03/2026 16:53 - +55 98 8186-3085: Cara, outro dia um cara sênior numa empresa grande de tecnologia aqui no MA, me recomendou que pra iniciar, o melhor caminho é fazer ADS e ir estudando tecnologias de maneira conjunta a isso. Ele disse que com portfólio e entendimento, dá pra conseguir vaga jr em empresa antes mesmo de terminar. 
 
-Por isso, quando ela detecta um comportamento de bot em mensagens fora da janela de 24h, daí sim corre o risco dela banir seu número mesmo sem denúncias.
+PS: antes de considerar meu conselho: não sou da área de tecnologia. Sou marketeiro, e tô estudando tecnologia.
+27/03/2026 16:53 - +55 98 8186-3085: Sobre Amazon, Microsoft... Não sei.
+27/03/2026 16:54 - +55 98 8186-3085: Meu conselho não, o conselho que me deram kkkkkk
+27/03/2026 16:56 - +55 17 99165-0320: Desculpa a ignorância o que é a sigla ADS?
+27/03/2026 16:56 - +55 17 99165-0320: Eu achava que ainda tava em alta
+27/03/2026 16:58 - +55 98 8186-3085: E depois fazer uma pós, em computação se eu não me engano.
+27/03/2026 16:58 - +55 11 97249-9367: E o curso analise e desenvolvimento de sistemas
+27/03/2026 16:58 - Almir - Minha Arte é Essa: Análise e Desenvolvimento de Sistemas
+27/03/2026 16:58 - +55 98 8186-3085: Vou te mandar o áudio do cara no PV @⁨~Tiago Alexandre Mantovani⁩
+27/03/2026 16:58 - +55 98 8186-3085: Isso, perdão.
+27/03/2026 16:59 - +55 11 97249-9367: É famoso por durar 2 anos e ser direto ao ponto, por isso é muito famoso na area de tecnologia
+27/03/2026 17:00 - +55 17 99165-0320: A ta eu sou da época de tecnólogo em processamento de dados kkkk
+27/03/2026 17:00 - +55 17 99165-0320: Obrigado
+27/03/2026 17:20 - +55 15 99194-4281: Meu deus
+27/03/2026 17:20 - +55 15 99194-4281: O que é isso
+27/03/2026 17:29 - Guilherme Lazarotto: O bom ao escolher um curso de ADS é tomar cuidado e ver as recomendações e avaliações da instituição, talvez encontrar ex-alunos e pedir uns feedbacks, olhar a grade curricular
 
-Assim, eu tenho para mim, que os seguintes comportamentos são comportamento de risco:
-1. Disparos para números desconhecidos. Disparos em massa. Spam.
-2. Disparos para números conhecidos fora da janela de 24h.
+Eu fiz TADS (Tecnologia em Análise e desenvolvimento de Sistemas), conheci muita gente que também fez e ao conversar víamos que a grade curricular era totalmente diferente, o meu foi mais focado em desenvolvimento e tecnologias mesmo, colocar a mão no código, enquanto alguns ensinam mais os processos e gerenciamento de projetos, a parte de UML modelagem de sistemas etc,
+27/03/2026 17:30 - Guilherme Lazarotto: Então tem que dar uma boa olhada se o curso é mais focado na parte teórica e diagramação, ou na parte de por a mão na massa mesmo. Não que um ou outro seja melhor, mas depende o que você quer seguir
+27/03/2026 17:31 - +55 17 99165-0320: Aqui na nossa região as faculdades usam o nome do curso de Sistemas de Informação
+27/03/2026 17:41 - +55 85 8796-2386: Pessoal, tive aula agora coM o @⁨~Bruno Werneck⁩ . Valeu muito a pena!
+27/03/2026 17:42 - +55 85 8796-2386: PS: Foi espontâneo o elogio aqui viu. Ele não pediu propaganda
+27/03/2026 17:42 - Wesley: Excelente Dev/programador/professor não tenho dúvidas
+27/03/2026 17:43 - +55 31 9654-1234: Extremamente lisonjeado, agradeço muito suas palavras.
+27/03/2026 17:43 - Vinão: Iria ser legal o Bruno como professor de matemática. Disciplina que não gosto
+27/03/2026 17:43 - +55 98 8186-3085: Ele é foda. Camisa 10
+27/03/2026 17:44 - +55 98 8186-3085: Acredito 100%. Quando tive aula com ele e vi o resultado, tenho a mesma postura sempre que possível
+27/03/2026 17:44 - +55 31 9654-1234: Mas pq vc não gosta? Foi algum professor chato no passado ou alguma dificuldade?
+27/03/2026 17:47 - Vinão: Depois que a matemática saiu de calcular número para letras (álgebra). Aí sim que ficou chato
+27/03/2026 17:48 - +55 31 9654-1234: Ah, não, é o mais legal, é aí que começa a diversão! ahahahah
+27/03/2026 17:49 - Vinão: Bruno parece meu professor de química no ensino médio em 2019. É igual o rosto
+27/03/2026 17:49 - +55 31 9654-1234: Vamos mudar essa mentalidade, Vinão, matemática é lindo e é fácil.
+27/03/2026 17:51 - +55 15 99194-4281: Matemática é a melhor matéria
+27/03/2026 17:51 - +55 15 99194-4281: Quando começa a álgebra aí você precisa usar a cabeça, melhor ainda!
+27/03/2026 17:51 - +55 15 99194-4281: O que torna a matemática chata, é ser obrigado a enfrentar ela sem p conhecimento necessário
+27/03/2026 17:51 - +55 15 99194-4281: Quando você não entende como resolver os problemas, fica chato como qualquer outra coisa...
+27/03/2026 17:52 - +55 15 99194-4281: Ainda mais ser obrigado a desempenhar bem em algo que você não foi ensinado a aprender
+27/03/2026 17:52 - Vinão: Aí que tá o problema. Gosto de pensar para fazer o que eu gosto.  O que eu não gosto nem perco tempo.
+27/03/2026 17:52 - +55 15 99194-4281: Conhecer o problema é o primeiro passo para solucioná-lo...
+27/03/2026 17:53 - +55 21 98973-2007: <Mídia oculta>
+27/03/2026 18:04 - +55 21 98036-2005: Ta falando serio ou ta na zueira? não me entenda mal.
+27/03/2026 18:04 - Vinão: Interprete como quiser
+27/03/2026 18:06 - +55 21 98036-2005: Não perguntei por mal não, que tu parece safo, mas também é zueira.
+27/03/2026 18:11 - +55 11 95341-3667: além de um homem espetacular
+27/03/2026 18:12 - +55 85 9167-0420: Mensagem apagada
+27/03/2026 18:13 - +55 85 9167-0420: Papo é que querendo ou não os dois devem fazer parte da vida da pessoa... não é "dificultar a matéria" e sim desenvolver uma lógica através de um problema.
+27/03/2026 18:13 - Vinão: exact
+27/03/2026 18:14 - +55 85 9167-0420: O que mais vejo é regra de 3, coisa de ver muito na vida e fazer parte da matemática.
+27/03/2026 18:14 - Vinão: lá ele
+27/03/2026 18:14 - +55 85 9167-0420: Porcentagem também... imagina não saber calcular um desconto de produto
+27/03/2026 18:15 - Vinão: alguém do grupo ai já usou essa IA brasileira ? Maritaca AI, direto aparece no meu instagram
+27/03/2026 18:17 - Vinão: <Mídia oculta>
+27/03/2026 18:17 - Vinão: <Mídia oculta>
+27/03/2026 18:18 - +55 85 9167-0420: Como que pronuncia esse "sabia"
+27/03/2026 18:18 - +55 85 9167-0420: Não querendo falar nada mas que layoutzinho...
+27/03/2026 18:19 - +55 85 9167-0420: Parece Google Stitch
+27/03/2026 18:21 - +55 21 98036-2005: Agora deve começar aparecer na minha time line também. rsrs 
+Essa ainda não vi.
+27/03/2026 18:22 - +55 21 98036-2005: o cara abrasileirou a IA, daqui a pouco alguém lança o BrasaAI. rs <Mensagem editada>
+27/03/2026 18:47 - ‎+595 984 013797 mudou de número de telefone. <b>Deseja enviar uma mensagem ou adicionar o novo número?</b>
+27/03/2026 19:10 - +55 71 8895-0860: Oi, Tiago
+Fala para ele dar uma olhada nesse curso gratuito na área de segurança de TI:
+https://hackersdobem.org.br/
 
-*O que é a janela de 24h?*
-
-Quando alguém envia alguma mensagem para um número do WhatsApp Business, a meta inicia uma _"janela"_ de 24h, um tempo para que você responda a essa mensagem sem custo, usando a API da Meta. 
-
-> Isso NÃO se aplica se você estiver usando o Celular ou o WhatsApp Web para responder/enviar mensagens. 
-
-Usuário enviou mensagem: abre a janela de 24h
-Sua automação respondeu dentro de 24h: a mensagem não tem custo
-Usuário enviou outra mensagem: abre-se outra janela de 24h
-Sua automação respondeu dentro de 24h: a mensagem não tem custo
-Usuário enviou outra mensagem:  abre-se outra janela de 24h
-Sua automação demorou e respondeu depois das 24h: risco de banimento se a meta flagrar porque essa mensagem deveria ser um template do tipo Utility ou Marketing. 
-
-Portanto, não tem a ver com o conteúdo, per se, mas com o tipo de mensagem. A Meta vai flagrar o tipo de mensagem enviado fora da janela de 24h. <Mensagem editada>
-26/03/2026 15:19 - Almir - Minha Arte é Essa: Concordo
-26/03/2026 15:20 - Wesley: Bem observado Bruno.
-Sinceramente não tinha montado um raciocínio fixo sobre o conceito do banimento e critérios de comportamento do sistema, isso esclarece muita coisa!
-26/03/2026 15:20 - Almir - Minha Arte é Essa: O ruim disso é quando toma um banimento temporário o número fica meio que "marcado" aí obriga ir para a oficial
-26/03/2026 15:20 - +55 31 9654-1234: Um detalhe. Eu envio mensagens gigantes. É um comportamento pessoal meu.
-26/03/2026 15:20 - +55 31 9654-1234: eu não tenho costume
-26/03/2026 15:20 - +55 31 9654-1234: de enviar mensagens
-26/03/2026 15:21 - +55 31 9654-1234: picadas
-26/03/2026 15:21 - +55 31 9654-1234: Sendo assim, não uso parser em minhas automações, não acho que seja necessário.
-26/03/2026 15:22 - Wesley: Dá impressão que eles ficam em cima de vc, provavelmente só esperando conectar o bot novamente e repetir o traçado, fora o IP exposto do server, normalmente o pessoal não coloca Proxy.
-26/03/2026 15:22 - ‎+55 43 9175-5353 entrou usando o link do grupo
-26/03/2026 15:24 - +55 31 9654-1234: Andar na linha, na minha opinião, não é ruim não. Estou estudando as APIs oficiais da meta para oferecer os serviços oficiais, sem APIs alternativas. O custo benefício de usar a oficial, mesmo com o custo das mensagens de marketing e utility supera a dor de cabeça de ter o número banido e o potencial de perder negócios durante o período de apagão.
-26/03/2026 15:25 - +55 47 9783-2789: concordo, hoje eu atuo com a oficial e não oficial. Sempre falo uma coisa: a API oficial se paga sozinha!
-26/03/2026 15:25 - +55 31 9654-1234: A não ser que a pessoa queira intencionalmente usar para disparo, daí realmente não vale a pena a oficial, tem que ir na alternativa e trocar número, usar proxy, senão fica muito caro
-26/03/2026 15:26 - +55 47 9783-2789: pra disparo, tem que ser muito estratégico
-26/03/2026 15:26 - +55 47 9783-2789: não adianta ser uma lista de Lead fria, que acabou de comprar
-26/03/2026 15:27 - Almir - Minha Arte é Essa: Vc usa a coexistência mano?
-26/03/2026 15:27 - Almir - Minha Arte é Essa: Começar estudar sobre não conheço mt ainda
-26/03/2026 15:27 - +55 31 9654-1234: To usando pagando um business partner, mas estou estudando pra colocar minha empresa como tech provider e não precisar de intermediários.
-26/03/2026 15:28 - +55 31 9654-1234: Se eu conseguir faço promoção pra alunos! kkkk
-26/03/2026 15:29 - Almir - Minha Arte é Essa: Melhor mesmo
-26/03/2026 16:00 - +55 14 99762-5599: <Mídia oculta>
-26/03/2026 16:00 - +55 14 99762-5599: No “obter mídia em base64” tá dando esse problema
-26/03/2026 16:00 - +55 14 99762-5599: Alguém sabe pq?
-26/03/2026 16:00 - +55 31 9654-1234: Tá falando que a url tá inválida
-26/03/2026 16:00 - Wesley: Evolution?
-26/03/2026 16:00 - +55 14 99762-5599: Assim
-26/03/2026 16:01 - +55 14 99762-5599: Sim
-26/03/2026 16:01 - +55 14 99762-5599: Mas não takkkk
-26/03/2026 16:01 - Wesley: Reinicia a Evo lá no Easypanel, fica perto de Implantar
-26/03/2026 16:01 - +55 14 99762-5599: <Mídia oculta>
-26/03/2026 16:01 - Wesley: Depois tenta dnv
-26/03/2026 16:01 - +55 14 99762-5599: Blz
-26/03/2026 16:02 - +55 14 99762-5599: Peguei e reiniciei tudo
-26/03/2026 16:02 - +55 14 99762-5599: N8N, evo, noco
-26/03/2026 16:02 - +55 14 99762-5599: Inclusive meu pc
-26/03/2026 16:02 - +55 14 99762-5599: <Mídia oculta>
-26/03/2026 16:03 - +55 79 8820-6314: Já ia falar isso, procedimento padrão com a evolution kkkkkkk
-26/03/2026 16:03 - +55 79 8820-6314: Só precisa reiniciar a evolution, mas deu certo?
-26/03/2026 16:04 - +55 14 99762-5599: Eu sei, tô zoando kkkk
-26/03/2026 16:04 - +55 14 99762-5599: Vamos ver
-26/03/2026 16:05 - +55 14 99762-5599: Mesmo erro
-26/03/2026 16:11 - +55 14 99762-5599: Já entendi
-26/03/2026 16:12 - +55 14 99762-5599: O node não é compatível com o N8N
-26/03/2026 16:12 - +55 14 99762-5599: Pq o N8N não tá no latest
-26/03/2026 16:12 - +55 31 9654-1234: o que era?
-26/03/2026 16:13 - +55 14 99762-5599: Cliquei em Details, e apareceu
-26/03/2026 16:13 - +55 31 9654-1234: Isso não faz sentido
-26/03/2026 16:13 - +55 14 99762-5599: Não mesmo kkkk
-26/03/2026 16:13 - +55 14 99762-5599: To mudando pra latest pra ver se vai
-26/03/2026 16:13 - +55 31 9654-1234: mostra o print pra gente
-26/03/2026 16:14 - +55 79 8820-6314: também não entendi 🤔
-26/03/2026 16:14 - Wesley: Manda a imagem do base64 ali no erro
-26/03/2026 16:14 - Wesley: Pra ver como vc configurou
-26/03/2026 16:15 - +55 14 99762-5599: <Mídia oculta>
-26/03/2026 16:17 - +55 14 99762-5599: Sumiu todo mundo
-26/03/2026 16:17 - +55 14 99762-5599: <Mídia oculta>
-26/03/2026 16:17 - Wesley: Puxa é erro da Evolution, quem diria.
-26/03/2026 16:17 - Wesley: Tenta aguardar um pouco, e manda outra imagem após um tempo
-26/03/2026 16:17 - +55 14 99762-5599: Áudio
-26/03/2026 16:18 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 16:18 - Wesley: Ela tem dessas as vezes
-26/03/2026 16:18 - +55 14 99762-5599: Para Warwick
-26/03/2026 16:19 - Wesley: Serve tbm
-26/03/2026 16:19 - +55 31 9654-1234: Ou então.....
-26/03/2026 16:19 - +55 31 9654-1234: Tem a uazapi
-26/03/2026 16:20 - +55 79 8820-6314: uazapi
-26/03/2026 16:20 - +55 79 8820-6314: sabia
-26/03/2026 16:20 - +55 14 99762-5599: Vou pra zapuai
-26/03/2026 16:20 - +55 14 99762-5599: <Mídia oculta>
-26/03/2026 16:20 - +55 31 9654-1234: Quer enviar botões assim? Uazapi é a melhor solução! Escolha sua opção:
-26/03/2026 16:21 - +55 14 99762-5599: Mas ele não reinicia??
-26/03/2026 16:21 - +55 14 99762-5599: Tipo, quando mensagem, ele reinicia o fluxo né
-26/03/2026 16:21 - +55 14 99762-5599: Ai não dá pra seguir certo os botões
-26/03/2026 16:22 - +55 31 9654-1234: Tem uma coisa muito legal que quando vc clica no botão, ele dispara uma mensagem de tipo diferente, que não é texto, não é audio, não é imagem, não é contato, não é documento, é botão. Vem no webhook. Vc captura e trata
-26/03/2026 16:22 - +55 14 99762-5599: Hmm
-26/03/2026 16:23 - +55 14 99762-5599: Qual aula o Guilherme fala do redis pra configurar?
-26/03/2026 16:23 - +55 14 99762-5599: Vou ter que pegar, mas primeiro vou ajustar os fluxos
-26/03/2026 16:25 - +55 14 99762-5599: ?
-26/03/2026 16:28 - +55 79 8820-6314: https://curson8n.ticto.club/content/49857/module/175990/lesson/467213
-
-aula: função de bloqueio 2
-26/03/2026 16:28 - +55 79 8820-6314: aula 7.2
-26/03/2026 16:37 - +55 14 99762-5599: Valeuuuu
-26/03/2026 16:37 - +55 14 99762-5599: Galera, qual um modelo de IA bom e barato pra usar
-26/03/2026 16:37 - +55 14 99762-5599: Qual chat GPT
-26/03/2026 16:38 - +55 14 99762-5599: Qual modelo
-26/03/2026 16:38 - +55 14 99762-5599: To muito por fora
-26/03/2026 16:40 - +55 31 9654-1234: Eu uso os mesmos que o Gui passa nas aulas
-26/03/2026 16:45 - +55 14 99762-5599: Sim sim, mas qual é o mais “legalzinho” e barato
-26/03/2026 16:45 - +55 14 99762-5599: Lembro na época que o pessoal usava muito o 4.0 mini
-26/03/2026 16:45 - +55 14 99762-5599: Já não sei como está hoje em dia
-26/03/2026 16:56 - Wesley: 4.1 míni é o mais interessante, tem o grok 4.1 fast tbm que está se mostrando bom!
-26/03/2026 17:21 - +55 14 99762-5599: <Mídia oculta>
-26/03/2026 17:21 - +55 14 99762-5599: Oque coloco nesse server url?
-26/03/2026 17:21 - +55 14 99762-5599: @⁨Wesley⁩ @⁨~Bruno Werneck⁩
-26/03/2026 17:23 - Wesley: Oi essa está nas primeiras aulas com a Evolution, vc coloca a base da sua URL que vc acessa o dashboard da Evolution: https://`suaUrlBaseDaEvo.com`
-26/03/2026 17:27 - +55 31 9654-1234: Nessa aula
-https://curson8n.ticto.club/content/49857/module/158299/lesson/414473
-26/03/2026 17:33 - +55 43 9107-3357: @⁨~Bruno Werneck⁩ já testou a nova versão da Evolution go?
-26/03/2026 17:33 - +55 43 9107-3357: <Mídia oculta>
-26/03/2026 17:33 - +55 43 9107-3357: <Mídia oculta>
-26/03/2026 17:34 - +55 31 9654-1234: Nem vou. Tenho coisa mais importante pra fazer! kkkk
-26/03/2026 17:34 - +55 43 9107-3357: Kkkkk
-26/03/2026 17:40 - +55 65 9216-7307: Waha normal
-26/03/2026 17:45 - +55 19 98175-2383: Galera. Alguém aqui ja conectou o N8N via MCP no Facebook Ads?
-
-Sem precisar ficar criando um monte de tools aleatórias? Queria algo mais simples
-26/03/2026 19:40 - +55 11 99630-0566: Boa noite, 
-
-Quando o fluxo executa está parando no agente e retornando isso:
-
-The service was not able to process your request
-The server had an error processing your request. Sorry about that! You can retry your request, or contact us through our help center at help.openai.com if you keep seeing this error. (Please include the requesb in your email.)
-26/03/2026 19:40 - +55 11 99630-0566: Tem crédito da openai
-26/03/2026 19:41 - +55 11 99630-0566: <Mídia oculta>
-26/03/2026 19:41 - +55 11 99630-0566: Alguém dá uma luz por favor?
-26/03/2026 19:42 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 19:44 - +55 11 96527-7326: <Mídia oculta>
-26/03/2026 19:46 - +55 31 9654-1234: Desmarca o Use Responses API. O modelo que vc ta usando não precisa disso e costuma dar problemas. Talvez seja isso, mas não tenho certeza.
-26/03/2026 19:47 - +55 11 96527-7326: Certo vou dar um retry aqui
-26/03/2026 19:47 - +55 11 96527-7326: executei e passou rs
-26/03/2026 19:48 - +55 11 99630-0566: Obrigado pela força, funcionando 🙌
-26/03/2026 19:48 - +55 11 96527-7326: Mais de 1 mes rodando o fluxo, só hoje veio dar problema
-26/03/2026 19:48 - +55 31 9654-1234: Uma hora a casa cai! kkkkk
-26/03/2026 19:49 - +55 11 96527-7326: Consegue me explicar a função dessa opção de forma resumida, por favor?
-26/03/2026 19:49 - +55 31 9654-1234: É pra ser usada com modelos a partir do gpt5, com tools de pesquisa na web, entre outras.
-26/03/2026 19:50 - +55 11 96527-7326: entendi... vou me aprofundar nesse assunto
-26/03/2026 19:52 - +55 31 9654-1234: @⁨~Edson Silva⁩ e @⁨~Eduardo Santos⁩ são a mesma pessoa?
-26/03/2026 19:53 - +55 11 96527-7326: Não kkkk
-26/03/2026 19:53 - +55 11 96527-7326: mas somos sócios rss
-26/03/2026 19:53 - +55 11 96527-7326: ele lembrou de postars aqui, mas ele está na rua, e eu to resolvendo isso
-26/03/2026 19:55 - +55 31 9654-1234: <Mídia oculta>
-26/03/2026 19:55 - +55 11 96527-7326: Somos sócios
+Não tenho referência, mas pareceu interessante. Se alguém tiver conhecimento do curso pode se manifestar para ajudar aqui.
+27/03/2026 19:18 - +55 17 99165-0320: O @⁨~Bruno Werneck⁩ é top segunda tenho uma mentoria com ele, trocamos uma ideia hoje e já aprendi muita coisa, excelente pessoa e profissional
+27/03/2026 19:20 - +55 17 99165-0320: Obrigado por compartilhar amigo
