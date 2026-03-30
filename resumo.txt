@@ -1,248 +1,323 @@
-27/03/2026 02:42 - +55 21 98973-2007: isso foi mo  loucura,  ainda bem que tava veio pra  caçar pokemon
-27/03/2026 08:30 - +351 967 247 471: Bom dia, alguem tendo problemas com o UAZAPI? meus clientes estao registrando os dados mais nao ta ativando o webhook
-27/03/2026 08:30 - +351 967 247 471: ja verifiquei e aqui ta tudo certinho
-27/03/2026 08:33 - Wesley: Bom dia eles tem número de suporte para esses tipos de problema, já escreva na msg o seu erro para responderem de imediato
-27/03/2026 08:34 - Wesley: ‎uazapi.vcf (arquivo anexado)
-27/03/2026 08:34 - +351 967 247 471: Grato
-27/03/2026 09:15 - +55 53 9142-1888: Opa, mesma coisa aqui
-27/03/2026 09:16 - +55 53 9142-1888: não chega todos as mensagens
-27/03/2026 09:19 - +351 967 247 471: o agente de atendimento deles é um problema kkk
-27/03/2026 09:20 - +351 967 247 471: <Mídia oculta>
-27/03/2026 09:20 - +351 967 247 471: e tambem nao me responderam ainda.
-27/03/2026 09:21 - +55 47 9783-2789: eles demoram um pouco
-27/03/2026 09:22 - +351 967 247 471: Vamos aguardar pra ver.
-27/03/2026 09:24 - Douglas Rosato: Olharam se o texmessage tá indo de acordo ?
-27/03/2026 09:24 - +55 53 9142-1888: vamos vender um pra eles kkkkk
-27/03/2026 09:28 - +55 48 9105-9577: <Mídia oculta>
-27/03/2026 09:33 - Vinicius Inteligência em Atendimento: Meu sócio me mandou uma mensagem ontem e aconteceu isso... Mas ele mandou do celular dele normal.
-Talvez possa ser algum problema no WhatsApp mesmo
-27/03/2026 11:40 - +55 15 99194-4281: Rapaziada, bom dia
-27/03/2026 11:40 - +55 15 99194-4281: Em provedores como waha
-27/03/2026 11:40 - +55 15 99194-4281: O que é a engine?
-27/03/2026 11:40 - +55 15 99194-4281: Noweb, gows...
-27/03/2026 11:41 - Wesley: https://waha.devlike.pro/docs/how-to/engines
-Aqui na documentação deles tem sobre!
-27/03/2026 11:42 - +55 15 99194-4281: Outra coisa
-27/03/2026 11:43 - +55 15 99194-4281: Pessoal usa muito o tal do jid né?
-27/03/2026 11:43 - +55 31 9654-1234: Engine em inglês é motor. Vc pode entender que é o "motor" que faz o app funcionar.
-27/03/2026 11:43 - +55 15 99194-4281: Mas se eu salvar o contato do cliente, eu salvo o número, não o JID...
-27/03/2026 11:43 - +55 15 99194-4281: E pra fazer disparo nesse caso?
-27/03/2026 11:44 - +351 967 247 471: Ate agora nada de responderem 😂😅😅
-27/03/2026 11:44 - +351 967 247 471: <Mídia oculta>
-27/03/2026 11:47 - Wesley: RemoteJID é uma nomeclatura da váriavel que trás o número da pessoa, se vc quiser salvar o número da pessoa só fazer um tratamento em Set para deixar no formato padrão +55...etc, ae se for usar esse número em outro workflown só traz em um sistema de verificar número valido, e ele retorna aquele código RemoteJID novamente para vc usar. isso vc encontra na aula de disparos: https://curson8n.ticto.club/content/50653/modules
-27/03/2026 11:55 - +55 15 99194-4281: @⁨~Bruno Werneck⁩ tem como fazer esse " obter número" na uazapi?
-27/03/2026 11:56 - +55 17 99165-0320: Eu tô pegando o chatid no lugar do remoteJid
-27/03/2026 11:56 - Wesley: Só uma nomeação diferente da variavel numero
-27/03/2026 11:58 - +55 31 9654-1234: <Mídia oculta>
-27/03/2026 11:58 - +55 31 9654-1234: Não acredito que vc ainda não tá usando/testando a uazapi!!!
-27/03/2026 11:59 - +55 15 99194-4281: Eu não comprei ainda
-27/03/2026 11:59 - +55 15 99194-4281: To liso paizao
-27/03/2026 11:59 - +55 15 99194-4281: Dá pra fazer na uazapi?
-27/03/2026 12:00 - +55 31 9654-1234: Seria isso?
-https://docs.uazapi.com/endpoint/post/chat~check
-27/03/2026 12:01 - +55 15 99194-4281: Eu passo o número e ele me retorna o jid
-27/03/2026 12:02 - +55 15 99194-4281: Isso aí msm
-27/03/2026 12:02 - +55 15 99194-4281: Vlww
-27/03/2026 12:23 - +351 967 247 471: Galera, me da um help, preciso fazer algo em meu fluxo, alguns clientes estao enviando registros pra meu agente, porem percebo que por vezes tem  pontos, virgula ou espaço por escreita errada por parte deles, e no meu caso em especial, a validaçao é em cima do nome que ele envia no primeiro registro.
+30/03/2026 01:55 - +55 85 8972-5224: Mensagem apagada
+30/03/2026 02:14 - +55 85 8972-5224: Pessoal, boa noite! Tenho uma dúvida sobre integração do N8N com Facebook Ads.
 
-Exemplo.
-Inicio de um atendimento
- - Nome do paciente
- - Serviço
+É possível criar um workflow no N8N que consulte automaticamente as métricas do Facebook Ads e envie um resumo pelo WhatsApp?
 
-Final do atendimento
- - Nome do paciente
- - Serviço neste caso nao é validado.
+A ideia seria algo assim: em horários programados  por exemplo às 9h e às 18h o N8N buscaria os dados da campanha via API do Facebook e mandaria uma mensagem automática no WhatsApp com as principais métricas do dia, tipo:
 
-o meu sistema é para frota de veiculos no qual transporta pacientes de caso pro hospital, e pra iniciar uma nova rota, obrigatoriamente precisa finalizar a rota com o mesmo nome de paciente.
-27/03/2026 12:24 - ‎+258 85 206 2320 entrou usando o link do grupo
-27/03/2026 12:25 - +351 967 247 471: <Mídia oculta>
-27/03/2026 12:26 - +55 15 99194-4281: .trim() <Mensagem editada>
-27/03/2026 12:27 - +351 967 247 471: vlw mano
-27/03/2026 12:27 - +55 15 99194-4281: Tem espaço antes e depois também
-27/03/2026 12:27 - +55 15 99194-4281: Dentro dos seus colchetes
-27/03/2026 12:27 - +55 15 99194-4281: Deixa o $ e o último ) colados nos { e }
-27/03/2026 12:28 - +55 15 99194-4281: Diz aí se resolveu
-27/03/2026 12:28 - +351 967 247 471: o .trim() resolvel na mesma hora
-27/03/2026 12:29 - +55 31 9654-1234: Não precisa. O n8n elimina esses espaços automaticamente. Melhor deixar com os espaços para facilitar a leitura:
-`{{ var }}` é melhor que `{{var}}`
-27/03/2026 12:29 - +55 15 99194-4281: Maravilha fi
-27/03/2026 12:29 - +55 15 99194-4281: Só sucesso
-27/03/2026 12:29 - +55 15 99194-4281: Ó o conhecimento abençoado do Bruno aí
-27/03/2026 12:30 - +351 967 247 471: pior que tenho anotado aqui em algum canto  kkk
-27/03/2026 12:34 - +351 967 247 471: <Mídia oculta>
-27/03/2026 12:34 - +351 967 247 471: <Mídia oculta>
-27/03/2026 12:45 - +55 15 99194-4281: Caraca
-27/03/2026 12:46 - Wesley: Lembra meu tempo estudando html 5
-27/03/2026 12:46 - Wesley: Caderno cheio de anotação kkk
-27/03/2026 12:47 - +351 967 247 471: meu TDAH é nivel hard man, se até anotando eu to pedindo ajuda aqui entao significa to to pior kkk
-27/03/2026 14:30 - +55 21 98973-2007: <Mídia oculta>
-27/03/2026 14:42 - +351 967 247 471: eu uso
-27/03/2026 14:42 - +351 967 247 471: vou tentar!
-27/03/2026 14:48 - +55 21 98973-2007: <Mídia oculta>
-27/03/2026 14:52 - +55 21 98036-2005: O grande problema é você conseguir foco mano e não viajar em outras paradas.
-27/03/2026 14:52 - +55 21 98036-2005: E se tornar interessante, perder o interesse é foda.
-27/03/2026 14:52 - +55 21 98036-2005: Procura salvar em videos e audios, leitura costuma ser muito desanimador quando é longa.
-27/03/2026 14:53 - +351 967 247 471: verdade, nunca consegui terminar um livro kkk
-27/03/2026 14:53 - +351 967 247 471: o que acho interessante eu consigo absorver
-27/03/2026 14:53 - +55 21 98036-2005: Imagino
-27/03/2026 14:53 - +351 967 247 471: ai quando fica cansativo eu travo e nao aprendo, entra em um ouvido e sai pelo outro
-27/03/2026 14:53 - +55 21 98036-2005: Rs
-27/03/2026 14:54 - +55 21 98036-2005: Não salva videos longos, quebra em partes se necessário.
-27/03/2026 14:54 - +55 21 98973-2007: <Mídia oculta>
-27/03/2026 14:54 - +55 21 98036-2005: Passou de 5 minutos é complicado, facilidade de perder o foco é grande.
-27/03/2026 14:55 - +55 21 98036-2005: To ligado mano, mas o b.o da falta de atenção geralmente não é a organização.
-27/03/2026 14:55 - +55 21 98973-2007: Leitura e um hábito bom e saudável,  se soubesse disso quando era novo.  Hoje tá em outro patamar.  Todo o conhecimento tá nos livros.  Principalmente na Bíblia irmão <Mensagem editada>
-27/03/2026 14:55 - +351 967 247 471: Isso, geralmente quando eu perco o foco, é quando eu nao consigo entender uma configuraçao, quando ela nao faz sentido pra mim, mais é a maneira correta, ai eu me lasco.
-27/03/2026 14:55 - +351 967 247 471: é foda
-27/03/2026 14:56 - +55 21 98036-2005: Muitos são extremamente metódico ou um pouco metódico.
-27/03/2026 14:56 - +55 21 98036-2005: Mas se perde o foco na vibe. Rs
-27/03/2026 14:56 - +55 21 98036-2005: Geralmente começa no n8n quando vai ver ta em programação de alguma coisa.
-27/03/2026 14:57 - +55 21 98036-2005: Sim, não falei que não tem que lêr, mas se ele entende o problema, precisa arrumar meios que adapte ao problema dele.
-27/03/2026 14:57 - +55 15 99194-4281: Oi pessoal
-27/03/2026 14:58 - +55 15 99194-4281: Dêem uma olhada nesse flow que eu fiz
-27/03/2026 14:58 - +55 21 98973-2007: <Mídia oculta>
-27/03/2026 14:58 - +55 15 99194-4281: É para que o usuário clique no lovable para  enviar uma mensagem específica, de lembrete, follow up ou etc
-27/03/2026 14:58 - +55 98 8186-3085: Manda ai
-27/03/2026 14:58 - +55 21 98036-2005: Não pode é desistir, é tentar entender e ter paciência ( que é difícil).
-27/03/2026 14:59 - +351 967 247 471: é isso que faço e quando eu esqueço ou nao sei eu pergunto aqui hehe
-27/03/2026 14:59 - +55 21 98036-2005: Eu tenho 3
-27/03/2026 14:59 - +55 21 98036-2005: E um recem nascido.
-27/03/2026 14:59 - +55 21 98036-2005: Tu ta falando da sua ótica cara.
-27/03/2026 14:59 - +55 21 98036-2005: Faz um pouco cada dia, as vezes é a necessidade de fazer muita coisa.
-27/03/2026 15:00 - +55 21 98036-2005: Ai você precisa salvar o pouco que fez.
-27/03/2026 15:02 - +55 15 99194-4281: <Mídia oculta>
-27/03/2026 15:05 - +55 15 99194-4281: Aceito sugestões e comentários!
-27/03/2026 15:06 - +351 967 247 471: O contexto da intençao é no  agente?
-27/03/2026 15:07 - +55 15 99194-4281: A pessoa pelo lovable escolhe uma função pré definida:
-- " Enviar mensagem de confirmação "
-- "Enviar mensagem de agendamento"
-E etc...
-27/03/2026 15:08 - +55 15 99194-4281: Isso chama o webhook e já envia o número do lead + intenção da mensagem
-27/03/2026 15:08 - +55 21 98036-2005: Pelo lovable ou sistema que você criou na lovable?
-27/03/2026 15:09 - +55 21 98036-2005: É um site, app ou oque, explica melhor e como cliente chega por la?
-27/03/2026 15:09 - +55 15 99194-4281: Eu criei um CRM
-27/03/2026 15:09 - +55 15 99194-4281: La dentro a pessoa clica no botão para uma função pré definida
-27/03/2026 15:09 - +55 15 99194-4281: Esse botão envia para meu webhook ali do flow <Mensagem editada>
-27/03/2026 15:10 - +55 15 99194-4281: Sacou?
-27/03/2026 15:10 - +55 21 98036-2005: +ou-
-27/03/2026 15:10 - +55 21 98036-2005: Não entendo muito de crm, mas no crm não fazemos esses filtros?
-27/03/2026 15:11 - +55 21 98036-2005: Ou ele vai mover automaticamente dentro do seu CRM?
-27/03/2026 15:11 - +351 967 247 471: eu entendi, com base nao sei onde entra o JID pois a mensagem nao vem do whatsapp e sim do CRM em Si.
-27/03/2026 15:11 - +55 21 98036-2005: Você tem um ponto.
-27/03/2026 15:12 - +351 967 247 471: acredito que voce pode no cadastro do cliente adicionar o numero do zap dele e a partir dai enviar a mensagem com base na intençao
-27/03/2026 15:12 - +351 967 247 471: ja que sua ia nao faz a identificaçao e sim o IF entao acredito que é mais de boas
-27/03/2026 15:12 - Almir - Minha Arte é Essa: Dependendo do seu redis de caso não tiver o contexto da conversa ele manda uma mensagem padrão? Normalmente o redis ele é usado como uma memória temp para um atendimento rápido, se for gravar o conteúdo completo seria interessante talvez usar a memória postgres.
-27/03/2026 15:13 - +55 21 98036-2005: Só não entendi porquê fazer essa rota com IA se o CRM serve para classificarmos.
-27/03/2026 15:13 - +55 15 99194-4281: Eu vou entrar no meu CRM onde tem todos os meus clientes.
+📊 Relatório Facebook Ads
 
-Lá eu escolho um lead.
+👁️ Alcance: 12.450
 
-Escolho qual a intenção da mensagem.
+🖱️ Cliques: 387
 
-" Enviar mensagem para agendar visita"
+💰 CPC: R$0,82
 
-Ao clicar, eu chamo meu webhook N8N, e envio com o número dele e a intenção da mensagem.
+🎯 Leads gerados: 14
 
-No flow, eu traduzo o número para chat ID.
-27/03/2026 15:13 - +55 15 99194-4281: Pq eu não tô classificando, eu tô enviando uma mensagem com intenção específico para o cliente
-27/03/2026 15:14 - +55 15 99194-4281: Se não existir contexto, meu redis insere o contexto na memória e depois repassa para a IA, aí quando ela responder, já vai ter as infos necessárias...
-27/03/2026 15:14 - +55 15 99194-4281: Eai, deu para entender agora?
-27/03/2026 15:14 - +55 21 98036-2005: Ao meu ver o seu CRM não ta fazendo bem um trabalhp de CRM.
-27/03/2026 15:15 - +55 21 98036-2005: Não precisaria da IA para classificar, usaria rotas, com base no que vem do CRM.
-27/03/2026 15:15 - +351 967 247 471: a ia nesse caso dele acredito que gere a mensagem
-27/03/2026 15:15 - +55 15 99194-4281: Não existe nenhuma IA de classificação mankkkkkkkkk
-27/03/2026 15:15 - +351 967 247 471: isso que eu falei a cima
-27/03/2026 15:15 - +55 15 99194-4281: A IA só está gerando e enviando a mensagem
-27/03/2026 15:15 - +55 15 99194-4281: Isso ai
-27/03/2026 15:16 - +55 21 98036-2005: Compreendi
-27/03/2026 15:16 - +351 967 247 471: tenho TDAH mais nao sou burro kkk
-27/03/2026 15:16 - +55 15 99194-4281: O CRM serve para eu ir até o cliente por uma interface mais organizada
-27/03/2026 15:16 - +351 967 247 471: consegui entender melhor
-27/03/2026 15:16 - +55 15 99194-4281: Eu não disse issokkkkkk
-27/03/2026 15:16 - +351 967 247 471: eu sei
-27/03/2026 15:16 - +55 21 98036-2005: Calma mano relaxa.  Rs
-27/03/2026 15:17 - +55 21 98036-2005: Nesse caso o amigo levantou um ponto aqui.
-27/03/2026 15:17 - +351 967 247 471: Verdade
-27/03/2026 15:17 - +55 15 99194-4281: .
-27/03/2026 15:17 - +55 21 98036-2005: Muda para o postgres
-27/03/2026 15:18 - +55 15 99194-4281: Não usei memória permanente pq é só para ser um lembrete ou coisa simples
-27/03/2026 15:18 - +55 21 98036-2005: Mas ai vai perder rapido, se não tem problema, segue com ele.
-27/03/2026 16:40 - +351 967 247 471: Aleluia, a UAZAPI respondeu agora!
-27/03/2026 16:49 - +55 17 99165-0320: Pessoal tem um garoto novo aqui que quer aprender tecnologia, e fazer carreira o que vcs me falam sobre as certificações Microsoft, Amazon?
-27/03/2026 16:49 - +55 17 99165-0320: Ele tá iniciando
-27/03/2026 16:49 - +55 17 99165-0320: Da pra conseguir trampa na Microsoft?
-27/03/2026 16:51 - +55 15 99194-4281: Mensagem apagada
-27/03/2026 16:52 - +55 15 99194-4281: Meu, não sei vocês mas hoje meu whatsapp tá com um delay insano para tudo
-27/03/2026 16:53 - +55 47 9783-2789: precisa ter bastante conhecimento
-27/03/2026 16:53 - +55 47 9783-2789: as certificações são boas,
-27/03/2026 16:53 - +55 47 9783-2789: porém, requer mais do que isso
-27/03/2026 16:53 - +55 98 8186-3085: Cara, outro dia um cara sênior numa empresa grande de tecnologia aqui no MA, me recomendou que pra iniciar, o melhor caminho é fazer ADS e ir estudando tecnologias de maneira conjunta a isso. Ele disse que com portfólio e entendimento, dá pra conseguir vaga jr em empresa antes mesmo de terminar. 
+Já entendi que não é possível receber esses dados em tempo real no clique  a própria API do Meta consolida os dados com algum delay. Mas queria saber se alguém já montou esse tipo de fluxo no N8N e se tem alguma dica de como estruturar, principalmente na parte de autenticação com a API do Facebook.
 
-PS: antes de considerar meu conselho: não sou da área de tecnologia. Sou marketeiro, e tô estudando tecnologia.
-27/03/2026 16:53 - +55 98 8186-3085: Sobre Amazon, Microsoft... Não sei.
-27/03/2026 16:54 - +55 98 8186-3085: Meu conselho não, o conselho que me deram kkkkkk
-27/03/2026 16:56 - +55 17 99165-0320: Desculpa a ignorância o que é a sigla ADS?
-27/03/2026 16:56 - +55 17 99165-0320: Eu achava que ainda tava em alta
-27/03/2026 16:58 - +55 98 8186-3085: E depois fazer uma pós, em computação se eu não me engano.
-27/03/2026 16:58 - +55 11 97249-9367: E o curso analise e desenvolvimento de sistemas
-27/03/2026 16:58 - Almir - Minha Arte é Essa: Análise e Desenvolvimento de Sistemas
-27/03/2026 16:58 - +55 98 8186-3085: Vou te mandar o áudio do cara no PV @⁨~Tiago Alexandre Mantovani⁩
-27/03/2026 16:58 - +55 98 8186-3085: Isso, perdão.
-27/03/2026 16:59 - +55 11 97249-9367: É famoso por durar 2 anos e ser direto ao ponto, por isso é muito famoso na area de tecnologia
-27/03/2026 17:00 - +55 17 99165-0320: A ta eu sou da época de tecnólogo em processamento de dados kkkk
-27/03/2026 17:00 - +55 17 99165-0320: Obrigado
-27/03/2026 17:20 - +55 15 99194-4281: Meu deus
-27/03/2026 17:20 - +55 15 99194-4281: O que é isso
-27/03/2026 17:29 - Guilherme Lazarotto: O bom ao escolher um curso de ADS é tomar cuidado e ver as recomendações e avaliações da instituição, talvez encontrar ex-alunos e pedir uns feedbacks, olhar a grade curricular
+Obrigado! 🙏
+30/03/2026 02:14 - +55 85 8972-5224: @⁨Guilherme Lazarotto⁩
+30/03/2026 02:14 - +55 85 8972-5224: @⁨Wesley⁩
+30/03/2026 02:32 - +55 21 98973-2007: com certeza ,  essas metricas ai são até basicas ,   da ate pra criar metricas personalizadas no facebook ads.    e da ate pra criar um dashboard pra isso
+30/03/2026 02:35 - +55 21 98973-2007: 
+30/03/2026 02:39 - +55 85 8972-5224: Kra que incrível isso
+30/03/2026 02:41 - +55 85 8972-5224: Kra pois, vou tentar aqui. A aula de capitação de clientes e proposta comercial já saiu ?
+30/03/2026 02:51 - +55 21 98973-2007: ainda não olhei
+30/03/2026 06:21 - +55 35 9878-1412: Bom dia a todos!
+Alguém aqui utiliza Portainer ao invés do Easypanel?
+30/03/2026 10:06 - Wesley: Tava para usar, ele é bem manual, bom para escalar, principalmente para quem tem o conhecimento mais abragente de linha de comandos
+30/03/2026 10:07 - +55 35 9878-1412: um tempo atrás comprei o curso da comunidade sem codar, e lá ensina a usar o portainer
+30/03/2026 10:07 - +55 35 9878-1412: ai n sei por qual caminho seguir
+30/03/2026 10:07 - +55 35 9878-1412: mas realmente o portainer é mais completo
+30/03/2026 10:08 - Wesley: Concertesa se vc tem o curso sobre a utilização dele, começa por ele, ae o EasyPanel vai parecer fichinha pra vc.
+30/03/2026 10:09 - +55 35 9878-1412: easypanel é bem "plug and play"
+30/03/2026 10:10 - +55 35 9878-1412: serve bem dentro do que é proposto no curso daqui
+30/03/2026 10:10 - Wesley: Exatamente! EasyPanel é uma mãe pra quem tá começando.
+30/03/2026 10:13 - +55 17 98111-5225: Bom dia... Alguém tem cupom do Lovable ?
+30/03/2026 10:15 - Wesley: Poxa queria tbm kkk
+30/03/2026 10:16 - +55 21 98441-2525: Gente vcs já viram uma galera que vende créditos no Lovable?
+30/03/2026 10:16 - +55 21 98441-2525: Eu nunca comprei mas vejo anúncio direto
+30/03/2026 10:18 - Wesley: Já mais não confio muito, prefiro aguardar alguma promo da Lovable.
+30/03/2026 10:26 - Dr. Adailto Richard Mendes: UAZAPI de vocês vem desconectando?
+30/03/2026 10:26 - Dr. Adailto Richard Mendes: A minha desconectou 2x nesse final de semana
+30/03/2026 10:29 - Wesley: Vc está utilizando o Whats normal ou whats Bunisses?
+30/03/2026 10:29 - Wesley: Para conectar no uazapi?
+30/03/2026 10:29 - +55 92 9123-6167: Desconfio que é de cartão clonado.
+Ja vi relatos de conta bloqueada.
+30/03/2026 10:30 - Dr. Adailto Richard Mendes: business
+30/03/2026 10:30 - +55 11 97684-6205: aqui normal, não desconectou
+30/03/2026 10:30 - Dr. Adailto Richard Mendes: Uso ele pro setor geral do escritório, onde só clientes fechados tem acesso
+30/03/2026 10:31 - Wesley: Em teoria o bunisses é muito mais estável, acontece de vez em nunca aqui, chegou a entrar em contato com o suporte? para relatar esses erros esporádicos?
+30/03/2026 11:02 - Igor Roman: glr, como faz pro uazapi não desconectar? - a cada 1/2 semanas a gente precisa reconectar
+30/03/2026 11:04 - Wesley: Essa pergunta é melhor fazer para o suporte deles, além de conectar o número pelo Bunisses, indicação própria deles, acredito que isso acontece pq eles devem trocar o sistema, sempre que vc conecta dnv, aparece um ícone de navegador diferente no Whats em dispositivos conectados, provavelmente ocorre uma troca interna de proxy ou algo do gênero na parte deles.
+30/03/2026 11:11 - +55 31 9654-1234: Tem um detalhe que quase ninguém fala, mas vc precisa abrir o whatsapp business no celular de 14 em 14 dias, no mínimo, senão ele desconecta os aparelhos conectados automaticamente. Talvez seja isso.
+30/03/2026 11:12 - +55 31 9654-1234: Talvez seja o caso que mencionei acima
+30/03/2026 11:12 - +55 92 9123-6167: vdd, tive esse problema com o openclaw.
+30/03/2026 11:13 - Igor Roman: boa glr!
+30/03/2026 11:13 - Igor Roman: vou manter ele ligado
+30/03/2026 11:13 - Igor Roman: geralmente eu conectava e deixava a bateria acabar
+30/03/2026 11:13 - Igor Roman: até precisar dnv
+30/03/2026 11:13 - Igor Roman: obrigado @bruno e @⁨Wesley⁩
+30/03/2026 11:13 - Wesley: Bateria do outro celular zerou aqui até kkk
+30/03/2026 11:19 - Expresso Espetaria: Eu vendia
+30/03/2026 11:19 - Expresso Espetaria: 🙊
+30/03/2026 11:19 - Expresso Espetaria: Nunca deu problemas e nem ban nas contas que compraram
+30/03/2026 11:19 - Expresso Espetaria: Os sistemas caíram por um bom tempo. Voltaram semana passada, mas ficaram "caros" d+
+30/03/2026 11:21 - Expresso Espetaria: 🚀 Promoção de fim de semana — só até domingo!
 
-Eu fiz TADS (Tecnologia em Análise e desenvolvimento de Sistemas), conheci muita gente que também fez e ao conversar víamos que a grade curricular era totalmente diferente, o meu foi mais focado em desenvolvimento e tecnologias mesmo, colocar a mão no código, enquanto alguns ensinam mais os processos e gerenciamento de projetos, a parte de UML modelagem de sistemas etc,
-27/03/2026 17:30 - Guilherme Lazarotto: Então tem que dar uma boa olhada se o curso é mais focado na parte teórica e diagramação, ou na parte de por a mão na massa mesmo. Não que um ou outro seja melhor, mas depende o que você quer seguir
-27/03/2026 17:31 - +55 17 99165-0320: Aqui na nossa região as faculdades usam o nome do curso de Sistemas de Informação
-27/03/2026 17:41 - +55 85 8796-2386: Pessoal, tive aula agora coM o @⁨~Bruno Werneck⁩ . Valeu muito a pena!
-27/03/2026 17:42 - +55 85 8796-2386: PS: Foi espontâneo o elogio aqui viu. Ele não pediu propaganda
-27/03/2026 17:42 - Wesley: Excelente Dev/programador/professor não tenho dúvidas
-27/03/2026 17:43 - +55 31 9654-1234: Extremamente lisonjeado, agradeço muito suas palavras.
-27/03/2026 17:43 - Vinão: Iria ser legal o Bruno como professor de matemática. Disciplina que não gosto
-27/03/2026 17:43 - +55 98 8186-3085: Ele é foda. Camisa 10
-27/03/2026 17:44 - +55 98 8186-3085: Acredito 100%. Quando tive aula com ele e vi o resultado, tenho a mesma postura sempre que possível
-27/03/2026 17:44 - +55 31 9654-1234: Mas pq vc não gosta? Foi algum professor chato no passado ou alguma dificuldade?
-27/03/2026 17:47 - Vinão: Depois que a matemática saiu de calcular número para letras (álgebra). Aí sim que ficou chato
-27/03/2026 17:48 - +55 31 9654-1234: Ah, não, é o mais legal, é aí que começa a diversão! ahahahah
-27/03/2026 17:49 - Vinão: Bruno parece meu professor de química no ensino médio em 2019. É igual o rosto
-27/03/2026 17:49 - +55 31 9654-1234: Vamos mudar essa mentalidade, Vinão, matemática é lindo e é fácil.
-27/03/2026 17:51 - +55 15 99194-4281: Matemática é a melhor matéria
-27/03/2026 17:51 - +55 15 99194-4281: Quando começa a álgebra aí você precisa usar a cabeça, melhor ainda!
-27/03/2026 17:51 - +55 15 99194-4281: O que torna a matemática chata, é ser obrigado a enfrentar ela sem p conhecimento necessário
-27/03/2026 17:51 - +55 15 99194-4281: Quando você não entende como resolver os problemas, fica chato como qualquer outra coisa...
-27/03/2026 17:52 - +55 15 99194-4281: Ainda mais ser obrigado a desempenhar bem em algo que você não foi ensinado a aprender
-27/03/2026 17:52 - Vinão: Aí que tá o problema. Gosto de pensar para fazer o que eu gosto.  O que eu não gosto nem perco tempo.
-27/03/2026 17:52 - +55 15 99194-4281: Conhecer o problema é o primeiro passo para solucioná-lo...
-27/03/2026 17:53 - +55 21 98973-2007: <Mídia oculta>
-27/03/2026 18:04 - +55 21 98036-2005: Ta falando serio ou ta na zueira? não me entenda mal.
-27/03/2026 18:04 - Vinão: Interprete como quiser
-27/03/2026 18:06 - +55 21 98036-2005: Não perguntei por mal não, que tu parece safo, mas também é zueira.
-27/03/2026 18:11 - +55 11 95341-3667: além de um homem espetacular
-27/03/2026 18:12 - +55 85 9167-0420: Mensagem apagada
-27/03/2026 18:13 - +55 85 9167-0420: Papo é que querendo ou não os dois devem fazer parte da vida da pessoa... não é "dificultar a matéria" e sim desenvolver uma lógica através de um problema.
-27/03/2026 18:13 - Vinão: exact
-27/03/2026 18:14 - +55 85 9167-0420: O que mais vejo é regra de 3, coisa de ver muito na vida e fazer parte da matemática.
-27/03/2026 18:14 - Vinão: lá ele
-27/03/2026 18:14 - +55 85 9167-0420: Porcentagem também... imagina não saber calcular um desconto de produto
-27/03/2026 18:15 - Vinão: alguém do grupo ai já usou essa IA brasileira ? Maritaca AI, direto aparece no meu instagram
-27/03/2026 18:17 - Vinão: <Mídia oculta>
-27/03/2026 18:17 - Vinão: <Mídia oculta>
-27/03/2026 18:18 - +55 85 9167-0420: Como que pronuncia esse "sabia"
-27/03/2026 18:18 - +55 85 9167-0420: Não querendo falar nada mas que layoutzinho...
-27/03/2026 18:19 - +55 85 9167-0420: Parece Google Stitch
-27/03/2026 18:21 - +55 21 98036-2005: Agora deve começar aparecer na minha time line também. rsrs 
-Essa ainda não vi.
-27/03/2026 18:22 - +55 21 98036-2005: o cara abrasileirou a IA, daqui a pouco alguém lança o BrasaAI. rs <Mensagem editada>
-27/03/2026 18:47 - ‎+595 984 013797 mudou de número de telefone. <b>Deseja enviar uma mensagem ou adicionar o novo número?</b>
-27/03/2026 19:10 - +55 71 8895-0860: Oi, Tiago
-Fala para ele dar uma olhada nesse curso gratuito na área de segurança de TI:
-https://hackersdobem.org.br/
+Pessoal, enquanto o método de fornecimento tá no ar, aproveita:
 
-Não tenho referência, mas pareceu interessante. Se alguém tiver conhecimento do curso pode se manifestar para ajudar aqui.
-27/03/2026 19:18 - +55 17 99165-0320: O @⁨~Bruno Werneck⁩ é top segunda tenho uma mentoria com ele, trocamos uma ideia hoje e já aprendi muita coisa, excelente pessoa e profissional
-27/03/2026 19:20 - +55 17 99165-0320: Obrigado por compartilhar amigo
+300 cr -> 84,90
+500 cr -> 139,90
+1.000 cr → ~R$ 264,90~ → R$ 224,90
+2.000 cr → ~R$ 497,90~ → R$ 412,90🔥
+
+Esse acesso pode mudar sem aviso. 
+
+Quem garante agora, garante o preço.
+
+Me chama no privado 👇
+30/03/2026 11:22 - Expresso Espetaria: Voltou sábado. Só durou até ontem
+30/03/2026 11:22 - Expresso Espetaria: Sistema caiu novamente
+30/03/2026 11:25 - +55 66 9997-3063: vixi
+30/03/2026 11:26 - +55 15 99194-4281: Mensagem apagada
+30/03/2026 11:26 - +55 15 99194-4281: Se lasca viu
+30/03/2026 11:27 - Expresso Espetaria: Que nada
+30/03/2026 11:27 - Expresso Espetaria: Desde dezembro
+30/03/2026 11:33 - +55 15 99194-4281: ??????
+30/03/2026 11:36 - +55 43 9107-3357: Onde issoooo 😱
+30/03/2026 11:38 - Douglas Rosato: Também quero onde.
+30/03/2026 11:38 - +55 11 98128-3114: Bom dia rapaziada
+30/03/2026 11:39 - +55 11 98128-3114: Tem alguma aula específica que ensina como fazer upload e modificar para base 64? <Mensagem editada>
+30/03/2026 11:39 - +55 43 9107-3357: <Mídia oculta>
+30/03/2026 11:47 - Vinão: Olha as avaliações sempre <Mensagem editada>
+30/03/2026 11:47 - Wesley: Bom dia chegou a ver a aula de envio de mídia? o conceito se aplica para qualquer mídia: https://curson8n.ticto.club/content/50722/module/173761/lesson/458538
+30/03/2026 11:48 - +55 11 99630-0566: Mensagem apagada
+30/03/2026 11:49 - Douglas Rosato: Se comprar e der bom me avisa
+30/03/2026 11:49 - Douglas Rosato: Tô migrando pro claude meu projeto
+30/03/2026 11:52 - ORBI IA: Bom dia. Uma ajuda, na verdade uma dica. Sobre a recorrência mensal, o que vcs colocam com valor fixo, tipo vps, api, etc. E se puder dar uma dica de valores pra eu ter uma noção. Porque o que vi algumas vezes que vou tentar fechar com alguém é que trava nesse valor.
+30/03/2026 11:52 - Vinão: Antes ele tava vendendo uma de 500 dólares de crédito por 93 reais
+30/03/2026 11:53 - +55 35 9878-1412: 
+30/03/2026 11:54 - Vinão: Uns 2 a 7 dias
+30/03/2026 11:54 - +55 35 9878-1412: uh
+30/03/2026 11:54 - +55 35 9878-1412: achei que era instantâneo kk
+30/03/2026 11:54 - +55 35 9878-1412: tomei na orelha
+30/03/2026 11:54 - +55 15 99194-4281: Nussss
+30/03/2026 11:59 - Wesley: Acima de 1K para as integrações que agente monta aqui no curso, tem alunos fechando negócio na casa dos 7K(Deve ser extremamente bem montado o esquema de negociação).
+Vc pode cobrar mensalmente tbm para manter o sistema e tbm repassar os custos de I.A e correlacionados/equivalentes para o cliente.
+Ou cobrar mais o mensal e assumir todos os custos, vai oq achar melhor e ir testando.
+Fora isso, ter uma abordagem boa, talvez um test drive se vc qualificar aquele cliente com alta chance de conversão e montar um Demo do Bot para ele "Viciar", assim vc ganha confiança e resolve a dor da pessoa mostrando eficiência e prova social da qualidade do seu serviço.
+30/03/2026 11:59 - Wesley: De resto é só ir aplicando e ampliando oq eu disse, para oq faz mais sentido para vc.
+30/03/2026 12:00 - Wesley: Acima de tudo: Valorize seu tempo e trabalho. <Mensagem editada>
+30/03/2026 12:03 - ORBI IA: Sim, a implantação estou fazendo acima disso que vc mencionou. E a recorrência fica entra 550-1000. Sem surpresa pro cliente.
+30/03/2026 12:03 - ORBI IA: Com certeza. Isso é o mais importante.
+30/03/2026 12:03 - ORBI IA: Valeu... obrigado
+30/03/2026 12:05 - Wesley: Sim já está no caminho certo, daqui para frente, é só para cima 🚀 <Mensagem editada>
+30/03/2026 12:07 - +55 31 9146-5886: Além do que mencionaram aí, pode ser também uma questão de público ou de apresentação de valor percebido na proposta, uma forma de conseguir cruzar essas informações é perguntando para o cliente do orçamento o motivo de não fechar com você, você consegue isso até mesmo através de um formuário simples no próprio n8n ou então em um bate papo direto com o cliente, pegar o telefone e questionar mesmo, sempre via ligação se possível pois a pessoa não consegue fugir da resposta, seja ela negativa ou positiva. Fazer esse follow up vai te ajudar e entender isso também.
+30/03/2026 12:13 - ORBI IA: Show. Vc tem razão. Feedback é essencial pra entender. Valei por mais essa dica
+30/03/2026 12:13 - Vinão: <Mídia oculta>
+30/03/2026 12:33 - +55 53 9142-1888: Pessoal, meu agente ta usando o modelo 5.2 mas ta gastando bastante tokens, por acaso o GPT-5 mini é bom? Alguém ta usando aí?
+30/03/2026 12:34 - +55 15 99194-4281: ☠️
+30/03/2026 12:34 - +55 15 99194-4281: Temos um multimilionário entre nós
+30/03/2026 12:34 - +55 15 99194-4281: GPT 5.2
+30/03/2026 12:34 - +55 31 9654-1234: eu acho o 5 mini muito lento, to usando o 4.1-mini mesmo
+30/03/2026 12:35 - Wesley: Bom o mini é mais barato, só que vc precisa viabilizar se faz sentido para sua logística o uso especifico desse agente, algo que funciona para fulano talvez não funcione para vc, já que cada agente tem seus pontos e diferenciais. podem ser bom para uma aplicação e péssimo para outro, se quiser o fator busca de (Web search e outros features), o 5.1 mini já se mostra bom. <Mensagem editada>
+30/03/2026 13:45 - +55 19 97153-8562: Olha… entrando nessa linha de raciocínio, a gente começa a perceber que essa decisão, que à primeira vista parece simplesmente uma escolha entre custo e desempenho, na verdade abre um leque bem mais amplo de variáveis que precisam ser consideradas com um certo cuidado estratégico.
+
+Porque assim, quando você fala que o “mini é mais barato”, isso é uma verdade objetiva — não tem muito o que discutir. Só que o ponto central não está exatamente no preço isolado, e sim no contexto em que esse preço está inserido. Às vezes o barato resolve perfeitamente, às vezes ele vira caro justamente porque não entrega o que aquela aplicação específica exige.
+
+E aí entra aquela velha questão: “depende” — que ninguém gosta de ouvir, mas que quase sempre é a resposta mais honesta.
+
+Cada agente tem um conjunto de características próprias: alguns são mais leves, mais rápidos, mais econômicos; outros têm mais capacidade de raciocínio, melhor integração com ferramentas, maior robustez em tarefas complexas. Só que isso não significa que um é “melhor” que o outro de forma absoluta. Significa que cada um foi pensado para um tipo de cenário.
+
+Então, quando você fala de “viabilizar se faz sentido para a logística”, isso é exatamente o ponto-chave. Porque logística aqui não é só custo financeiro — é fluxo de uso, volume de requisições, criticidade das respostas, necessidade de precisão, tempo de resposta, integração com outros sistemas… tudo isso entra na conta.
+
+Tem casos em que um agente mais simples resolve 100% do problema e ainda sobra. E tem outros em que ele começa a falhar em pontos específicos — não porque ele é ruim, mas porque ele simplesmente não foi feito para aquilo. E aí você começa a ter retrabalho, ajustes, contornos… e no final das contas, o ganho inicial de custo pode se diluir.
+
+Sobre o ponto de web search e features adicionais, aí já começa a entrar um critério mais funcional. Se o seu fluxo depende de informação atualizada, consulta externa, ou alguma forma de enriquecimento dinâmico de dados, então já não é só uma questão de “responder bem”, mas de acessar melhor. E nesse aspecto, realmente, o 5.1 mini já começa a se posicionar como um meio-termo interessante — ele não é o mais parrudo, mas também não fica tão limitado.
+
+No fim das contas, é quase como escolher ferramenta de trabalho: não adianta pegar a mais barata nem a mais completa sem critério. O ideal é entender exatamente o que você precisa resolver e aí encaixar o agente que melhor se adapta — porque um mesmo modelo pode ser excelente em um cenário e totalmente inadequado em outro.
+
+Resumindo, mas sem resumir muito:
+não é sobre qual é melhor, é sobre qual faz mais sentido dentro do seu contexto específico, considerando não só custo, mas comportamento, capacidade e aderência ao problema que você quer resolver.
+
+E é aí que mora toda a graça (ou dor de cabeça) da decisão
+30/03/2026 13:47 - +55 15 99194-4281: <Mídia oculta>
+30/03/2026 13:48 - Wesley: <Mídia oculta>
+30/03/2026 13:48 - Wesley: @⁨~Eduardo Soares Crespo⁩
+30/03/2026 14:46 - +55 85 9167-0420: Galera, boa tarde
+30/03/2026 14:46 - +55 85 9167-0420: pensando em oferecer um crm + ia de whatsapp pro cliente
+30/03/2026 14:46 - +55 85 9167-0420: onde eu hospedaria esse crm?
+30/03/2026 14:46 - +55 85 9167-0420: em um subdominio do meu dominio?
+30/03/2026 14:46 - +55 85 9167-0420: implantaria no dominio do cliente se ele já tiver um site?
+30/03/2026 14:49 - Wesley: Depende de como vc está vendendo essa solução, acho mais interessante esse sistema ser propriedade intelectual sua e ""vender o uso dele"" para poder escalar para vários clientes.
+Ou seja tudo hospedado para vc mesmo, não sei se a vercel.com lida bem bem com site dinámico, é mais para site estático. <Mensagem editada>
+30/03/2026 15:05 - +55 21 98973-2007: Na VPS ué.    Vão hospeda na vercel por exemplo.  A Vercel é sua ?  Não.  Mas a VPS é.   Vai plantar no terreno dos outros. Primeira regra pra escalabilidade.
+30/03/2026 15:05 - +55 21 98973-2007: Eu tenho página dashboard site tudo na VPS
+30/03/2026 15:07 - +55 21 98973-2007: Antes eu tinha hospedagem paga pra 50 sites e a VPS agora nem pago mas o plano de hospedagem
+30/03/2026 15:08 - +55 21 98973-2007: Mas dependendo do seu negócio é bom ter.   Pra mim é legal ter hospedagem paga
+30/03/2026 15:22 - +55 15 99194-4281: Como vc faz para hospedar algo na sua VPS Fernando?
+30/03/2026 15:23 - +55 21 98973-2007: Via Github.com
+30/03/2026 15:24 - +55 31 9654-1234: Vc assistiu a live do flux action? Nela eu mostro como "instalar" um site ou app para a vps usando o easypanel.
+30/03/2026 15:24 - +55 15 99194-4281: Não 😢
+30/03/2026 15:25 - +55 31 9654-1234: Mas vc tem acesso à pasta compartilhada pq eu te enviei
+30/03/2026 15:25 - +55 15 99194-4281: Hospeda no Github e usa o easypanel para puxar ela?
+30/03/2026 15:25 - +55 15 99194-4281: <Mídia oculta>
+30/03/2026 15:26 - +55 21 98973-2007: <Mídia oculta>
+30/03/2026 15:26 - +55 21 98973-2007: Olha ai
+30/03/2026 15:27 - Thiago Esteves: Senhores, boa tarde! Tudo bem?
+30/03/2026 15:27 - +55 11 98108-2421: <Mídia oculta>
+30/03/2026 15:28 - +55 31 9654-1234: evolution?
+30/03/2026 15:28 - Thiago Esteves: Alguém que já tem o conhecimento de desenvolver o o agente de ia no app quer tocar um projeto para mim?
+30/03/2026 15:28 - +55 15 99194-4281: Zé do rolo
+30/03/2026 15:28 - +55 31 9654-1234: pagando bem...
+30/03/2026 15:29 - +55 15 99194-4281: Explana aí para nós
+30/03/2026 15:29 - +55 11 98108-2421: uazapi
+30/03/2026 15:29 - Thiago Esteves: Vou chamar no privado.
+30/03/2026 15:29 - Thiago Esteves: Vou chamar no privado
+30/03/2026 15:34 - +55 31 9654-1234: Eu só tenho 2 chatwoots, um meu e outro de cliente. Não consegui reproduzir seu erro com meu chatwoot nem meu cliente. Tudo normal. 
+Está instalado assim pro meu cliente: 1 vps kvm2 para o n8n/noco/crm, 1 vps kvm2 para chatwoot. 
+Pra mim: 1 vps kvm2 pra tudo, mas é só teste, não tem nada rodando em produção além do chatwoot
+30/03/2026 15:36 - Wesley: Bruno, vc otimiza seu chatwoot, faz alguma rotina nele?
+30/03/2026 15:36 - Wesley: Vi que ele é pesadinho e ""Acumulador""" kkk
+30/03/2026 15:37 - +55 11 98108-2421: está atualizado? começou esse erro quando atualizei recentemente
+30/03/2026 15:37 - +55 66 9997-3063: qual app? eu estou fazendo um pelo lovable e integrei um agente de ia do n8n
+30/03/2026 15:37 - +55 31 9654-1234: Não faço nada de mais, só que no caso desse cliente eu precisei de um novo servidor pq ele tem 9 chatbots, ia dar gargalo se tudo estivesse num só VPS
+30/03/2026 15:38 - +55 11 98108-2421: <Mídia oculta>
+30/03/2026 15:43 - +55 31 9654-1234: Vc configurou um domínio pra esse chatwoot? Depois de configurar o domínio, vc atualizou as variáveis de ambiente tanto do chatwoot quanto do sidekiq?
+30/03/2026 15:45 - +55 11 98108-2421: mexi em nada, só atualizei porque ele tava pedindo pra atualizar
+30/03/2026 15:45 - +55 11 98108-2421: só implantei pra ele atualizar
+30/03/2026 15:46 - +55 85 9167-0420: alguém aqui NÃO usa o chatwoot?
+30/03/2026 15:47 - +55 66 9997-3063: eu
+30/03/2026 15:47 - +55 66 9997-3063: nunca usei
+30/03/2026 15:47 - +55 66 9997-3063: nunca nem vi como funciona
+30/03/2026 15:48 - +55 85 9167-0420: tem quantos projetos sem?
+30/03/2026 15:48 - +55 31 9654-1234: <Mídia oculta>
+30/03/2026 15:49 - +55 15 99194-4281: Eu também nao
+30/03/2026 15:49 - +55 15 99194-4281: Faço nem ideia
+30/03/2026 15:49 - +55 85 9167-0420: vem dado certo fazer os projetos?
+30/03/2026 15:50 - +55 15 99194-4281: Sim
+30/03/2026 15:50 - +55 15 99194-4281: Até o momento fiz app para gestão geral no lovable
+30/03/2026 15:50 - +55 15 99194-4281: E os bots de atendimento no whats
+30/03/2026 15:50 - +55 15 99194-4281: Diretamente
+30/03/2026 15:50 - +55 15 99194-4281: Chatwoot é bem interessante, confesso
+30/03/2026 15:50 - +55 15 99194-4281: Mas acredito que dá pra desenrolar suave sem ele
+30/03/2026 15:50 - +55 85 9167-0420: e pra fazer o funil de leads?
+30/03/2026 15:50 - +55 66 9997-3063: é tipo um CRM?
+30/03/2026 15:51 - +55 15 99194-4281: Lovable man
+30/03/2026 15:51 - +55 15 99194-4281: Kanban no lovable e já erakkkkkk
+30/03/2026 15:51 - +55 15 99194-4281: Do lovable eu crio botões para fazer contato
+30/03/2026 15:51 - +55 15 99194-4281: Aí o lovable dispara um fluxo no n8n que ativa o bot para disparo
+30/03/2026 15:52 - +55 15 99194-4281: Apartir daí, o bot recebe o contexto do contato e toca o barco
+30/03/2026 15:52 - +55 85 9167-0420: ue krai kkkkkkkk
+30/03/2026 15:52 - +55 85 9167-0420: filtrar é manual?
+30/03/2026 15:52 - +55 85 9167-0420: tipo de contatado etc?
+30/03/2026 15:52 - +55 85 9167-0420: ou o gpt retorna com abse no contexto como ce disse?
+30/03/2026 15:52 - +55 15 99194-4281: .
+30/03/2026 15:52 - +55 15 99194-4281: Veja aqui ó
+30/03/2026 15:52 - +55 31 9654-1234: É uma solução de atendimento multicanal, vc agrega todos os canais de atendimento num só app (whats, telegram, insta, messenger, bot de site, email, app)
+30/03/2026 15:53 - +55 15 99194-4281: O filtro é feito manualmente, pq no meu caso tenho pouco fluxo <Mensagem editada>
+30/03/2026 15:53 - +55 85 9167-0420: agora eu saquei
+30/03/2026 15:53 - +55 85 9167-0420: ele capta a 'intenção da mensagem'
+30/03/2026 15:53 - +55 85 9167-0420: matou a charada
+30/03/2026 15:54 - +55 15 99194-4281: Isso
+30/03/2026 15:54 - +55 15 99194-4281: Bota como contexto no redis
+30/03/2026 15:54 - +55 15 99194-4281: E envia a mensagem
+30/03/2026 15:55 - +55 15 99194-4281: Apartir daí o bot de atendimento é que vai responder o cara
+30/03/2026 15:55 - +55 15 99194-4281: E o bot de atendimento tem as tools necessárias
+30/03/2026 15:55 - +55 85 9167-0420: ei glr
+30/03/2026 15:55 - +55 85 9167-0420: é inválido colocar um rag adaptado no system prompt ao invés de pedir pra que ele faça a leitura do rag toda vez?
+30/03/2026 15:57 - +55 17 98111-5225: Estamos em ano de copa do mundo. E aproveitando a onda, fiz uma brincadeira retro da Copa de 94 (Tetracampeonato) e o chat da época: mIRC. (isso é para os 40+... rsrs)
+Utilizando IA e Lovable: https://copa-retro-chat.lovable.app/
+30/03/2026 15:59 - +55 17 98111-5225: Digite um apelido e entre no chat!
+30/03/2026 16:00 - +55 11 98108-2421: <Mídia oculta>
+30/03/2026 16:03 - +55 21 98973-2007: Com lovable né
+30/03/2026 16:05 - +55 21 98973-2007: Lovable e uma bosta.  Só serve pra começar mesmo. Aquilo é uma merda faz tudo genérico igual pra todo mundo.   Mas pra começar
+30/03/2026 16:06 - +55 47 9783-2789: nunca conheci ninguém que realmente escalou algo com o lovable
+30/03/2026 16:06 - +55 21 98973-2007: E uma bosta
+30/03/2026 16:06 - +55 21 98973-2007: Essa é a verdade
+30/03/2026 16:07 - +55 15 99194-4281: Fernando é meio sanguinário né...
+30/03/2026 16:07 - +55 21 98973-2007: Quebra um galho pra quem tá começando.  Mas se ficar olhando só pra frente com rédeas de cavalo sem ver o que tem do lado só vão ver lovable mesmo
+30/03/2026 16:08 - +55 21 98973-2007: RJ.  Tiro porrada e bomba
+30/03/2026 16:09 - +55 31 9654-1234: Meu n8n tava assim semana passada, reiniciei o VPS e voltou
+30/03/2026 16:10 - +55 11 98108-2421: Tá osso aqui pra mim, tudo dando errado hoje
+30/03/2026 16:10 - +55 21 98973-2007: Horizons da hostinger pra sites faz sites muito mas lindos e profissionais do que lovable
+30/03/2026 16:11 - +55 31 9654-1234: Whatsapp tá com muita instabilidade ultimamente. Semana passada tive problema de cliente falando que não recebiam mensagens, enviavam normalmente, mas não recebiam.
+30/03/2026 16:11 - +55 31 9654-1234: https://downdetector.com.br/fora-do-ar/whatsapp/
+30/03/2026 16:12 - +55 31 9654-1234: Eu acho que pode ser porque a Meta está implantando novas funcionalidade como os nomes de usuário. Também semana passada recebi emails da Meta falando sobre essa nova funcionalidade que começa a ser implantada agora no final de março
+30/03/2026 16:12 - +55 31 9654-1234: Mas estou especulando, não tenho evidências disso
+30/03/2026 16:13 - +55 11 98108-2421: Pior que parece que todos os serviços decidiram explodir juntos, primeiro foi o uazapi, depois foi o chatwoot e agora que tudo resolver rodar, o n8n n carrega meus models
+30/03/2026 16:15 - +55 11 98108-2421: nenhum chat model tá carregando os models kkkkkkkkkkk
+30/03/2026 16:23 - +55 21 98973-2007: Mensagem apagada
+30/03/2026 16:23 - +55 21 98973-2007: Olha aí.
+30/03/2026 16:26 - +55 11 98108-2421: <Mídia oculta>
+30/03/2026 16:29 - +55 21 98973-2007: joga tudo fora e começa do zero novamente
+30/03/2026 16:30 - +55 21 98973-2007: vai no terminal da vps  limpa tudo,  que sempre  fica algum lixo escodido  , e vem fazendo tudo do zero,
+30/03/2026 16:33 - +55 31 9654-1234: Recentemente o google anunciou que ia tirar o modelo 2.5 flash do ar, eu acho que foi isso mesmo, e era pro pessoal migrar pro 3 flash.. vou pesquisar aqui mas tenho a nítida impressão que vi isso em algum lugar
+30/03/2026 16:34 - +55 31 9654-1234: Achei aqui, vão desativar os modelos 2.0 flash e flash lite, aconselhando a migrar pro 3.1 flash lite
+30/03/2026 16:35 - +55 31 9654-1234: <Mídia oculta>
+30/03/2026 16:35 - +55 11 98108-2421: é coisa do n8n, nem é do gemini
+30/03/2026 16:35 - +55 11 98108-2421: testei com outros chat models e nenhum carrega
+30/03/2026 16:35 - +55 11 98108-2421: olha ali na parte model, nem carrega essa porra, não faço a minima ideia do porque
+30/03/2026 16:36 - +55 11 98108-2421: todos chat model estão assim
+30/03/2026 16:36 - +55 21 98973-2007: olha a versão do  teu n8n ai ,
+30/03/2026 16:37 - +55 11 98108-2421: Mano, já alterei pra todas versões, stable, latest, coloquei manualmente agora pra 2.14.2 que é a stable
+30/03/2026 16:39 - +55 21 98973-2007: <Mídia oculta>
+30/03/2026 16:39 - +55 21 98973-2007: Version 2.12.3
+30/03/2026 16:39 - +55 21 98973-2007: vou ver a outra versão do outro n8n
+30/03/2026 16:40 - +55 21 98973-2007: <Mídia oculta>
+30/03/2026 16:41 - +55 85 8796-2386: Mensagem apagada
+30/03/2026 16:41 - +55 21 98973-2007: versão muito nova sempre  da problema,   teve uma vez que ela  não achava uma  tool do google calendar nem por reza braba , e o pessoal da comunidade falando
+30/03/2026 16:51 - +55 11 98108-2421: algum de vocês usa contabo? Eles implementaram firewall agora, acho que é isso
+30/03/2026 16:56 - Wesley: Estou sabendo agora
+30/03/2026 16:56 - +55 11 98108-2421: era isso mesmo
+30/03/2026 16:56 - +55 11 98108-2421: coloquei as regras no firewall e voltou a funcionou
+30/03/2026 16:56 - +55 11 98108-2421: vagabundos ordinários
+30/03/2026 16:57 - +55 11 98108-2421: <Mídia oculta>
+30/03/2026 16:58 - +55 11 98108-2421: <Mídia oculta>
+30/03/2026 16:58 - +55 21 98973-2007: Valeu mam
+30/03/2026 16:58 - +55 21 98973-2007: Exculachou , isso ai
+30/03/2026 16:58 - +55 11 98108-2421: <Mídia oculta>
+30/03/2026 17:01 - +55 31 9654-1234: Experimenta tirar essa 5678. Ela é a porta interna do n8n, não deveria ser exposta no firewall.
+30/03/2026 17:02 - +55 31 9654-1234: Firewall vc deixa somente as portas 80 e 443. A 22 vc só libera se precisar acessar via ssh com frequência, senão deixa desativada e ativa só quando precisar
+30/03/2026 17:09 - +55 11 98108-2421: comemorei muito cedo, parou de funcionar
+30/03/2026 17:09 - +55 11 98108-2421: sei lá o que pode ser
+30/03/2026 17:48 - +55 61 9639-1493: <Mídia oculta>
+30/03/2026 18:51 - +55 98 8885-3060: <Mídia oculta>
+30/03/2026 19:02 - Wesley: Boa tarde consegui mostrar o Node inteiro? Aqui ele foi para um caminho já
+30/03/2026 19:10 - +55 98 8885-3060: <Mídia oculta>
+30/03/2026 19:10 - +55 98 8885-3060: <Mídia oculta>
+30/03/2026 19:10 - +55 98 8885-3060: só sai texto ou audio
+30/03/2026 19:11 - +55 98 8885-3060: se mandar imagem sai pela de audio
+30/03/2026 19:11 - +55 98 8885-3060: a config de imagem deixei aberto pra config
+30/03/2026 19:12 - +55 98 8885-3060: <Mídia oculta>
+30/03/2026 19:14 - +55 98 8885-3060: <Mídia oculta>
+30/03/2026 19:16 - Almir - Minha Arte é Essa: no payload do webhook tem o mimetype?
+30/03/2026 19:16 - Wesley: `messageType` = media, mesmo enviando audio só chega o nome media nele?
+30/03/2026 19:17 - +55 11 95341-3667: galerinha eu to sentindo o prompt do meu agente muito obsoleto, voces tao usando alguma ferramenta especifica pra dar uma revitalizada no prompt de voces?
+30/03/2026 19:17 - +55 98 8885-3060: já fiz só sai pelo audio
+30/03/2026 19:18 - +55 98 8885-3060: sim
+30/03/2026 19:20 - Wesley: Projeto no claude: Formatador de Prompts, lá eu coloco as melhores instruções e modelos de referencia para montagem de prompt dinamicos, estilo de instruções e hierarquia de mardown `.md`.
+Ae eu vou vendo a comunidade oq é melhor oq é pior, prompt recursivo tbm...etc.
+30/03/2026 19:20 - Wesley: Não, eu digo: quando vc manda aúdio, o `messageType` trás oq?
+30/03/2026 19:21 - +55 98 8885-3060: audio, media
+30/03/2026 19:21 - +55 11 95341-3667: eu fiz meu prompt a uns 8 meses atras, e tenho percebido que o agente tem perdido as referencias, os guides que foram feitos no prompt, e toda vez que limpo a memoria é aquela salada
+30/03/2026 19:21 - Almir - Minha Arte é Essa: E com ele que vc tem que ver o tipo do arquivo para condicionar ao switch la vem a informação do tipo do arquivp?
+30/03/2026 19:22 - +55 98 8885-3060: não tá é saindo pela saida media que tô criando
+30/03/2026 19:22 - +55 98 8885-3060: audio tá ok
+30/03/2026 19:22 - +55 98 8885-3060: o problema é imagem pra ler
+30/03/2026 19:23 - +55 98 8885-3060: <Mídia oculta>
+30/03/2026 19:23 - +55 98 8885-3060: saída 2 nunca sai nada
+30/03/2026 19:24 - +55 98 8885-3060: 0 texto, 1 audio, 2 imagem, mas nuna sai por 2
+30/03/2026 19:38 - +55 98 8885-3060: pode ajudar?
+30/03/2026 19:39 - Wesley: Oi mostra seu webhook
+30/03/2026 19:39 - Wesley: e o node de dados se possível
+30/03/2026 19:40 - Almir - Minha Arte é Essa: Aqui parece que no campo do media esta sem a variavel para sai no switch tem que puxar do json
+30/03/2026 19:40 - Almir - Minha Arte é Essa: Do webhook
+30/03/2026 19:45 - +55 85 9167-0420: Tem umas copy tão bem elaborada
+30/03/2026 19:45 - +55 85 9167-0420: que dá vontade de ver e replicar o produto, só pra falar a mesma coisa
+30/03/2026 19:45 - +55 85 9167-0420: tipo, você sabe que o texto/design vai reter lead 🤡 <Mensagem editada>
+30/03/2026 19:52 - +55 98 8885-3060: sim, é isso que tô precisando
+30/03/2026 19:52 - Douglas Rosato: alguem aqui ja fez atendente para agencia de viagens?

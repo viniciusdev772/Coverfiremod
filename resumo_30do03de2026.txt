@@ -1,0 +1,96 @@
+30/03/2026
+
+*Resumo do Grupo - Curso N8N Fácil - Guilherme Lazarotto* 📆 30/03/2026
+
+📌 *Assunto Principal:*
+Dia movimentado e diverso, com dúvidas sobre integração do N8N com Facebook Ads, debate sobre Portainer vs EasyPanel, desconexões recorrentes na Uazapi, venda de créditos Lovable gerando polêmica, discussão sobre precificação e recorrência mensal de serviços de IA, modelos de IA (GPT-5 mini vs 4.1 mini) e consumo de tokens, hospedagem de CRM e sites na VPS própria, problemas com Chatwoot após atualização, firewall da Contabo bloqueando o N8N, e suporte técnico colaborativo como sempre.
+
+💡 *Assuntos Relevantes:*
+
+🔧 _Dicas Técnicas e Solução de Problemas:_
+Desconexão da Uazapi resolvida ao manter o WhatsApp Business aberto no celular a cada 14 dias. Firewall novo da Contabo bloqueando portas do N8N — resolvido configurando regras para portas 80 e 443. Chatwoot com erro após atualização — variáveis de ambiente e domínio precisam ser re-verificados. N8N não carregando modelos de chat — versões muito novas podem causar incompatibilidades. Google desativando modelos Gemini 2.0 Flash e Flash Lite, recomendando migração para 3.1 Flash Lite.
+
+💼 _Negócios e Estratégia:_
+Precificação de implantação acima de R$1.000 e recorrência entre R$550-1.000. Orientação de Wesley: integrações montadas no curso podem ser vendidas na casa dos R$7.000. Estratégia de test drive para leads qualificados. Importância do follow-up para entender por que clientes não fecham. Copys bem elaboradas retêm leads.
+
+🖥️ _Infraestrutura e Hospedagem:_
+Debate sobre hospedar CRM na VPS própria vs serviços terceiros (Vercel). Regra de escalabilidade: hospedar no seu próprio terreno (VPS), não depender de plataformas alheias. GitHub + EasyPanel para deploy de sites e apps na VPS. Portainer como alternativa mais completa ao EasyPanel para quem tem conhecimento de linha de comando.
+
+🔗 *Links Compartilhados:*
+• Aula de envio de mídia (curso): curson8n.ticto.club/content/50722/module/173761/lesson/458538
+• Copa Retro Chat (projeto Lovable): copa-retro-chat.lovable.app
+• Horizons da Hostinger: mencionado como alternativa para sites profissionais
+• Downdetector WhatsApp: downdetector.com.br/fora-do-ar/whatsapp/
+
+━━━━━━━━━━━━━━━━━━━━
+
+*Tema: Integração N8N com Facebook Ads via API* ⏰ 02:14 – 02:51
+Membro (+55 85) perguntou se é possível criar um workflow no N8N que consulte automaticamente métricas do Facebook Ads e envie resumo pelo WhatsApp em horários programados (9h e 18h). A ideia: o N8N busca dados da campanha via API da Meta (alcance, cliques, CPC, leads) e manda mensagem formatada no WhatsApp. O membro já entendeu que a API da Meta consolida dados com delay e não funciona em tempo real. Outro membro (+55 21) confirmou que é totalmente viável e que as métricas citadas são até básicas — é possível criar métricas personalizadas e até um dashboard completo. O membro mencionou a "outridade de campo" como próximo alvo e perguntou sobre a aula de captação de clientes e proposta comercial. _Conecta com o tema do dia 26 sobre N8N via MCP no Facebook Ads, que ficou sem resposta conclusiva._
+
+*Tema: Portainer vs EasyPanel* ⏰ 06:21 – 10:10
+Membro (+55 35) perguntou se alguém usa o Portainer ao invés do EasyPanel. Wesley explicou que o Portainer é mais manual e bom para escalar, ideal para quem tem conhecimento abrangente de linha de comandos. O membro revelou que já comprou um curso da comunidade "Sem Codar" que ensina Portainer. Wesley aconselhou: se já tem o curso, comece por ele, pois depois o EasyPanel vai parecer "fichinha". O consenso: EasyPanel é "plug and play" e serve bem para o proposto no curso do Guilherme; Portainer é mais completo mas exige mais conhecimento. _Complementa a discussão do dia 24 sobre infraestrutura e VPS, onde Ubuntu 24.04 foi recomendado._
+
+*Tema: Cupom e Créditos do Lovable — Polêmica* ⏰ 10:13 – 11:22
+Membro pediu cupom do Lovable. Outro (+55 21) mencionou que vê anúncios de gente vendendo créditos. Membro (+55 92) desconfiou ser de cartão clonado e relatou casos de contas bloqueadas. "Expresso Espetaria" revelou que vendia créditos e nunca deu problemas, mas o sistema caiu e ficou caro. Chegou a postar tabela de preços (300cr por R$84,90 até 2.000cr por R$412,90). Vinão mencionou que antes ele vendia 500 dólares de crédito por R$93. O sistema voltou sábado mas durou só um dia. Wesley disse que prefere aguardar promoção oficial do Lovable. _Continuação direta do tema do dia 25, onde o Lovable foi criticado por ficar "mais burro" com poucos créditos, e do dia 27, onde CRM foi construído no Lovable._
+
+*Tema: Desconexão da Uazapi* ⏰ 10:26 – 11:13
+Dr. Adailto Richard Mendes relatou que sua Uazapi desconectou 2 vezes no final de semana, usando WhatsApp Business para o setor geral do escritório. Outro membro confirmou que a dele estava normal. Wesley perguntou se usava WhatsApp normal ou Business e reforçou que o Business é mais estável. Igor Roman relatou que também precisa reconectar a cada 1-2 semanas. Um membro (+55 31) revelou o detalhe crucial: é preciso abrir o WhatsApp Business no celular a cada 14 dias, no mínimo, senão ele desconecta os dispositivos conectados automaticamente. Igor confessou que conectava e deixava a bateria do celular acabar — esse era o problema. Wesley admitiu que a bateria do celular dele também zerou. _Reviravolta irônica continuada do dia 27: a Uazapi, recomendada nos dias 24-26 como solução infalível, segue apresentando problemas. No dia 27, o webhook dela não ativava; hoje, desconecta por inatividade do celular._
+
+*Tema: Upload e Base64 no N8N* ⏰ 11:38 – 11:47
+Membro (+55 11) perguntou sobre aula específica de upload e conversão para base64. Wesley indicou a aula de envio de mídia do curso, explicando que o conceito se aplica para qualquer tipo de mídia. _Relacionado ao tema do dia 26, onde erro de base64 na Evolution foi discutido._
+
+*Tema: Precificação de Recorrência Mensal e Proposta Comercial* ⏰ 11:52 – 12:13
+ORBI IA pediu ajuda com precificação de recorrência mensal, relatando que o valor trava negociações. Wesley orientou: acima de R$1.000 para as integrações do curso, com alunos fechando negócios na casa dos R$7.000 (quando extremamente bem montado). Pode cobrar mensalmente para manter o sistema e repassar custos de IA ao cliente, ou cobrar mais no mensal e assumir os custos. Recomendou oferecer test drive para leads qualificados e montar um Demo do Bot para o cliente "viciar". ORBI IA respondeu que já cobra implantação acima do mencionado e recorrência entre R$550-1.000. Wesley confirmou que está no caminho certo. Outro membro (+55 31) complementou sugerindo follow-up com clientes que não fecharam, preferencialmente via ligação, para entender o motivo e ajustar a abordagem. _Aprofundamento do tema do dia 25 sobre precificação e modelo de negócio para chatbots, agora com valores concretos e estratégia de follow-up._
+
+*Tema: Modelos de IA – GPT-5.2, GPT-5 Mini e 4.1 Mini* ⏰ 12:33 – 13:48
+Membro (+55 53) relatou que usa o GPT-5.2 mas está gastando muitos tokens e perguntou sobre o GPT-5 mini. Reação do grupo: "Temos um multimilionário entre nós" — GPT-5.2 é caro. Membro (+55 31) avaliou o GPT-5 mini como muito lento e disse preferir o 4.1 mini. Wesley explicou que o mini é mais barato, mas o ideal é avaliar se faz sentido para a logística específica de cada agente. Para web search e features adicionais, o 5.1 mini já se mostra uma boa opção. Um membro (+55 19) fez uma reflexão longa e elaborada sobre como a escolha de modelo não é simplesmente custo vs desempenho, mas depende do contexto: fluxo de uso, volume de requisições, criticidade das respostas, tempo de resposta e integração com outros sistemas. _Continuação direta do tema do dia 26, onde Wesley recomendou GPT 4.1 Mini e Grok 4.1 fast como melhor custo-benefício, e do dia 24 sobre custos dos modelos da Anthropic._
+
+*Tema: Hospedagem de CRM e Sites na VPS* ⏰ 14:46 – 15:27
+Membro (+55 85) pensava em oferecer CRM + IA de WhatsApp ao cliente e perguntou onde hospedar: subdomínio próprio ou domínio do cliente? Wesley aconselhou manter como propriedade intelectual própria e "vender o uso", hospedando tudo no próprio servidor para poder escalar. Fernando (+55 21) reforçou enfaticamente: hospedar na VPS própria, não no terreno de terceiros (Vercel). Ele mesmo tem dashboard, páginas e sites tudo na VPS, tendo dispensado hospedagem paga para 50 sites. A forma de deploy: via GitHub para a VPS. Outro membro (+55 31) indicou a live do Flux Action onde mostra como instalar site/app na VPS usando EasyPanel. Membro (+55 15) confirmou o workflow: hospedar no GitHub e puxar pelo EasyPanel. _Aprofundamento da discussão do dia 24 sobre infraestrutura de VPS por cliente e do dia 27 sobre CRM no Lovable — agora com foco em onde hospedar._
+
+*Tema: Projeto Freelance de Agente IA* ⏰ 15:27 – 15:29
+Thiago Esteves entrou perguntando se alguém com conhecimento em agentes de IA quer tocar um projeto pago. Chamou interessados no privado. Membro (+55 66) mencionou que já fez integração de agente N8N com app do Lovable. _Demonstra a demanda crescente por profissionais de automação, tema recorrente desde o dia 25._
+
+*Tema: Chatwoot – Problemas Após Atualização e Configuração* ⏰ 15:34 – 15:50
+Bruno (+55 31) compartilhou sua configuração: 1 VPS KVM2 para N8N/Noco/CRM e 1 VPS KVM2 para Chatwoot (separado por ter 9 chatbots do cliente). Wesley perguntou se ele otimiza o Chatwoot, que é "pesadinho e acumulador". Membro (+55 11) relatou que o erro surgiu após atualização do Chatwoot. Bruno sugeriu verificar se o domínio foi configurado e se as variáveis de ambiente do Chatwoot e Sidekiq foram atualizadas. Bruno explicou o que é o Chatwoot para quem não conhecia: solução de atendimento multicanal que agrega WhatsApp, Telegram, Instagram, Messenger, bot de site, email e apps num só lugar. Membros (+55 85 e +55 66) revelaram nunca ter usado. _Complementa temas de infraestrutura dos dias 24 e 27._
+
+*Tema: Lovable – Uso Real, Críticas e Alternativas* ⏰ 15:37 – 16:10
+Membro (+55 15) compartilhou que faz projetos sem Chatwoot usando Lovable: app de gestão geral e bots de atendimento direto no WhatsApp. Criou um Kanban no Lovable com botões que disparam fluxos no N8N, que ativam bots com contexto via Redis. Fernando (+55 21) criticou duramente o Lovable: "É uma bosta. Só serve pra começar. Faz tudo genérico igual pra todo mundo." Outro membro (+55 47) reforçou: "Nunca conheci ninguém que realmente escalou algo com o Lovable." Fernando recomendou o Horizons da Hostinger como alternativa para sites profissionais. Membro (+55 17) compartilhou projeto nostálgico feito no Lovable: chat retrô da Copa de 94 com mIRC (copa-retro-chat.lovable.app). _Continuação do debate do dia 25 (Lovable fica "burro" com poucos créditos) e do dia 27 (CRM no Lovable com Redis). A crítica de Fernando aprofunda o contraponto: Lovable é bom para prototipar mas não para escalar._
+
+*Tema: RAG no System Prompt vs Consulta Dinâmica* ⏰ 15:55 – 15:55
+Membro (+55 85) perguntou se é "inválido" colocar um RAG adaptado diretamente no system prompt ao invés de fazer a IA consultar o RAG dinamicamente a cada vez. Sem resposta conclusiva no grupo. _Tema avançado que conecta com as discussões sobre otimização de prompts e custos de tokens do dia 24._
+
+*Tema: Instabilidade Geral – WhatsApp, Uazapi, Chatwoot e N8N* ⏰ 16:09 – 16:56
+Membro (+55 11) relatou um dia catastrófico: primeiro o Uazapi, depois o Chatwoot, e por fim o N8N parou de carregar modelos de chat. Bruno (+55 31) especulou que o WhatsApp está instável por conta da implantação dos nomes de usuário (BSUID) anunciada para final de março. Link do Downdetector foi compartilhado novamente. Sobre os modelos não carregando no N8N: Fernando (+55 21) sugeriu verificar a versão, que versões muito novas sempre dão problema e relatou um caso onde uma tool do Google Calendar sumiu em versão nova. O membro tentou várias versões (stable, latest, 2.14.2) sem sucesso. Bruno descobriu que o Google está desativando os modelos Gemini 2.0 Flash e Flash Lite, aconselhando migração para o 3.1 Flash Lite. Porém o membro esclareceu que o problema não era do Gemini, mas do N8N — nenhum chat model carregava. O real culpado foi descoberto depois: a Contabo implementou firewall novo que bloqueou as conexões. _Continuação da instabilidade do WhatsApp relatada no dia 26 (Downdetector) e da desconexão da Uazapi do dia 27. A especulação sobre BSUID conecta com o tema do dia 26 sobre nomes de usuário no WhatsApp._
+
+*Tema: Firewall da Contabo Bloqueando N8N* ⏰ 16:51 – 17:09
+O membro (+55 11) descobriu que a Contabo implementou firewall sem aviso, bloqueando o funcionamento do N8N. Após configurar as regras no firewall, tudo voltou a funcionar. Bruno (+55 31) orientou que no firewall devem ficar apenas as portas 80 e 443, e a porta 5678 (interna do N8N) NÃO deve ser exposta. A porta 22 (SSH) só deve ser liberada quando necessário. Entretanto, o membro comemorou cedo: parou de funcionar novamente mesmo com as regras. _Complementa a discussão do dia 24 sobre comparação entre Hostinger e Contabo (latência alta da Contabo). Agora a Contabo adicionou mais um problema: firewall unilateral._
+
+*Tema: Otimização de Prompts* ⏰ 19:17 – 19:24
+Membro (+55 11) relatou que sente seu prompt "muito obsoleto" após 8 meses e que o agente vem perdendo referências e guias definidos. Wesley compartilhou que usa um projeto no Claude chamado "Formatador de Prompts", onde coloca as melhores instruções, modelos de referência, estilos de instrução e hierarquia de markdown .md, e vai refinando baseado no que a comunidade indica como melhor ou pior, incluindo prompt recursivo. _Conecta com os temas do dia 25 sobre execução vs estudo e do dia 24 sobre engenharia de contexto com GSD._
+
+*Tema: Problema com Switch de Mídia no N8N (Áudio vs Imagem)* ⏰ 18:51 – 19:52
+Membro (+55 98) mostrou fluxo no N8N com switch para separar texto (saída 0), áudio (saída 1) e imagem (saída 2). O problema: áudio funcionava, mas imagens sempre saíam pela saída de áudio e nunca pela saída 2 (imagem). Wesley pediu para mostrar o webhook e verificar o que o messageType trazia. Almir sugeriu verificar se no payload do webhook existe o mimetype e que o campo de media parecia estar sem a variável correta para acionar o switch — era necessário puxar a informação do JSON do webhook. _Tema técnico prático que conecta com a aula de envio de mídia indicada por Wesley mais cedo no dia._
+
+*Tema: Copywriting e Retenção de Leads* ⏰ 19:45 – 19:45
+Membro (+55 85) elogiou copys bem elaboradas que vê no mercado, dizendo que dá vontade de replicar o produto só pela qualidade do texto/design, reconhecendo que retém leads. _Complementa o tema de proposta comercial e abordagem discutido mais cedo no dia e no dia 25._
+
+*Tema: Projeto – Atendente para Agência de Viagens* ⏰ 19:52 – 19:52
+Douglas Rosato perguntou se alguém já fez atendente IA para agência de viagens. Sem resposta conclusiva. _Mais uma vertical de mercado sendo explorada, como a jurídica (dia 24-25) e a médica (dia 27)._
+
+━━━━━━━━━━━━━━━━━━━━
+
+🔍 *Destaques do Dia*
+
+🔧 *Técnicos:* Uazapi desconecta se o celular ficar desligado por mais de 14 dias — manter o WhatsApp Business aberto regularmente. Firewall novo da Contabo bloqueou N8N — configurar portas 80 e 443 (não expor 5678). Chatwoot com erro após atualização — verificar variáveis de ambiente e domínio. Google desativando Gemini 2.0 Flash/Flash Lite — migrar para 3.1 Flash Lite. Switch de mídia no N8N: verificar mimetype no payload do webhook para separar corretamente áudio de imagem.
+
+💼 *Negócios:* Implantação de chatbots acima de R$1.000 (até R$7.000 com negociação forte). Recorrência entre R$550-1.000. Estratégia de test drive e Demo do Bot para converter leads. Follow-up via ligação para entender objeções de clientes.
+
+🖥️ *Infraestrutura:* Hospedar CRM e sites na VPS própria para escalar (GitHub + EasyPanel). Portainer como opção mais avançada ao EasyPanel. Contabo com firewall implementado sem aviso. Chatwoot pesado — separar em VPS dedicada para clientes com muitos chatbots.
+
+🤝 *Colaboração:* Dica crucial sobre os 14 dias do WhatsApp Business resolveu problema de vários membros. Debate construtivo sobre Lovable (bom para prototipar, ruim para escalar). Orientação de precificação com valores reais. Wesley com projeto de Formatador de Prompts no Claude.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🌟 *Encerramento*
+Dia com caráter prático e diverso. A descoberta de que o WhatsApp Business desconecta dispositivos após 14 dias de inatividade no celular resolveu um mistério que vários membros enfrentavam há semanas. A Contabo surpreendeu negativamente ao implementar firewall sem aviso, adicionando mais um motivo para questioná-la (latência alta já discutida no dia 24). O Lovable continua sendo debatido: útil para prototipagem rápida (como visto no dia 27 com o CRM), mas criticado por quem busca escalar — o caminho recomendado é VPS própria com deploy via GitHub. A Uazapi segue como recomendação do grupo, mas continua apresentando percalços (desconexões hoje, webhooks no dia 27), mostrando que nenhuma ferramenta é perfeita — tema recorrente desde o dia 24. Em precificação, pela primeira vez o grupo compartilhou valores concretos de mercado, aprofundando a discussão do dia 25 sobre modelo de negócio.
