@@ -1,0 +1,206 @@
+*Resumo Semanal do Grupo - Curso N8N Fácil - Guilherme Lazarotto* 📆 24/03 a 30/03/2026
+
+📌 *Assunto Principal:*
+Semana extremamente produtiva marcada pelo lançamento do N8N MCP em beta (criar workflows via IA), análise profunda sobre banimentos no WhatsApp e a janela de 24h da Meta, evolução do debate sobre precificação de chatbots com valores concretos (R$1.000-7.000 implantação, R$550-1.000 recorrência), a saga das APIs de WhatsApp (Evolution → Uazapi → falhas na Uazapi), reflexões sobre mentalidade e aprendizado (regra 80/20, TDAH, carreira), e muita resolução colaborativa de problemas técnicos com N8N, Evolution API, Uazapi e OpenAI.
+
+💡 *Assuntos Relevantes:*
+
+🔧 _Dicas Técnicas e Solução de Problemas:_
+Reagendamento dinâmico de fluxos N8N usando banco de dados e Schedule auxiliar. Bloqueio de agente após finalizar atendimento com #Finalizado + IF + banco. Filtro fromMe para agente pessoal no WhatsApp. Análise da janela de 24h da Meta e os reais motivos de banimento. Erro da Responses API da OpenAI resolvido ao desmarcar a opção. Bugs no N8N 2.13.4 com subagentes. WhatsApp Business desconecta após 14 dias sem abrir no celular. Firewall novo da Contabo bloqueando N8N (portas 80 e 443). .trim() para limpar espaços em nomes no N8N. Switch de mídia no N8N verificando mimetype no webhook.
+
+🚀 _Ferramentas e Inovação:_
+N8N MCP em beta (v2.14.0) para criação de workflows via Claude Code/Cursor/Codex. Google Stitch como concorrente do Figma. GSD para engenharia de contexto com commits atômicos. Memória 2.0 do Claude Code com Auto Dream. Kimi.com para geração de slides com 1 prompt. Transformação de fluxos N8N em LangGraph. CRM no Lovable integrado ao N8N com Redis. BSUID (nomes de usuário) chegando ao WhatsApp até julho/2026. Maritaca AI como IA brasileira emergente.
+
+💼 _Negócios e Estratégia:_
+Precificação de chatbots: cobrar pelo que o cliente pode pagar (dia 25), evoluindo para valores concretos (dia 30): implantação R$1.000-7.000, recorrência R$550-1.000. Assinaturas digitais com validade jurídica via Zapsign/Clicksign (STJ admitiu fora da ICP-Brasil). Software jurídico com venda casada de agente IA. Estratégia de test drive e Demo do Bot para converter leads. Follow-up via ligação para entender objeções. Hospedar CRM e sites na VPS própria (GitHub + EasyPanel), não depender de terceiros.
+
+🧠 _Mentalidade e Carreira:_
+Regra 80/20: 80% execução e 20% estudo. Ser autodidata é fundamental. Estratégias de estudo para quem tem TDAH: vídeos curtos (5 min), evitar leituras longas, salvar progresso diário. ADS (2 anos) como melhor porta de entrada em tecnologia. Especializar-se em uma área ao invés de tentar acompanhar tudo. Matemática e álgebra como base lógica para programação.
+
+🖥️ _Infraestrutura:_
+Comparativo Hostinger vs Contabo (Contabo com latência alta e firewall implementado sem aviso). Ubuntu 24.04 recomendado para VPS. Portainer vs EasyPanel (Portainer mais completo, EasyPanel plug and play). 1 VPS por cliente como modelo ideal. Chatwoot pesado — separar em VPS dedicada. Google desativando Gemini 2.0 Flash/Flash Lite, migrar para 3.1 Flash Lite.
+
+🤖 _Modelos de IA:_
+Claude superior ao ChatGPT em testes, mas caro para agents no N8N. GPT 4.1 Mini e Grok 4.1 fast como melhor custo-benefício. GPT-5.2 caro demais, GPT-5 mini lento, 4.1 mini segue como melhor opção. Instabilidades no Claude (tokens expirados, respostas que não carregam). Wesley usa projeto "Formatador de Prompts" no Claude para refinar instruções.
+
+🔗 *Links Compartilhados na Semana:*
+• Google Stitch: stitch.withgoogle.com
+• N8N MCP Beta: community.n8n.io/t/create-workflows-via-mcp-now-in-beta/280856
+• N8N MCP servidor: github.com/czlonkowski/n8n-mcp
+• N8N Skills: github.com/czlonkowski/n8n-skills
+• GSD (Get Shit Done): github.com/gsd-build/get-shit-done
+• Context Mode MCP: github.com/mksglu/context-mode
+• Preços do Claude: platform.claude.com/docs/en/about-claude/pricing
+• STJ assinaturas digitais: migalhas.com.br/quentes/451284/stj-admite-assinaturas-digitais-fora-da-icp-brasil-entenda-o-tema
+• BSUID documentação Meta: developers.facebook.com/documentation/business-messaging/whatsapp/business-scoped-user-ids
+• Downdetector WhatsApp: downdetector.com.br/fora-do-ar/whatsapp/
+• WAHA Engines: waha.devlike.pro/docs/how-to/engines
+• Uazapi check de número: docs.uazapi.com/endpoint/post/chat~check
+• Hackers do Bem (segurança gratuito): hackersdobem.org.br
+• Hostinger 20% desconto: hostinger.com/br?REFERRALCODE=112549A19760311
+• Claude controlando navegador: proud-actress-809.notion.site/Claude-Code-agora-pode-controlar-seu-navegador-32bb865752fd8086a574dcec45273eec
+• Copa Retro Chat (projeto Lovable): copa-retro-chat.lovable.app
+
+━━━━━━━━━━━━━━━━━━━━
+
+*📅 Terça-feira — 24/03/2026 — "O dia da explosão tecnológica"*
+
+*Tema: N8N MCP Beta – Criar Workflows via IA* ⏰ 19:07 – 19:24
+Grande novidade da semana: o N8N lançou em beta pública (versão 2.14.0) a possibilidade de criar e atualizar workflows diretamente via MCP, dispensando o editor. Integração com Claude Code, Cursor e Codex. Repositórios n8n-mcp e n8n-skills compartilhados. Membros já utilizavam MCP customizado para construir fluxos completos.
+
+*Tema: Claude vs ChatGPT – Debate sobre Modelos de IA* ⏰ 12:16 – 13:58
+Claude confirmado como superior em testes do Pentágono e empresas. O Claude Opus não é upgrade do Sonnet, mas modelo totalmente diferente. Estratégia recomendada: VS Code + Git Copilot para tarefas simples, Claude Code para tarefas complexas. Antigravity destacado como ferramenta poderosa.
+
+*Tema: Google Stitch e GSD* ⏰ 11:19 – 19:56
+Google Stitch apresentado como potencial concorrente do Figma. GSD (Get Shit Done) compartilhado para engenharia de contexto com commits atômicos. Memória 2.0 do Claude Code com Auto Dream. Context Mode MCP recomendado para Claude Code.
+
+*Tema: Infraestrutura e VPS* ⏰ 16:19 – 17:45
+Comparação Hostinger vs Contabo: Contabo com latência alta e lentidão no SSH. Ubuntu 24.04 recomendado. Modelo de 1 VPS por cliente. Agendamento dinâmico de fluxos resolvido com banco de dados + Schedule auxiliar + IF com dupla condição.
+
+━━━━━━━━━━━━━━━━━━━━
+
+*📅 Quarta-feira — 25/03/2026 — "O dia da estratégia e da mentalidade"*
+
+*Tema: Precificação e Modelo de Negócio para Chatbots* ⏰ 00:30 – 01:44
+Dois modelos discutidos: venda única vs mensalidade com gerenciamento. O conselho principal: o mais importante não é quanto cobrar, mas sim quanto o cliente pode pagar, a curto e longo prazo. Muitos perdem oportunidades por querer ganhar muito de poucos.
+
+*Tema: Bloquear Agente Após Finalizar Atendimento* ⏰ 18:08 – 18:22
+Solução técnica de Wesley: agente retorna #Finalizado no output → IF filtra → grava número na tabela. Na próxima mensagem, IF no início verifica se já existe na tabela de atendidos. Alternativas: Supabase, Redis, NocoDB. Ajuste de prompt sozinho não resolve.
+
+*Tema: Assinatura Digital Jurídica* ⏰ 16:04 – 16:28
+Fluxo automatizado: lead qualificado → coleta de dados → geração de procuração → Zapsign → assinatura online. STJ passou a admitir assinaturas fora da ICP-Brasil. De 2 mil clientes do Dr. Adailto, apenas 3-5 casos com juízes que não aceitaram.
+
+*Tema: Execução vs Estudo* ⏰ 12:14 – 12:52
+Regra 80/20: 80% execução e 20% estudo. Ser autodidata é fundamental. Relato marcante: "Estudei 1 curso, 0 prática, pensava que quando fosse precisar eu saberia, hoje não lembro 1 ferramenta citada." Ferramentas mudam em 20 dias, fundamentos permanecem.
+
+*Tema: Instabilidade no Claude e Evolução das Automações* ⏰ 10:48 – 19:57
+Diversos membros com problemas no Claude: tokens expirados, respostas que não carregam. Fluxos N8N sendo transformados em LangGraph para automações mais robustas. Kimi.com destacada para geração de slides completos com 1 prompt.
+
+━━━━━━━━━━━━━━━━━━━━
+
+*📅 Quinta-feira — 26/03/2026 — "O dia dos banimentos e das verdades do WhatsApp"*
+
+*Tema: Banimento no WhatsApp – Análise da Janela de 24h* ⏰ 14:57 – 15:28
+Bruno Werneck com análise educativa: banimentos causados por disparos fora da janela de 24h, não por conteúdo repetitivo. A Meta flagra mensagens fora dessa janela que deveriam ser templates (Marketing/Utility) com custo. Wesley reconheceu que não tinha esse raciocínio montado. Após banimento temporário, número fica "marcado". Bruno estudando APIs oficiais para se tornar tech provider. _Esclareceu definitivamente o tema de banimentos que vinha sendo discutido nos dias 24 e 25._
+
+*Tema: BSUID – Nomes de Usuário no WhatsApp* ⏰ 08:53 – 10:17
+WhatsApp lançará nomes de usuário em 2026 (aplicação até julho), junto com IA interna, automações simples e crachá digital. Recurso opcional para pessoas e empresas. Conselho: já separar um nome bacana antes que os bons fiquem ocupados. Vinão: "WhatsApp segue copiando o Telegram."
+
+*Tema: Bugs no N8N 2.13.4 e Erro da Responses API* ⏰ 13:55 – 19:55
+Subagentes não chamando tools, execuções com pin que não rodam, erro de tipo (number vs string). Solução: salvar e publicar subworkflow, dar refresh na tool. Responses API da OpenAI causando erro — resolvido ao desmarcar "Use Responses API" (destinada a modelos a partir do GPT-5).
+
+*Tema: Modelos de IA e Infraestrutura* ⏰ 11:13 – 17:34
+Uazapi consolidada com 40 números rodando. Wesley recomendou GPT 4.1 Mini e Grok 4.1 fast como custo-benefício. Evolution API funcional para poucos "abençoados". Evolution Go descartada: "Nem vou testar. Tenho coisa mais importante pra fazer!" _Continuação do debate sobre APIs dos dias anteriores._
+
+━━━━━━━━━━━━━━━━━━━━
+
+*📅 Sexta-feira — 27/03/2026 — "O dia mais humano do grupo"*
+
+*Tema: Uazapi com Problemas de Webhook* ⏰ 08:30 – 16:40
+Clientes registrando dados na Uazapi mas webhook não ativava. Suporte da Uazapi demorou horas e é feito por IA (piada: "Vamos vender um agente melhor pra eles!"). _Reviravolta irônica: nos dias 24, 25 e 26, a Uazapi foi recomendada como solução infalível. Hoje, ela mesma apresentou falhas._
+
+*Tema: TDAH e Estratégias de Estudo* ⏰ 14:42 – 15:00
+Conversa empática sobre TDAH na área de automações. Dicas: vídeos/áudios curtos (máximo 5 min), evitar leituras longas, quebrar tarefas em partes pequenas, salvar progresso diário. Cada pessoa tem sua realidade. _Aprofundamento da reflexão do dia 25 sobre execução vs estudo, agora com perspectiva de neurodivergência._
+
+*Tema: CRM no Lovable Integrado ao N8N* ⏰ 14:57 – 15:18
+CRM com funções pré-definidas (confirmação, agendamento, follow-up). Clique no botão → webhook N8N → converte para chatId → verifica contexto no Redis → IA gera mensagem personalizada. Debate Redis (temporário) vs Postgres (permanente).
+
+*Tema: Carreira em Tecnologia* ⏰ 16:49 – 17:31
+ADS (Análise e Desenvolvimento de Sistemas) como melhor porta de entrada: 2 anos, direto ao ponto. Avaliar grade curricular antes de escolher faculdade. Curso gratuito de segurança "Hackers do Bem" compartilhado. Elogios espontâneos ao Bruno Werneck como professor e mentor. _Complementa a reflexão sobre especialização do dia 24._
+
+*Tema: Matemática e Maritaca AI* ⏰ 17:43 – 18:22
+Debate filosófico sobre álgebra e lógica de programação. Maritaca AI (modelo "Sabiá") apresentada como curiosidade brasileira. Membros zoaram: "Daqui a pouco alguém lança o BrasaAI."
+
+━━━━━━━━━━━━━━━━━━━━
+
+*📅 Segunda-feira — 30/03/2026 — "O dia prático e diverso"*
+
+*Tema: Precificação com Valores Concretos* ⏰ 11:52 – 12:13
+Wesley orientou: acima de R$1.000 para integrações do curso, com alunos fechando na casa dos R$7.000 (bem montado). Recorrência entre R$550-1.000. Estratégia de test drive para leads qualificados e Demo do Bot para "viciar" o cliente. Follow-up via ligação para entender objeções. _Aprofundamento do dia 25, agora com valores reais pela primeira vez._
+
+*Tema: Desconexão da Uazapi e os 14 Dias* ⏰ 10:26 – 11:13
+Uazapi desconectou 2 vezes no final de semana. Detalhe crucial descoberto: é preciso abrir o WhatsApp Business no celular a cada 14 dias, senão desconecta dispositivos automaticamente. Membro confessou que conectava e deixava bateria acabar. _Continuação da saga da Uazapi que começou no dia 24._
+
+*Tema: Modelos de IA – GPT-5.2, 5 Mini e 4.1 Mini* ⏰ 12:33 – 13:48
+GPT-5.2 caro demais ("Temos um multimilionário entre nós"). GPT-5 mini avaliado como muito lento. 4.1 mini segue como melhor custo-benefício. Reflexão elaborada: escolha de modelo depende do contexto (volume, criticidade, tempo de resposta, integração). _Continuação do debate do dia 26._
+
+*Tema: Hospedagem e Infraestrutura* ⏰ 06:21 – 17:09
+Portainer vs EasyPanel: Portainer mais completo, EasyPanel plug and play. Hospedar CRM/sites na VPS própria (GitHub + EasyPanel), não no terreno de terceiros. Fernando dispensou hospedagem paga para 50 sites. Contabo implementou firewall sem aviso bloqueando N8N — configurar portas 80 e 443. Chatwoot pesado — separar em VPS dedicada. _Complementa infraestrutura do dia 24 e CRM do dia 27._
+
+*Tema: Lovable – Uso, Críticas e Alternativas* ⏰ 15:37 – 16:10
+Lovable criticado duramente: "É uma bosta. Só serve pra começar. Faz tudo genérico." Nunca escalou para ninguém. Horizons da Hostinger recomendado como alternativa. Projeto nostálgico: chat retrô da Copa de 94 com mIRC. _Contraste com dia 27, onde CRM funcional foi criado nele._
+
+*Tema: Instabilidade Geral e Firewall da Contabo* ⏰ 16:09 – 17:09
+Dia catastrófico para um membro: Uazapi, Chatwoot e N8N pararam. Especulação: WhatsApp instável pela implantação dos BSUID (dia 26). Google desativando Gemini 2.0 Flash/Flash Lite — migrar para 3.1 Flash Lite. Real culpado do N8N: Contabo implementou firewall novo sem aviso. _Continuação da instabilidade do dia 26 e da Contabo do dia 24._
+
+━━━━━━━━━━━━━━━━━━━━
+
+🔄 *Arcos Narrativos da Semana*
+
+🔌 _A Saga das APIs de WhatsApp:_
+Dia 24 (ter): Evolution criticada, Uazapi recomendada → Dia 25 (qua): Evolution com mensagens não respondidas → Dia 26 (qui): Uazapi consolidada (40 números) → Dia 27 (sex): Plot twist — Uazapi com falha de webhook → Dia 30 (seg): Uazapi desconecta por inatividade do celular (14 dias). Lição: nenhuma ferramenta é perfeita.
+
+💰 _Precificação — Do Conceito ao Valor Real:_
+Dia 25 (qua): "O mais importante não é quanto cobrar, mas sim quanto o cliente pode pagar" → Dia 30 (seg): Valores concretos compartilhados pela primeira vez — implantação R$1.000-7.000, recorrência R$550-1.000, com estratégia de test drive e follow-up.
+
+🧠 _Mentalidade e Aprendizado:_
+Dia 24 (ter): Especializar-se em uma área, não tentar tudo → Dia 25 (qua): Regra 80/20 — 80% execução, 20% estudo → Dia 27 (sex): TDAH — adaptar o estudo à sua realidade com vídeos curtos e tarefas pequenas. A evolução mostrou que cada pessoa aprende diferente, mas a execução é o que conta.
+
+🤖 _Modelos de IA — Quem é o Melhor Custo-Benefício:_
+Dia 24 (ter): Claude superior, mas caro para agents → Dia 25 (qua): Instabilidades no Claude → Dia 26 (qui): GPT 4.1 Mini e Grok 4.1 fast recomendados → Dia 30 (seg): GPT-5.2 caro, 5 mini lento, 4.1 mini segue como melhor opção. Consenso: 4.1 Mini é o rei do custo-benefício em março/2026.
+
+🛠️ _Lovable — Do Hype à Realidade:_
+Dia 25 (qua): Fica "burro" com poucos créditos → Dia 27 (sex): CRM funcional criado nele (uso positivo) → Dia 30 (seg): Criticado — "só serve pra começar, não escala". Consenso: bom para prototipar, migrar para VPS própria para produção.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🔍 *Destaques da Semana*
+
+🔧 *Técnicos:* N8N MCP Beta v2.14.0 para criação de workflows via IA. Bloqueio de agente pós-atendimento com #Finalizado + banco + IF. Janela de 24h da Meta como real causa de banimentos. WhatsApp Business desconecta após 14 dias sem abrir no celular. Firewall da Contabo bloqueando N8N (portas 80/443). Responses API da OpenAI causando erro (desmarcar opção). .trim() para limpar espaços. Switch de mídia com mimetype no webhook.
+
+🚀 *Inovação:* N8N MCP dispensando editor manual. Google Stitch ameaçando Figma. GSD para engenharia de contexto. Memória 2.0 do Claude com Auto Dream. LangGraph tornando automações mais robustas. BSUID chegando ao WhatsApp até julho/2026. Kimi.com para slides com 1 prompt.
+
+💼 *Negócios:* Precificação com valores reais (R$1-7K implantação, R$550-1K recorrência). Assinaturas digitais validadas pelo STJ. Test drive e Demo do Bot como estratégia de conversão. Follow-up via ligação. Software jurídico com venda casada de agente IA.
+
+🧠 *Mentalidade:* Regra 80/20. Ser autodidata é fundamental. TDAH com estratégias práticas. ADS como porta de entrada. Especializar-se em vez de acompanhar tudo. Fundamentos permanecem, ferramentas mudam.
+
+🖥️ *Infraestrutura:* VPS própria > Vercel/terceiros. GitHub + EasyPanel para deploy. Portainer para quem tem mais conhecimento. Contabo com latência + firewall sem aviso. Ubuntu 24.04. Chatwoot em VPS separada. Uazapi como principal, mas com ressalvas.
+
+🤝 *Colaboração:* Bruno Werneck educou o grupo sobre banimentos e recebeu elogios espontâneos. Resolução coletiva de ~15 problemas técnicos. Troca de valores reais de mercado. Apoio empático a membros com TDAH. 18+ links compartilhados. 8 ferramentas novas apresentadas. 4 áreas de mercado exploradas (jurídica, marketing, médica, viagens).
+
+━━━━━━━━━━━━━━━━━━━━
+
+🏆 *TOP 5 Momentos da Semana*
+
+1. 🥇 *N8N MCP Beta* (dia 24, ter) — Criar workflows via IA, dispensando o editor manual. A maior novidade técnica da semana.
+2. 🥈 *Análise da Janela de 24h* (dia 26, qui) — Bruno Werneck educou o grupo inteiro sobre os reais motivos de banimento no WhatsApp.
+3. 🥉 *Precificação com Valores Reais* (dia 30, seg) — Primeira vez que o grupo compartilhou R$ concretos de mercado.
+4. 🏅 *Regra 80/20 — Execução vs Estudo* (dia 25, qua) — Reflexão que ressoou com todo o grupo e gerou relatos marcantes.
+5. 🏅 *WhatsApp Business 14 Dias* (dia 30, seg) — Detalhe crucial que resolveu o problema de desconexão de vários membros.
+
+━━━━━━━━━━━━━━━━━━━━
+
+💡 *Recomendação de Melhor Estilo para Resumos Diários*
+
+Após ler todos os 5 resumos, cada dia tem pontos fortes únicos. O estilo ideal é um *híbrido do dia 27 + dia 30*:
+
+O dia 30 é o mais maduro por: identificação de membros com (+55 XX) para rastreabilidade sem exposição, conexões entre dias com referências cruzadas em itálico, valores concretos em vez de genéricos, e tom equilibrado entre técnico e humano.
+
+O dia 27 complementa com: subtítulo temático que dá identidade ao dia ("O dia mais humano"), seção de encerramento com reflexão e ironia, e tom empático nas discussões de mentalidade.
+
+_Formato recomendado:_
+1. Cabeçalho + Subtítulo temático do dia
+2. Assunto principal (1 parágrafo)
+3. Categorias de assuntos (Técnica, Negócios, Mentalidade)
+4. Links compartilhados (seção dedicada como no dia 24)
+5. Temas detalhados com horário ⏰ e (+55 XX)
+6. Conexões com dias anteriores em itálico
+7. Destaques do dia (bullets por categoria)
+8. Encerramento com reflexão + personalidade
+
+O dia 24 é o melhor em organização de links. O dia 25 brilha na parte de mentalidade. O dia 26 é o mais educativo. O dia 27 é o mais humano. O dia 30 é o mais completo. A evolução do estilo ao longo da semana é visível — o autor foi refinando a cada dia.
+
+━━━━━━━━━━━━━━━━━━━━
+
+🌟 *Encerramento*
+Semana que consolidou a maturidade do grupo. A comunidade demonstrou que não é apenas um espaço técnico, mas um ecossistema completo: resolve problemas com agilidade (N8N MCP, Responses API, firewall Contabo), educa com profundidade (janela de 24h, banimentos, BSUID), debate estratégia de negócio com valores reais (R$1-7K), acolhe com empatia (TDAH, carreira para iniciantes), e mantém o bom humor mesmo quando as ferramentas favoritas falham (a saga da Uazapi). O destaque da semana vai para o N8N MCP Beta, que pode revolucionar a forma como workflows são construídos, e para Bruno Werneck, que foi reconhecido espontaneamente como referência do grupo. A lição da semana resume-se em uma frase que atravessou vários dias: nenhuma ferramenta é perfeita, mas uma comunidade unida resolve qualquer coisa.

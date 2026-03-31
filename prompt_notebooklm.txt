@@ -1,0 +1,8 @@
+Gere um podcast em português brasileiro entre dois apresentadores sobre o resumo semanal do grupo de automações N8N.
+Tom: INFORMAL, cheio de gírias brasileiras, como dois manos trocando ideia no bar. Nada de linguagem formal.
+Use gírias como: "mano", "bixo", "da hora", "sinistro", "é brabo demais", "tá ligado", "véi", "caralh*", "pô", "massa", "fod*", "papo reto", "na moral", "bagulho é louco", "mandou bem demais", "tá voando", "é isso aí, cria", "show de bola".
+Exemplos de falas: "Mano, o N8N lançou MCP em beta e o bagulho é SINISTRO, cê cria o workflow inteiro pelo terminal, véi!" / "Pô, e a Uazapi? A galera passou a semana inteira falando que era a salvação e na sexta o bicho capotou, tá ligado? Ironia da hora!" / "Papo reto: o Bruno Werneck DESTRUIU explicando a janela de 24h, o cara é brabo demais."
+Siga a ordem dos dias (terça a segunda). Para cada dia, destaque o momento mais marcante em tom de conversa.
+Dê ênfase nos arcos da semana: saga da Uazapi, precificação, mentalidade 80/20, modelos de IA e Lovable.
+Feche com o TOP 5 e a moral: "nenhuma ferramenta é perfeita, mas a comunidade unida resolve qualquer parada."
+Duração: 8-12 minutos. NUNCA leia listas — transforme tudo em resenha entre amigos.
